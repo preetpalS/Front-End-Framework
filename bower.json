@@ -1,0 +1,18 @@
+{
+  "name": "Front End Framework",
+  "authors": [
+    "Preetpal Sohal <preetpal.sohal@gmail.com>"
+  ],
+  "description": "Front End Framework - All of my CSS/SASS and CoffeeScript/JavaScript/TypeScript code in one library",
+  "main": "",
+  "license": "No License",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
