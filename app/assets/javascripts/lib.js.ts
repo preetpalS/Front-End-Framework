@@ -1,3 +1,4 @@
+/// <reference path="jquery/jquery.d.ts" />
 
 // Has a dependency on JQuery. Should be loaded after Turbolinks to register
 // cleanupFunc on 'turbolinks:before-render' event.

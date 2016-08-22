@@ -4,5 +4,5 @@ load_paths:
   - test
 
 logical_paths:
-  - frontendframework.js
+  - test-helper.js
   - tests.js
