@@ -28,5 +28,5 @@ declare var hooks : {
     pageCleanup?: (() => void)[]
 };
 
-declare var gHndl : MiniHtmlViewModel.GlobalHandle;
+declare var gHndl : FrontEndFramework.GlobalHandle;
 declare var Turbolinks : any;
