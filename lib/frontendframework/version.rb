@@ -1,3 +1,3 @@
-module Frontendframework
+module FrontEndFramework
   VERSION = '0.0.1'
 end

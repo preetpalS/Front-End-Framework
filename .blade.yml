@@ -1,0 +1,8 @@
+# .blade.yml
+load_paths:
+  - app/assets/javascripts
+  - test
+
+logical_paths:
+  - frontendframework.js
+  - tests.js

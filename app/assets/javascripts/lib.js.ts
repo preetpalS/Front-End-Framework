@@ -1,8 +1,4 @@
 
-var adder = function(num) {
-    return function(val) { return val + num; };
-};
-
 namespace FrontEndFramework {
     export var VERSION = '1.0.0';
 

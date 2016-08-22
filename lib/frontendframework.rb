@@ -1,5 +1,5 @@
 require 'frontendframework/version'
 
-module Frontendframework
+module FrontEndFramework
   class Engine < ::Rails::Engine; end
 end

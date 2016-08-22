@@ -5,7 +5,7 @@ require 'frontendframework/version'
 
 Gem::Specification.new do |gem|
   gem.name = 'frontendframework'
-  gem.version = Frontendframework::VERSION
+  gem.version = FrontEndFramework::VERSION
   gem.platform = Gem::Platform::RUBY
   gem.authors = ['Preetpal Sohal']
   gem.email = %w(preetpal.sohal@gmail.com)
