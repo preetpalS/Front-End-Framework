@@ -1,3 +1,4 @@
+require 'frontendframework/header_script'
 require 'frontendframework/version'
 
 module FrontEndFramework
