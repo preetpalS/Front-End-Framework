@@ -1,0 +1,7 @@
+
+@mixin hide-table-columns($id, $columns-to-hide...) {
+    @each $col in $columns-to-hide {
+        #{$id} tr th:nth-child(#{$col}) { display: none; }
+        #{$id} tr td:nth-child(#{$col}) { display: none; }
+    }
+}

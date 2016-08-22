@@ -1,0 +1,20 @@
+
+@mixin show-above($cutoff-point-num, $cutoff-point-unit) {
+    .show-above-#{$cutoff-point-num}#{$cutoff-point-unit} {
+        display: none;
+    }
+    @media screen and (max-width: #{$cutoff-point-num - 1}#{$cutoff-point-unit}) {
+        .show-above-#{$cutoff-point-num}#{$cutoff-point-unit} {
+            display: initial;
+        }
+    }
+}
+
+@mixin show-below($cutoff-point-num, $cutoff-point-unit) {
+}
+
+// show-above-below(768, "px") generates show-above-768px and show-below-767px
+@mixin show-above-below($above-cutoff-point-num, $cutoff-point-unit) {
+    @include show-above($above-cutoff-point-num, $cutoff-point-unit);
+    @include show-below(($above-cutoff-point-num - 1), $cutoff-point-unit);
+}
