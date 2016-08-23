@@ -1,8 +1,10 @@
 
+// Does not really depend on anything
+
 "use strict";
 
 namespace FrontEndFramework {
-namespace ScreenDimensions {
+export namespace ScreenDimensions {
     export interface ScreenDimensions {
         availableHeight : number;
         availableWidth : number;

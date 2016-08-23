@@ -1,6 +1,7 @@
-/// <reference path="./base" />
+/// <reference path="../__jquery.js.ts" />
+/// <reference path="./base.js.ts" />
 
-export namespace FrontEndFramework {
+namespace FrontEndFramework {
     export namespace MiniHtmlViewModel {
         export const VERSION = '0.3.1';
         export const TurbolinksAvailable = ((typeof Turbolinks !== 'undefined') && (Turbolinks != null)) ? true : false;
