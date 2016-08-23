@@ -1,4 +1,4 @@
-/// <reference path="../lib.js.ts" />
+/// <reference path="./base" />
 
 export namespace FrontEndFramework {
     export namespace MiniHtmlViewModel {
