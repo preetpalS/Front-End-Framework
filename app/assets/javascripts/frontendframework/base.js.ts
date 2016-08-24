@@ -33,7 +33,6 @@ declare var Turbolinks : any;
 namespace FrontEndFramework {
     export const TurbolinksAvailable = ((typeof Turbolinks !== 'undefined') && (Turbolinks != null)) ? true : false;
 
-    export const enum BindingMode { OneTime, OneWayRead, OneWayWrite, TwoWay };
     export let readyFunc : (() => void) = null;
     export let cleanupHooks : (() => void)[] = [];
     let cleanupFunc = function() {

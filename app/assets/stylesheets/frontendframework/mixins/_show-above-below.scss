@@ -8,9 +8,9 @@
             display: none;
         }
     }
-    @media screen and (max-width: #{$cutoff-point-num}#{$cutoff-point-unit}) {
+    @media screen and (min-width: #{$cutoff-point-num}#{$cutoff-point-unit}) {
         .show-above-#{$cutoff-point-num}#{$cutoff-point-unit} {
-            display: #{$front-end-framework--default-visibility-option}; // Default for Internet Explorer
+            display: #{$front-end-framework--default-visibility-option-fallback}; // Default for Internet Explorer
             display: initial;
         }
         @each $display-visibility-option in $front-end-framework--display-visibility-options {
@@ -23,7 +23,7 @@
 
 @mixin show-below($cutoff-point-num, $cutoff-point-unit) {
     .show-above-#{$cutoff-point-num - 1}#{$cutoff-point-unit} {
-        display: #{$front-end-framework--default-visibility-option}; // Default for Internet Explorer
+        display: #{$front-end-framework--default-visibility-option-fallback}; // Default for Internet Explorer
         display: initial;
     }
     @each $display-visibility-option in $front-end-framework--display-visibility-options {
@@ -31,7 +31,7 @@
             display: #{$display-visibility-option};
         }
     }
-    @media screen and (max-width: #{$cutoff-point-num}#{$cutoff-point-unit}) {
+    @media screen and (min-width: #{$cutoff-point-num}#{$cutoff-point-unit}) {
         .show-below-#{$cutoff-point-num - 1}#{$cutoff-point-unit} {
             display: none;
         }
@@ -50,7 +50,7 @@
 }
 
 @mixin show-above-below-breakpoints($cutoff-point-unit, $above-cutoff-point-nums...) {
-    @for $above-cutoff-point-num in $above-cutoff-point-nums {
+    @each $above-cutoff-point-num in $above-cutoff-point-nums {
         @include show-above-below($above-cutoff-point-num, $cutoff-point-unit);
     }
 }
