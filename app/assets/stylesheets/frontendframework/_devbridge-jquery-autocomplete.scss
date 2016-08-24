@@ -1,0 +1,10 @@
+
+/* https://github.com/devbridge/jQuery-Autocomplete styling 
+ * Currently optimized for BootsWatch Paper theme.
+ */
+.autocomplete-suggestions { background-color: #fff; overflow: auto; font-size: 16px; line-height: 1.846; }
+.autocomplete-suggestion { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 2px 4px; }
+.autocomplete-selected { background: #66afe9; }
+.autocomplete-suggestions strong {}
+.autocomplete-group { }
+.autocomplete-group strong { display: block; box-shadow: inset 0px -1px 0px #ddd; }

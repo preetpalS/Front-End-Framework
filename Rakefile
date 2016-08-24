@@ -1,5 +1,8 @@
 
 # Rakefile
+
+require_relative './lib/frontendframework'
+
 require "blade"
 require 'sprockets'
 require 'typescript-sprockets'

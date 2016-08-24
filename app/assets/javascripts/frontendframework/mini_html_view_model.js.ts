@@ -1,125 +1,12 @@
-/// <reference path="../__jquery.js.ts" />
 /// <reference path="./base.js.ts" />
+
+// Depends on JQuery
+// Depends on ./base.js.ts due to the fact that the future IUserInterfaceElement might rely on cleanupHooks
+// for teardown logic.
 
 namespace FrontEndFramework {
     export namespace MiniHtmlViewModel {
         export const VERSION = '0.3.1';
-        export const TurbolinksAvailable = ((typeof Turbolinks !== 'undefined') && (Turbolinks != null)) ? true : false;
-
-        export namespace Storage {
-            export const enum DataPersistenceDuration { Transient, Session, AcrossSessions }
-            export interface ICacheExpirationDuration {
-                indefinite?: boolean;
-                expiryDate?: Date;
-            }
-
-            export interface IExpiringCacheDuration extends ICacheExpirationDuration {
-                indefinite?: boolean; // MUST BE `false`
-                expiryDate: Date;
-            }
-
-            export interface IIndefiniteCacheDuration extends ICacheExpirationDuration {
-                indefinite: boolean; // MUST BE `true`
-                expiryDate?: Date; //  IGNORED
-            }
-
-            export class ExpiringCacheDuration implements IExpiringCacheDuration {
-                public indefinite = false;
-                constructor(public expiryDate: Date) { }
-            }
-
-            export class IndefiniteCacheDuration implements IIndefiniteCacheDuration {
-                public indefinite = true;
-                constructor() { }
-            }
-
-            // This is needed for browsers that say that they have SessionStorage but in reality throw an Error as soon
-            // as you try to do something.
-            let is_session_storage_available = true;
-            try {
-                sessionStorage.setItem('testa890a809', 'val');
-                sessionStorage.removeItem('testa890a809');
-            } catch (_error) {
-                is_session_storage_available = false;
-            } finally {
-                // Nothing to do...
-            }
-            export const IsSessionStorageAvailable = is_session_storage_available;
-
-            export class ClientProfile {
-                public DataPersistanceDurationCapabilities: Array<DataPersistenceDuration>;
-                constructor() {
-                    this.DataPersistanceDurationCapabilities = [DataPersistenceDuration.Transient];
-                    if (MiniHtmlViewModel.TurbolinksAvailable ||  MiniHtmlViewModel.Storage.IsSessionStorageAvailable)
-                        this.DataPersistanceDurationCapabilities.push(DataPersistenceDuration.Session);
-                }
-            }
-
-            export class Database {
-                public clientProfile = new ClientProfile();
-                constructor(
-                    private errorOnFail = false
-                ) { }
-
-                public set(key: any,
-                           val: any,
-                           dataPersistenceDuration = DataPersistenceDuration.Session,
-                           cacheExpirationDuration?: ICacheExpirationDuration) {
-                    try {
-                        switch(dataPersistenceDuration) {
-                        case DataPersistenceDuration.Transient:
-                            break;
-                        case DataPersistenceDuration.Session:
-                            sessionStorage.setItem(key, val);
-                            break;
-                        case DataPersistenceDuration.AcrossSessions:
-                            break;
-                        default:
-                            break;
-                        }
-                    } catch (e) {
-                        if (this.errorOnFail) throw e;
-                    }
-                }
-
-                public get(key: any, dataPersistenceDuration?: DataPersistenceDuration) : string {
-                    try {
-                        if (dataPersistenceDuration != null) {
-                            switch(dataPersistenceDuration) {
-                            case DataPersistenceDuration.Transient:
-                                break;
-                            case DataPersistenceDuration.Session:
-                                return sessionStorage.getItem(key);
-                            case DataPersistenceDuration.AcrossSessions:
-                                break;
-                            default:
-                                break;
-                            }
-                        } else {
-                        }
-                    } catch (e) {
-                        if (this.errorOnFail) throw e;
-                    }
-                }
-
-                public forceCacheExpiry(key: any) { }
-            }
-        }
-
-        export const enum BindingMode { OneTime, OneWayRead, OneWayWrite, TwoWay };
-        export let readyFunc : (() => void) = null;
-        export let cleanupHooks : (() => void)[] = [];
-        let cleanupFunc = function() {
-            // Only do something if Turbolinks is present (in other case, page would be reset anyways)
-            if (MiniHtmlViewModel.TurbolinksAvailable) {
-                for (let i = 0; i < cleanupHooks.length; i++) {
-                    try { cleanupHooks[i](); } catch (e) { console.error(e); }
-                }
-            }
-        }
-        let clearStateOnNavigationFunc = function() {
-            gHndl.stateToClearOnNavigation = {};
-        };
 
         export interface IChangeData {
             key: string;
@@ -330,54 +217,6 @@ namespace FrontEndFramework {
                 public converterFunc?: ((a: any) => any),
                 public viewModelRef?: T
             ) { }
-        }
-
-        // Visits site using Turbolinks if possible.
-        export let visitLink = function(link : string, forceReload = false) {
-            if ((!forceReload) &&
-                MiniHtmlViewModel.TurbolinksAvailable &&
-                (typeof(Turbolinks.visit) === 'function')) {
-                Turbolinks.visit(link);
-            } else {
-                window.location.href = link;
-            }
-        };
-
-        $(document).ready(function() {
-            // Fire functions in hooks.pre Array
-            while (hooks.pre.length > 0) {
-                try { hooks.pre.shift()(); }
-                catch(e) { console.error(e); }
-            };
-
-            if ((MiniHtmlViewModel.readyFunc != null) &&
-                (typeof(MiniHtmlViewModel.readyFunc) === 'function')) {
-                try {
-                    MiniHtmlViewModel.readyFunc();
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-
-            // Fire functions in hooks.post Array
-            while (hooks.post.length > 0) {
-                try { hooks.post.shift()(); }
-                catch(e) { console.error(e); }
-            };
-        });
-
-        if (MiniHtmlViewModel.TurbolinksAvailable) {
-            document.addEventListener('turbolinks:before-render', cleanupFunc);
-            if (hooks.pageCleanup != null)
-                document.addEventListener('turbolinks:before-render', function() {
-                    // Fire functions in hooks.pageCleanup Array
-                    while (hooks.pageCleanup.length > 0) {
-                        try { hooks.pageCleanup.shift()(); }
-                        catch(e) { console.error(e); }
-                    };
-                });
-            if ((clearStateOnNavigationFunc != null) && (typeof(clearStateOnNavigationFunc) === 'function'))
-                document.addEventListener('turbolinks:visit', clearStateOnNavigationFunc);
         }
     }
 }

@@ -3,18 +3,54 @@
     .show-above-#{$cutoff-point-num}#{$cutoff-point-unit} {
         display: none;
     }
-    @media screen and (max-width: #{$cutoff-point-num - 1}#{$cutoff-point-unit}) {
+    @each $display-visibility-option in $front-end-framework--display-visibility-options {
+        .show-above-#{$cutoff-point-num}#{$cutoff-point-unit}-#{$display-visibility-option} {
+            display: none;
+        }
+    }
+    @media screen and (max-width: #{$cutoff-point-num}#{$cutoff-point-unit}) {
         .show-above-#{$cutoff-point-num}#{$cutoff-point-unit} {
+            display: #{$front-end-framework--default-visibility-option}; // Default for Internet Explorer
             display: initial;
+        }
+        @each $display-visibility-option in $front-end-framework--display-visibility-options {
+            .show-above-#{$cutoff-point-num}#{$cutoff-point-unit}-#{$display-visibility-option} {
+                display: #{$display-visibility-option};
+            }
         }
     }
 }
 
 @mixin show-below($cutoff-point-num, $cutoff-point-unit) {
+    .show-above-#{$cutoff-point-num - 1}#{$cutoff-point-unit} {
+        display: #{$front-end-framework--default-visibility-option}; // Default for Internet Explorer
+        display: initial;
+    }
+    @each $display-visibility-option in $front-end-framework--display-visibility-options {
+        .show-below-#{$cutoff-point-num - 1}#{$cutoff-point-unit}-#{$display-visibility-option} {
+            display: #{$display-visibility-option};
+        }
+    }
+    @media screen and (max-width: #{$cutoff-point-num}#{$cutoff-point-unit}) {
+        .show-below-#{$cutoff-point-num - 1}#{$cutoff-point-unit} {
+            display: none;
+        }
+        @each $display-visibility-option in $front-end-framework--display-visibility-options {
+            .show-below-#{$cutoff-point-num - 1}#{$cutoff-point-unit}-#{$display-visibility-option} {
+                display: none;
+            }
+        }
+    }
 }
 
 // show-above-below(768, "px") generates show-above-768px and show-below-767px
 @mixin show-above-below($above-cutoff-point-num, $cutoff-point-unit) {
     @include show-above($above-cutoff-point-num, $cutoff-point-unit);
-    @include show-below(($above-cutoff-point-num - 1), $cutoff-point-unit);
+    @include show-below($above-cutoff-point-num, $cutoff-point-unit);
+}
+
+@mixin show-above-below-breakpoints($cutoff-point-unit, $above-cutoff-point-nums...) {
+    @for $above-cutoff-point-num in $above-cutoff-point-nums {
+        @include show-above-below($above-cutoff-point-num, $cutoff-point-unit);
+    }
 }
