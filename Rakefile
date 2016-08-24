@@ -51,7 +51,7 @@ ALL_JS_TS_ERB = <<ERB
 <% end %>
 
 <% ts_lib_files.each do |ts_lib_file| %>
-/// <reference path="./<%= ts_lib_file %>.js.ts">
+/// <reference path="./<%= ts_lib_file %>.js.ts"/>
 <% end %>
 
 // Note that the above references do not work if you have the TypeScript compiler set to remove comments.

@@ -48,7 +48,7 @@ namespace FrontEndFramework {
             public DataPersistanceDurationCapabilities: Array<DataPersistenceDuration>;
             constructor() {
                 this.DataPersistanceDurationCapabilities = [DataPersistenceDuration.Transient];
-                if (MiniHtmlViewModel.TurbolinksAvailable ||  MiniHtmlViewModel.Storage.IsSessionStorageAvailable)
+                if (FrontEndFramework.TurbolinksAvailable || FrontEndFramework.Storage.IsSessionStorageAvailable)
                     this.DataPersistanceDurationCapabilities.push(DataPersistenceDuration.Session);
             }
         }
