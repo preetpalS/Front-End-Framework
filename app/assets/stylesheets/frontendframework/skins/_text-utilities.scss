@@ -1,0 +1,32 @@
+
+.capitalize {
+    text-transform: capitalize;
+}
+
+.upcase, .uppercase, .toUpperCase {
+    text-transform: uppercase;
+}
+
+.downcase, .lowercase, .toLowerCase {
+    text-transform: lowercase;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.italics {
+    font-style: italic;
+}
+
+.overline {
+    text-decoration: overline;
+}
+
+.strikethrough {
+    text-decoration: line-through;
+}
+
+.underline {
+    text-decoration: underline;
+}
