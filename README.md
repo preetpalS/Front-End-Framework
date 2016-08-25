@@ -7,6 +7,6 @@ Some SASS and TypeScript code that I extracted from some of the websites that I 
 
 ## Getting Started
 
-Run bundler (`bundle`). Run npm (`npm install`). Run tests with `bundle exec rake blade:runner`
+Run bundler (`bundle`). Run npm (`npm install`). Fetch submodules (`git submodule update --init --recursive`). Run tests with `bundle exec rake blade:runner`
 
 Requires having a working Node.js and Ruby development environment available.
