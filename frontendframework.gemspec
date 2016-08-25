@@ -10,10 +10,10 @@ Gem::Specification.new do |gem|
   gem.authors = ['Preetpal Sohal']
   gem.email = %w(preetpal.sohal@gmail.com)
 
-  gem.summary       = %q{My Front End Framework for Rails/Sprockets.}
-  gem.description   = %q{Private collection of code I use in the front-end of sites I build.}
-  # gem.homepage      = "PRIVATE REPO"
-  gem.license       = "No License"
+  gem.summary       = %q{Front-End Framework.}
+  gem.description   = %q{Some SASS and TypeScript code that I extracted from some of the websites that I have built.}
+  gem.homepage      = "git@github.com:preetpalS/Front-End-Framework.git"
+  gem.license       = "MIT"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
