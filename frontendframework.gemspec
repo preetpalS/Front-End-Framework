@@ -12,7 +12,7 @@ Gem::Specification.new do |gem|
 
   gem.summary       = %q{Front-End Framework.}
   gem.description   = %q{Some SASS and TypeScript code that I extracted from some of the websites that I have built.}
-  gem.homepage      = "git@github.com:preetpalS/Front-End-Framework.git"
+  gem.homepage      = "https://github.com/preetpalS/Front-End-Framework"
   gem.license       = "MIT"
 
   gem.files         = `git ls-files`.split($/)
