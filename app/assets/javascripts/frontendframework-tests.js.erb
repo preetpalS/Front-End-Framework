@@ -2,6 +2,31 @@
 //= require frontendframework
 
 QUnit.test("adder basics", function(assert) {
-    var add5 = FrontEndFramework.adder(5);
-    assert.equal(10, add5(5));
+  var add5 = FrontEndFramework.adder(5);
+  assert.equal(10, add5(5));
+});
+
+//
+// These mainly test to make sure that gHndl and hooks are not overwritten
+//
+
+QUnit.test("global handle basics", function(assert) {
+  assert.notStrictEqual((typeof gHndl), 'undefined');
+  assert.equal(gHndl, window);
+});
+
+QUnit.test("hooks basics", function(assert) {
+  assert.notStrictEqual((typeof hooks), 'undefined');
+  assert.equal(gHndl.hooks, hooks);
+  assert.ok(hooks.pre instanceof Array);
+  assert.ok(hooks.post instanceof Array);
+});
+
+//
+// FrontEndFramework.MiniHtmlViewModel
+//
+
+QUnit.test("MiniHtmlViewModel basics", function(assert) {
+  // Tests if MiniHtmlViewModel namespace is available
+  assert.notStrictEqual(FrontEndFramework.MiniHtmlViewModel, 'undefined');
 });
