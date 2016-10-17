@@ -10,15 +10,14 @@ namespace FrontEndFramework {
 
         export const enum BindingMode { OneTime, OneWayRead, OneWayWrite, TwoWay };
 
-        export interface IChangeData {
-            key: string;
-            value: any;
-        }
-
         export interface IUserInterfaceElement {
-            setupEventHandlers: (() => void);
-            teardownEventHandlers: (() => void);
-            invokeChange: ((data?: IChangeData) => void);
+            // Setup of event handlers should really be taken of in construction of User Interface Element
+            // setupEventHandlers?: (() => void);
+
+            teardownEventHandlers: (() => void); // Needed for clean interaction with certain frameworks that do not clear DOM on navigation
+
+            // Unsure about how this would be used, like for instance in ViewModel class
+            //invokeChange: ((data?: any]) => void);
         }
 
         export interface IViewModel {
@@ -94,8 +93,9 @@ namespace FrontEndFramework {
         };
 
         // Should inherit from this class instead of instantiating it directly.
-        export abstract class ViewModel implements IViewModel {
+        export abstract class ViewModel implements IViewModel, IUserInterfaceElement {
             idToBindableProperty: { [index: string]: IViewModelProperty<ViewModel> };
+            readonly events = 'change textInput input';
             constructor(...bindableProperties: IViewModelProperty<ViewModel>[]) {
                 this.idToBindableProperty = {};
                 bindableProperties.forEach(this.processBindableProperty, this);
@@ -115,7 +115,7 @@ namespace FrontEndFramework {
                     // Attach onChange event handler for TwoWay and OneWayRead properties.
                     if (bP.bindingMode === BindingMode.TwoWay ||
                         bP.bindingMode === BindingMode.OneWayRead) {
-                        $('#' + bP.id).on('change textInput input', function() {
+                        $('#' + bP.id).on(this.events, function() {
                             console.info('Detected change in: ' + bP.id);
                             retrieveAndSetValueForBindableProperty(bP);
 
@@ -159,6 +159,12 @@ namespace FrontEndFramework {
                 } catch (e) {
                     console.log(e);
                 }
+            }
+
+            teardownEventHandlers() {
+                Object.keys(this.idToBindableProperty).forEach((id: string) => {
+                    $('#' + id).off(this.events);
+                }, this);
             }
         }
 
