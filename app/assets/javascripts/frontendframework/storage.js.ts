@@ -64,6 +64,9 @@ namespace FrontEndFramework {
                        dataPersistenceDuration = DataPersistenceDuration.Session,
                        cacheExpirationDuration?: ICacheExpirationDuration) {
                 try {
+                    if (cacheExpirationDuration != null)
+                        console.error("cacheExpirationDuration ignored in Database#set.");
+
                     switch(dataPersistenceDuration) {
                     case DataPersistenceDuration.Transient:
                         break;
@@ -98,9 +101,10 @@ namespace FrontEndFramework {
                 } catch (e) {
                     if (this.errorOnFail) throw e;
                 }
+                return null;
             }
 
-            public forceCacheExpiry(key: any) { }
+            public forceCacheExpiry(key: any) { console.error(`Unimplemented Database#forceCacheExpiry: Failed to expire key: ${key}`); throw key; }
         }
     }
 }
