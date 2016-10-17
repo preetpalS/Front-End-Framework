@@ -33,7 +33,7 @@ declare var Turbolinks : any;
 namespace FrontEndFramework {
     export const TurbolinksAvailable = ((typeof Turbolinks !== 'undefined') && (Turbolinks != null)) ? true : false;
 
-    export let readyFunc : (() => void) = null;
+    export let readyFunc : (() => void)|null = null;
     export let cleanupHooks : (() => void)[] = [];
     let cleanupFunc = function() {
         // Only do something if Turbolinks is present (in other case, page would be reset anyways)
@@ -61,7 +61,7 @@ namespace FrontEndFramework {
     $(document).ready(function() {
         // Fire functions in hooks.pre Array
         while (hooks.pre.length > 0) {
-            try { hooks.pre.shift()(); }
+            try { (<(() => void)>hooks.pre.shift())(); }
             catch(e) { console.error(e); }
         };
 
@@ -76,7 +76,7 @@ namespace FrontEndFramework {
 
         // Fire functions in hooks.post Array
         while (hooks.post.length > 0) {
-            try { hooks.post.shift()(); }
+            try { (<(() => void)>hooks.post.shift())(); }
             catch(e) { console.error(e); }
         };
     });
@@ -86,8 +86,8 @@ namespace FrontEndFramework {
         if (hooks.pageCleanup != null)
             document.addEventListener('turbolinks:before-render', function() {
                 // Fire functions in hooks.pageCleanup Array
-                while (hooks.pageCleanup.length > 0) {
-                    try { hooks.pageCleanup.shift()(); }
+                while ((<(() => void)[]>hooks.pageCleanup).length > 0) {
+                    try { (<(() => void)>(<(() => void)[]>hooks.pageCleanup).shift())(); }
                     catch(e) { console.error(e); }
                 };
             });

@@ -80,7 +80,7 @@ namespace FrontEndFramework {
                 }
             }
 
-            public get(key: any, dataPersistenceDuration?: DataPersistenceDuration) : string {
+            public get(key: any, dataPersistenceDuration?: DataPersistenceDuration) : string|null|undefined {
                 try {
                     if (dataPersistenceDuration != null) {
                         switch(dataPersistenceDuration) {

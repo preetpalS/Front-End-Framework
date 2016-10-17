@@ -120,7 +120,7 @@ namespace FrontEndFramework {
                             retrieveAndSetValueForBindableProperty(bP);
 
                             if (bP.onChangeFunc != null) {
-                                bP.onChangeFunc(bP.viewModelRef);
+                                bP.onChangeFunc(<ViewModel>bP.viewModelRef);
                             } else {
                                 if (typeof (<any>bP.viewModelRef).onChange === 'function') {
                                     (<any>bP.viewModelRef).onChange(bP.id);

@@ -8,7 +8,11 @@ require 'erubis'
 require 'sprockets'
 require 'typescript-sprockets'
 
+# TypeScript compiler options
 ::Typescript::Sprockets::TypescriptProcessor.register
+::Typescript::Sprockets::TypescriptProcessor.options(
+  compiler_flags: ['--noImplicitAny', '--noEmitOnError', '--strictNullChecks']
+)
 
 namespace :blade do
   desc 'Runs blade runner'
