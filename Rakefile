@@ -11,7 +11,16 @@ require 'typescript-sprockets'
 # TypeScript compiler options
 ::Typescript::Sprockets::TypescriptProcessor.register
 ::Typescript::Sprockets::TypescriptProcessor.options(
-  compiler_flags: ['--noImplicitAny', '--noEmitOnError', '--strictNullChecks']
+  compiler_flags: ['--forceConsistentCasingInFileNames',
+                   '--noEmitOnError',
+                   '--noFallthroughCasesInSwitch',
+                   '--noImplicitAny',
+                   '--noImplicitReturns',
+                   '--noImplicitThis',
+                   '--noUnusedParameters',
+                   '--noUnusedLocals',
+                   '--strictNullChecks'
+                  ]
 )
 
 namespace :blade do
