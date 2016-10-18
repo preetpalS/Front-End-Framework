@@ -14,7 +14,7 @@ namespace FrontEndFramework {
             // Setup of event handlers should really be taken of in construction of User Interface Element
             // setupEventHandlers?: (() => void);
 
-            teardownEventHandlers: (() => void); // Needed for clean interaction with certain frameworks that do not clear DOM on navigation
+            teardown: (() => void); // Needed for clean interaction with certain frameworks that do not clear DOM on navigation
 
             // Unsure about how this would be used, like for instance in ViewModel class
             //invokeChange: ((data?: any]) => void);
@@ -102,7 +102,7 @@ namespace FrontEndFramework {
 
                 if (FrontEndFramework.SinglePageApplication &&
                     (hooks.pageCleanup != null)) {
-                    (<(() => void)[]>hooks.pageCleanup).push(this.teardownEventHandlers);
+                    (<(() => void)[]>hooks.pageCleanup).push(this.teardown);
                 }
             }
 
@@ -164,6 +164,10 @@ namespace FrontEndFramework {
                 } catch (e) {
                     console.log(e);
                 }
+            }
+
+            teardown() {
+                this.teardownEventHandlers();
             }
 
             teardownEventHandlers() {
