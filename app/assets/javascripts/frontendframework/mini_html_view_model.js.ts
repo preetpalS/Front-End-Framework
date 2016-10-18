@@ -102,7 +102,7 @@ namespace FrontEndFramework {
 
                 if (FrontEndFramework.SinglePageApplication &&
                     (hooks.pageCleanup != null)) {
-                    (<(() => void)[]>hooks.pageCleanup).push(this.teardown);
+                    (<(() => void)[]>hooks.pageCleanup).push(this.genTeardownFunc(this));
                 }
             }
 
@@ -164,6 +164,10 @@ namespace FrontEndFramework {
                 } catch (e) {
                     console.log(e);
                 }
+            }
+
+            private genTeardownFunc(self: ViewModel) {
+                return function() {self.teardown.call(self);};
             }
 
             teardown() {
