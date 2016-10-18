@@ -32,6 +32,7 @@ declare var Turbolinks : any;
 
 namespace FrontEndFramework {
     export const TurbolinksAvailable = ((typeof Turbolinks !== 'undefined') && (Turbolinks != null)) ? true : false;
+    export const SinglePageApplication = TurbolinksAvailable;
 
     export let readyFunc : (() => void)|null = null;
     export let cleanupHooks : (() => void)[] = [];

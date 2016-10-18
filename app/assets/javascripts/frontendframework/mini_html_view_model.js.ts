@@ -99,6 +99,11 @@ namespace FrontEndFramework {
             constructor(...bindableProperties: IViewModelProperty<ViewModel>[]) {
                 this.idToBindableProperty = {};
                 bindableProperties.forEach(this.processBindableProperty, this);
+
+                if (FrontEndFramework.SinglePageApplication &&
+                    (hooks.pageCleanup != null)) {
+                    (<(() => void)[]>hooks.pageCleanup).push(this.teardownEventHandlers);
+                }
             }
 
             protected processBindableProperty(bP: IViewModelProperty<ViewModel>) {
@@ -163,6 +168,7 @@ namespace FrontEndFramework {
 
             teardownEventHandlers() {
                 Object.keys(this.idToBindableProperty).forEach((id: string) => {
+                    console.log(`Cleaning up event handlers set up in ViewModel (id: ${id})`);
                     $('#' + id).off(this.events);
                 }, this);
             }
