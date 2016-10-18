@@ -10,18 +10,8 @@ require 'typescript-sprockets'
 
 # TypeScript compiler options
 ::Typescript::Sprockets::TypescriptProcessor.register
-::Typescript::Sprockets::TypescriptProcessor.options(
-  compiler_flags: ['--forceConsistentCasingInFileNames',
-                   '--noEmitOnError',
-                   '--noFallthroughCasesInSwitch',
-                   '--noImplicitAny',
-                   '--noImplicitReturns',
-                   '--noImplicitThis',
-                   '--noUnusedParameters',
-                   '--noUnusedLocals',
-                   '--strictNullChecks'
-                  ]
-)
+# Not overloading any defaults of library
+# ::Typescript::Sprockets::TypescriptProcessor.options()
 
 namespace :blade do
   desc 'Runs blade runner'
