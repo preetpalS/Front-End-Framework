@@ -167,10 +167,6 @@ namespace FrontEndFramework {
             }
 
             teardown() {
-                this.teardownEventHandlers();
-            }
-
-            teardownEventHandlers() {
                 Object.keys(this.idToBindableProperty).forEach((id: string) => {
                     console.log(`Cleaning up event handlers set up in ViewModel (id: ${id})`);
                     $('#' + id).off(this.events);
