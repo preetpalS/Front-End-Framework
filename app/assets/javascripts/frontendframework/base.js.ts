@@ -34,6 +34,8 @@ namespace FrontEndFramework {
     export const TurbolinksAvailable = ((typeof Turbolinks !== 'undefined') && (Turbolinks != null)) ? true : false;
     export const SinglePageApplication = TurbolinksAvailable;
 
+    export let PagePreCacheEvent: string|null = TurbolinksAvailable ? 'turbolinks:before-cache' : null;
+
     export let readyFunc : (() => void)|null = null;
     export let cleanupHooks : (() => void)[] = [];
     let cleanupFunc = function() {
