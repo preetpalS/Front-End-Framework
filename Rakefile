@@ -46,6 +46,18 @@ namespace :update do
   end
 end
 
+desc 'Generates type definition file'
+task :generate_type_definition_file do
+  cmd = <<CMD
+node node_modules/typescript/bin/tsc -d app/assets/javascripts/frontendframework/all.js.ts --types #{Typescript::Sprockets::TypescriptProcessor.options[:compiler_flags].join(' ')} --outFile frontendframework.js
+CMD
+  puts "Executing command: #{cmd}"
+  system cmd
+  puts 'Deleting generated file: frontendframework.js'
+  File.delete 'frontendframework.js'
+  puts 'Generated: frontendframework.d.ts'
+end
+
 task default: :main
 
 ALL_JS_TS_ERB = <<ERB
