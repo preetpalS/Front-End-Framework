@@ -1,5 +1,5 @@
 /// <reference path="./mini_html_view_model.js.ts"/>
-/// <reference path="../__d3.js.ts"/>
+/// <reference path="../__d3.d.ts"/>
 
 namespace FrontEndFramework {
     export namespace Visualization {
