@@ -1,18 +1,12 @@
-//= require ./audio
 //= require ./base
 //= require ./mini_html_view_model
 //= require ./screen_resolutions
 //= require ./storage
-//= require ./visualization
-//= require ./webgl
 
-/// <reference path="./audio.js.ts"/>
 /// <reference path="./base.js.ts"/>
 /// <reference path="./mini_html_view_model.js.ts"/>
 /// <reference path="./screen_resolutions.js.ts"/>
 /// <reference path="./storage.js.ts"/>
-/// <reference path="./visualization.js.ts"/>
-/// <reference path="./webgl.js.ts"/>
 
 // Note that the above references do not work if you have the TypeScript compiler set to remove comments.
 // Use something like the uglifier gem for removing comments/obfuscation.
