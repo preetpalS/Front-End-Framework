@@ -6,7 +6,7 @@
 
 namespace FrontEndFramework {
     export namespace MiniHtmlViewModel {
-        export const VERSION = '0.3.1';
+        export const VERSION = '0.4.0';
 
         export const enum BindingMode { OneTime, OneWayRead, OneWayWrite, TwoWay };
 
