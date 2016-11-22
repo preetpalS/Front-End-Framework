@@ -70,11 +70,11 @@ namespace FrontEndFramework {
 
     // Visits site using Turbolinks (or another SPA framework when support is added) if possible.
     // Should always result in opening given link (if given argument for `link` is valid URL).
-    export let visitLink = function(link : string, {forceReload = false, newTab = false} = {forceReload: false, newTab: false}) {
-        if (newTab) {
+    export let visitLink = function(link : string, {forceReload, newTab}: {forceReload?: boolean, newTab?: boolean} = {forceReload: false, newTab: false}) {
+        if ((newTab != null) && <boolean>newTab) {
             window.open(link, "_blank");
         } else {
-            if (FrontEndFramework.SinglePageApplication && (!forceReload)) {
+            if (FrontEndFramework.SinglePageApplication && !((forceReload != null) && <boolean>forceReload)) {
                 // TODO: Add support for other SPA frameworks here.
                 if (FrontEndFramework.TurbolinksAvailable &&
                     (typeof(Turbolinks.visit) === 'function')) {
