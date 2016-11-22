@@ -10,93 +10,54 @@ namespace FrontEndFramework {
 
         export const enum BindingMode { OneTime, OneWayRead, OneWayWrite, TwoWay };
 
-        export interface IUserInterfaceElement {
-            // Setup of event handlers should really be taken of in construction of User Interface Element
-            // setupEventHandlers?: (() => void);
-
-            teardown: (() => void); // Needed for clean interaction with certain frameworks that do not clear DOM on navigation
-
-            // Unsure about how this would be used, like for instance in ViewModel class
-            //invokeChange: ((data?: any]) => void);
-        }
-
-        export interface IViewModel {
-            handlePropertyChangedEvent: ((s: string) => void);
-            onChange?: ((htmlId: string) => void);
-        }
-
-        export interface IViewModelProperty<T extends ViewModel> {
-            bindingMode: BindingMode;
-            id: string; // Represents HTML id
-            value: any; // Represents displayed initial value
-            setDataFunc?: ((a: any) => void);
-            getDataFunc?: (() => any);
-            onChangeFunc?: ((vm: T) => void); // Either implement onChange on IViewModel OR provide onChangeFunc
-            converterFunc?: ((a: any) => any);
+        export interface IViewModelPropertyBase<T extends ViewModel> {
+            readonly bindingMode: BindingMode;
+            readonly id: string; // Represents HTML id
+            value?: any; // Represents displayed initial value
             viewModelRef?: T;
         }
 
-        export interface IViewModelPropertyOneTimeBinding<T extends ViewModel> extends IViewModelProperty<T> {
-            bindingMode: BindingMode; // Must be set to BindingMode.OneTime
-            id: string; // Represents HTML id
-            value: any; // Represents displayed initial value
+        export interface IViewModelPropertyWritable<T extends ViewModel> extends IViewModelPropertyBase<T> {
             setDataFunc?: ((a: any) => void);
             converterFunc?: ((a: any) => any);
-            viewModelRef?: T;
         }
 
-        export interface IViewModelPropertyOneWayReadBinding<T extends ViewModel> extends IViewModelProperty<T> {
-            bindingMode: BindingMode; // Must be set to BindingMode.OneWayRead
-            id: string; // Represents HTML id
-            value: any; // Represents displayed initial value
+        export interface IViewModelPropertyReadable<T extends ViewModel> extends IViewModelPropertyBase<T> {
             getDataFunc?: (() => any);
             onChangeFunc?: ((vm: T) => void); // Either implement onChange on IViewModel OR provide onChangeFunc
-            viewModelRef?: T;
         }
 
+        // Value is read from HTML element on ViewModel construction (unless value provided for IViewModelPropertyBase).
+        export interface IViewModelProperty<T extends ViewModel> extends IViewModelPropertyReadable<T>, IViewModelPropertyWritable<T> {
+        }
+
+        // BindingMode.OneTime can be thought of as set value once and forget (no event handlers set or IViewModelProperty stored)
+        // Value is NOT read from HTML element on ViewModel construction (unless value provided for IViewModelPropertyBase).
+        export interface IViewModelPropertyOneTimeBinding<T extends ViewModel> extends IViewModelPropertyWritable<T> {
+            readonly bindingMode: BindingMode.OneTime;
+        }
+
+        // Value is read from HTML element on ViewModel construction (unless value provided for IViewModelPropertyBase).
+        export interface IViewModelPropertyOneWayReadBinding<T extends ViewModel> extends IViewModelPropertyReadable<T> {
+            readonly bindingMode: BindingMode.OneWayRead;
+        }
+
+        // BindingMode.OneWayWrite is a way to set values (no event handlers set but IViewModelProperty<T> are stored).
+        // Value is read from HTML element on ViewModel construction (unless value provided for IViewModelPropertyBase).
         export interface IViewModelPropertyOneWayWriteBinding<T extends ViewModel> extends IViewModelProperty<T> {
-            bindingMode: BindingMode; // Must be set to BindingMode.OneWayWrite
-            id: string; // Represents HTML id
-            value: any; // Represents displayed initial value
-            setDataFunc?: ((a: any) => void);
-            converterFunc?: ((a: any) => any);
-            viewModelRef?: T;
+            readonly bindingMode:BindingMode.OneWayWrite;
         }
 
+        // Value is read from HTML element on ViewModel construction (unless value provided for IViewModelPropertyBase).
         export interface IViewModelPropertyTwoWayBinding<T extends ViewModel> extends IViewModelProperty<T> {
-            bindingMode: BindingMode; // Must be set to BindingMode.TwoWay
-            id: string; // Represents HTML id
-            value: any; // Represents displayed initial value
-            setDataFunc?: ((a: any) => void);
-            getDataFunc?: (() => any);
-            onChangeFunc?: ((vm: T) => void); // Either implement onChange on IViewModel OR provide onChangeFunc
-            converterFunc?: ((a: any) => any);
-            viewModelRef?: T;
+            readonly bindingMode: BindingMode.TwoWay;
         }
-
-        var retrieveAndSetValueForBindableProperty = function<T extends ViewModel>(bP: IViewModelProperty<T>): IViewModelProperty<T> {
-            if (bP.getDataFunc != null) {
-                bP.value = bP.getDataFunc();
-            } else {
-                bP.value = (<HTMLInputElement>document.getElementById(bP.id)).value;
-            }
-            return bP;
-        };
-
-        var setValueForBindableProperty = function<T extends ViewModel>(bP: IViewModelProperty<T>) {
-            var cnvrtr = bP.converterFunc || function(x) { return x; };
-            if (bP.setDataFunc == null) {
-                $('#' + bP.id).val(cnvrtr(bP.value));
-            } else {
-                bP.setDataFunc(cnvrtr(bP.value));
-            }
-        };
 
         // Should inherit from this class instead of instantiating it directly.
-        export abstract class ViewModel implements IViewModel, IUserInterfaceElement {
-            idToBindableProperty: { [index: string]: IViewModelProperty<ViewModel> };
-            readonly events = 'change textInput input';
-            constructor(...bindableProperties: IViewModelProperty<ViewModel>[]) {
+        export abstract class ViewModel {
+            protected idToBindableProperty: { [index: string]: IViewModelPropertyBase<ViewModel> };
+            private static readonly ChangeEvents = 'change textInput input';
+            protected constructor(...bindableProperties: IViewModelPropertyBase<ViewModel>[]) {
                 this.idToBindableProperty = {};
                 bindableProperties.forEach(this.processBindableProperty, this);
 
@@ -106,7 +67,7 @@ namespace FrontEndFramework {
                 }
             }
 
-            protected processBindableProperty(bP: IViewModelProperty<ViewModel>) {
+            protected processBindableProperty(bP: IViewModelPropertyBase<ViewModel>) {
                 try {
                     // Store and attach bindable properties that do not have a OneTime bindingMode.
                     // Note that OneTime bindingMode properties are not stored.
@@ -115,23 +76,26 @@ namespace FrontEndFramework {
                         this.idToBindableProperty[bP.id] = bP;
                     }
 
-                    setValueForBindableProperty(bP);
+                    // BindingMode.OneTime is set always
+                    if ((bP.value !== undefined) || (bP.bindingMode === BindingMode.OneTime)) {
+                        ViewModel.setValueForBindableProperty(<IViewModelPropertyWritable<ViewModel>>bP);
+                    } else {
+                        ViewModel.retrieveAndSetValueForBindableProperty(<IViewModelPropertyReadable<ViewModel>>bP);
+                    }
 
                     // Attach onChange event handler for TwoWay and OneWayRead properties.
                     if (bP.bindingMode === BindingMode.TwoWay ||
                         bP.bindingMode === BindingMode.OneWayRead) {
-                        $('#' + bP.id).on(this.events, function() {
-                            console.info('Detected change in: ' + bP.id);
-                            retrieveAndSetValueForBindableProperty(bP);
+                        $('#' + bP.id).on(ViewModel.ChangeEvents, () => {
+                            console.info(`Detected change in: ${bP.id}`);
+                            this.handlePropertyChangedEvent(bP.id);
 
-                            if (bP.onChangeFunc != null) {
-                                bP.onChangeFunc(<ViewModel>bP.viewModelRef);
+                            if ((<IViewModelPropertyReadable<ViewModel>>bP).onChangeFunc != null) {
+                                (<((vm: ViewModel) => void)>(<IViewModelPropertyReadable<ViewModel>>bP).onChangeFunc)(<ViewModel>bP.viewModelRef);
+                            } else if (typeof (<any>bP.viewModelRef).onChange === 'function') {
+                                (<any>bP.viewModelRef).onChange(bP.id);
                             } else {
-                                if (typeof (<any>bP.viewModelRef).onChange === 'function') {
-                                    (<any>bP.viewModelRef).onChange(bP.id);
-                                } else {
-                                    console.error('Failed to provide onChangeFunc (alternatively implement onChange [(htmlId: string) => void] method) for implentation of IViewModelProperty for id: ' + bP.id);
-                                }
+                                console.error('Failed to provide onChangeFunc (alternatively implement onChange [(htmlId: string) => void] method) for implentation of IViewModelProperty for id: ' + bP.id);
                             }
                         });
                     }
@@ -141,24 +105,24 @@ namespace FrontEndFramework {
             }
 
             // Triggers change in UI to match value of property in idToBindableProperty.
-            handlePropertyChangedEvent(propertyId: string) {
+            protected handlePropertyChangedEvent(propertyId: string) {
                 try {
                     var bindableProperty = this.idToBindableProperty[propertyId];
                     switch (bindableProperty.bindingMode) {
-                    case BindingMode.OneTime:
-                        console.error("IMPOSSIBLE");
-                        break;
+                    // case BindingMode.OneTime:
+                    //     console.error("IMPOSSIBLE");
+                    //     break;
                     case BindingMode.OneWayRead:
-                        retrieveAndSetValueForBindableProperty(bindableProperty);
+                        ViewModel.retrieveAndSetValueForBindableProperty(<IViewModelPropertyOneWayReadBinding<ViewModel>>bindableProperty);
                         break;
                     case BindingMode.OneWayWrite:
-                        setValueForBindableProperty(bindableProperty);
+                        ViewModel.setValueForBindableProperty(<IViewModelPropertyOneWayWriteBinding<ViewModel>>bindableProperty);
                         break;
                     case BindingMode.TwoWay:
-                        setValueForBindableProperty(bindableProperty);
+                        ViewModel.setValueForBindableProperty(<IViewModelPropertyTwoWayBinding<ViewModel>>bindableProperty);
                         break;
                     default:
-                        console.warn('Invalid bindingMode for Binding Property with id: ' + bindableProperty.id);
+                        console.warn(`Invalid bindingMode for Binding Property with id: ${bindableProperty.id}`);
                         break;
                     }
                 } catch (e) {
@@ -173,16 +137,34 @@ namespace FrontEndFramework {
             teardown() {
                 Object.keys(this.idToBindableProperty).forEach((id: string) => {
                     console.log(`Cleaning up event handlers set up in ViewModel (id: ${id})`);
-                    $('#' + id).off(this.events);
+                    $('#' + id).off(ViewModel.ChangeEvents);
                 }, this);
+            }
+
+            private static retrieveAndSetValueForBindableProperty<T extends ViewModel>(bP: IViewModelPropertyReadable<T>): IViewModelPropertyReadable<T> {
+                if (bP.getDataFunc != null) {
+                    bP.value = bP.getDataFunc();
+                } else {
+                    bP.value = (<HTMLInputElement>document.getElementById(bP.id)).value;
+                }
+                return bP;
+            }
+
+             private static setValueForBindableProperty<T extends ViewModel>(bP: IViewModelPropertyWritable<T>) {
+                var cnvrtr = bP.converterFunc || function(x) { return x; };
+                if (bP.setDataFunc == null) {
+                    $('#' + bP.id).val(cnvrtr(bP.value));
+                } else {
+                    bP.setDataFunc(cnvrtr(bP.value));
+                }
             }
         }
 
         export class ViewModelProperty<T extends ViewModel> implements IViewModelProperty<T> {
             constructor(
-                public bindingMode: BindingMode,
-                public id: string, // Represents HTML id
-                public value: any, // Represents displayed initial value
+                public readonly bindingMode: BindingMode,
+                public readonly id: string, // Represents HTML id
+                public value?: any, // Represents displayed initial value
                 public setDataFunc?: ((a: any) => void),
                 public getDataFunc?: (() => any),
                 public onChangeFunc?: ((vm: T) => void), // Either implement onChange on IViewModel OR provide onChangeFunc
@@ -192,10 +174,10 @@ namespace FrontEndFramework {
         }
 
         export class ViewModelPropertyOneTimeBinding<T extends ViewModel> implements IViewModelPropertyOneTimeBinding<T> {
-            public bindingMode = BindingMode.OneTime;
+            public readonly bindingMode = <BindingMode.OneTime>BindingMode.OneTime;
             constructor(
-                public id: string, // Represents HTML id
-                public value: any, // Represents displayed initial value
+                public readonly id: string, // Represents HTML id
+                public value?: any, // Represents displayed initial value
                 public setDataFunc?: ((a: any) => void),
                 public converterFunc?: ((a: any) => any),
                 public viewModelRef?: T
@@ -203,10 +185,10 @@ namespace FrontEndFramework {
         }
 
         export class ViewModelPropertyOneWayReadBinding<T extends ViewModel> implements IViewModelPropertyOneWayReadBinding<T> {
-            public bindingMode = BindingMode.OneWayRead;
+            public readonly bindingMode = <BindingMode.OneWayRead>BindingMode.OneWayRead;
             constructor(
-                public id: string, // Represents HTML id
-                public value: any, // Represents displayed initial value
+                public readonly id: string, // Represents HTML id
+                public value?: any, // Represents displayed initial value
                 public getDataFunc?: (() => any),
                 public onChangeFunc?: ((vm: T) => void), // Either implement onChange on IViewModel OR provide onChangeFunc
                 public viewModelRef?: T
@@ -214,10 +196,10 @@ namespace FrontEndFramework {
         }
 
         export class ViewModelPropertyOneWayWriteBinding<T extends ViewModel> implements IViewModelPropertyOneWayWriteBinding<T> {
-            public bindingMode = BindingMode.OneWayWrite;
+            public readonly bindingMode = <BindingMode.OneWayWrite>BindingMode.OneWayWrite;
             constructor(
-                public id: string, // Represents HTML id
-                public value: any, // Represents displayed initial value
+                public readonly id: string, // Represents HTML id
+                public value?: any, // Represents displayed initial value
                 public setDataFunc?: ((a: any) => void),
                 public converterFunc?: ((a: any) => any),
                 public viewModelRef?: T
@@ -225,10 +207,10 @@ namespace FrontEndFramework {
         }
 
         export class ViewModelPropertyTwoWayBinding<T extends ViewModel> implements IViewModelPropertyTwoWayBinding<T> {
-            public bindingMode = BindingMode.TwoWay;
+            public readonly bindingMode = <BindingMode.TwoWay>BindingMode.TwoWay;
             constructor(
-                public id: string, // Represents HTML id
-                public value: any, // Represents displayed initial value
+                public readonly id: string, // Represents HTML id
+                public value?: any, // Represents displayed initial value
                 public setDataFunc?: ((a: any) => void),
                 public getDataFunc?: (() => any),
                 public onChangeFunc?: ((vm: T) => void), // Either implement onChange on IViewModel OR provide onChangeFunc
