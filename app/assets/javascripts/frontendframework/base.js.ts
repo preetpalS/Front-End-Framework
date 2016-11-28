@@ -3,12 +3,6 @@
 // Has a dependency on JQuery. Should be loaded after Turbolinks to register
 // cleanupFunc on 'turbolinks:before-render' event.
 namespace FrontEndFramework {
-    export var VERSION = '1.0.0';
-
-    export var adder = function(num: number) {
-        return function(val: number) { return val + num; };
-    };
-
     export interface GlobalHandle extends Window {
         stateToClearOnNavigation : any;
     }
