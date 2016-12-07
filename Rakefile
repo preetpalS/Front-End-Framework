@@ -10,8 +10,7 @@ require 'typescript-sprockets'
 
 # TypeScript compiler options
 ::Typescript::Sprockets::TypescriptProcessor.register
-# Not overloading any defaults of library
-# ::Typescript::Sprockets::TypescriptProcessor.options()
+::Typescript::Sprockets::TypescriptProcessor.options()
 
 namespace :blade do
   task :build do
