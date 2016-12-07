@@ -191,7 +191,7 @@ namespace FrontEndFramework {
         }
 
         export class ViewModelPropertyOneTimeBinding<T extends ViewModel> implements IViewModelPropertyOneTimeBinding<T> {
-            public readonly bindingMode = <BindingMode.OneTime>BindingMode.OneTime;
+            public readonly bindingMode: BindingMode.OneTime = <BindingMode.OneTime>BindingMode.OneTime;
             constructor(
                 public readonly id: string|string[], // Represents HTML id
                 public value?: any, // Represents displayed initial value
@@ -202,7 +202,7 @@ namespace FrontEndFramework {
         }
 
         export class ViewModelPropertyOneWayReadBinding<T extends ViewModel> implements IViewModelPropertyOneWayReadBinding<T> {
-            public readonly bindingMode = <BindingMode.OneWayRead>BindingMode.OneWayRead;
+            public readonly bindingMode: BindingMode.OneWayRead = <BindingMode.OneWayRead>BindingMode.OneWayRead;
             constructor(
                 public readonly id: string|string[], // Represents HTML id
                 public value?: any, // Represents displayed initial value
@@ -213,7 +213,7 @@ namespace FrontEndFramework {
         }
 
         export class ViewModelPropertyOneWayWriteBinding<T extends ViewModel> implements IViewModelPropertyOneWayWriteBinding<T> {
-            public readonly bindingMode = <BindingMode.OneWayWrite>BindingMode.OneWayWrite;
+            public readonly bindingMode: BindingMode.OneWayWrite = <BindingMode.OneWayWrite>BindingMode.OneWayWrite;
             constructor(
                 public readonly id: string|string[], // Represents HTML id
                 public value?: any, // Represents displayed initial value
@@ -224,7 +224,7 @@ namespace FrontEndFramework {
         }
 
         export class ViewModelPropertyTwoWayBinding<T extends ViewModel> implements IViewModelPropertyTwoWayBinding<T> {
-            public readonly bindingMode = <BindingMode.TwoWay>BindingMode.TwoWay;
+            public readonly bindingMode: BindingMode.TwoWay = <BindingMode.TwoWay>BindingMode.TwoWay;
             constructor(
                 public readonly id: string|string[], // Represents HTML id
                 public value?: any, // Represents displayed initial value
