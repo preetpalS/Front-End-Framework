@@ -1,9 +1,11 @@
 # .blade.yml
 load_paths:
+  - tmp
   - app/assets/javascripts
   - vendor/jquery-rails/vendor/assets/javascripts/
 
 logical_paths:
+  - _header_script_js.js
   - jquery.js
   - frontendframework.js
   - frontendframework-tests.js

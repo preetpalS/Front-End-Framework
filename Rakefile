@@ -14,8 +14,14 @@ require 'typescript-sprockets'
 # ::Typescript::Sprockets::TypescriptProcessor.options()
 
 namespace :blade do
+  task :build do
+    system <<CMD
+node node_modules/typescript/bin/tsc -d app/assets/javascripts/frontendframework/all.js.ts --types #{Typescript::Sprockets::TypescriptProcessor.options[:compiler_flags].join(' ')} --outFile tmp/frontendframework.js
+CMD
+  end
+
   desc 'Runs blade runner'
-  task :runner do
+  task runner: :build do
     Blade.start(interface: :runner)
   end
 end
