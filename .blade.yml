@@ -2,6 +2,8 @@
 load_paths:
   - tmp
   - app/assets/javascripts
+  - app/assets/html
+  - test/src
   - vendor/jquery-rails/vendor/assets/javascripts/
 
 logical_paths:

@@ -39,3 +39,7 @@ QUnit.test("MiniHtmlViewModel ViewModelProperty basics", function(assert) {
     )) instanceof FrontEndFramework.MiniHtmlViewModel.ViewModelProperty
   );
 });
+
+QUnit.test("view sanity test", function(assert) {
+  assert.ok(document.getElementById('fef') != null);
+});
