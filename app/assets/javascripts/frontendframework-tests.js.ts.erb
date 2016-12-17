@@ -1,3 +1,4 @@
+/// <reference path="type_definitions/jquery/jquery.d.ts"/>
 /// <reference path="type_definitions/qunit/qunit.d.ts"/>
 /// <reference path="frontendframework/all.js.ts"/>
 
@@ -42,4 +43,66 @@ QUnit.test("MiniHtmlViewModel ViewModelProperty basics", function(assert) {
 
 QUnit.test("view sanity test", function(assert) {
   assert.ok(document.getElementById('fef') != null);
+});
+
+QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert) {
+  class TestCase1ViewModel extends FrontEndFramework.MiniHtmlViewModel.ViewModel {
+    static SelectItemId = 'select-item';
+    static GroupSelectItem1Id = 'group-select-item-1';
+    static GroupSelectItem2Id = 'group-select-item-2';
+    static GroupSelectItem3Id = 'group-select-item-3';
+
+    constructor() {
+      super({
+        bindingMode: FrontEndFramework.MiniHtmlViewModel.BindingMode.OneWayRead,
+        id: TestCase1ViewModel.SelectItemId
+      }, {
+        bindingMode: FrontEndFramework.MiniHtmlViewModel.BindingMode.OneWayRead,
+        id: [TestCase1ViewModel.GroupSelectItem1Id, TestCase1ViewModel.GroupSelectItem2Id,
+             TestCase1ViewModel.GroupSelectItem3Id]
+      });
+    }
+
+    onChange(htmlId: string) {
+      switch(htmlId) {
+        case TestCase1ViewModel.SelectItemId:
+          assert.ok(true);
+          break;
+        case TestCase1ViewModel.GroupSelectItem1Id:
+        case TestCase1ViewModel.GroupSelectItem2Id:
+        case TestCase1ViewModel.GroupSelectItem3Id:
+          assert.ok(true);
+          break;
+        default:
+          assert.ok(false);
+          break;
+      }
+    }
+
+    selectFormValue() : number {
+      return <number>+(this.idToBindableProperty[TestCase1ViewModel.SelectItemId].value);
+    }
+
+    GroupSelectForm1Value() : number {
+      return <number>+(this.idToBindableProperty[TestCase1ViewModel.GroupSelectItem1Id].value);
+    }
+
+    GroupSelectForm2Value() : number {
+      return <number>+(this.idToBindableProperty[TestCase1ViewModel.GroupSelectItem2Id].value);
+    }
+
+    GroupSelectForm3Value() : number {
+      return <number>+(this.idToBindableProperty[TestCase1ViewModel.GroupSelectItem3Id].value);
+    }
+  }
+  let tc1vm = new TestCase1ViewModel();
+  $(`#${TestCase1ViewModel.SelectItemId}`).val(1);
+  $(`#${TestCase1ViewModel.SelectItemId}`).trigger($.Event("change"));
+  assert.strictEqual(tc1vm.selectFormValue(), 1);
+
+  $(`#${TestCase1ViewModel.GroupSelectItem2Id}`).val(1);
+  $(`#${TestCase1ViewModel.GroupSelectItem2Id}`).trigger($.Event("change"));
+  assert.strictEqual(tc1vm.GroupSelectForm1Value(), 0);
+  assert.strictEqual(tc1vm.GroupSelectForm2Value(), 1);
+  assert.strictEqual(tc1vm.GroupSelectForm3Value(), 0);
 });
