@@ -110,12 +110,12 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
   assert.strictEqual(tc1vm.GroupSelectForm2Value(), 4);
   assert.strictEqual(tc1vm.GroupSelectForm3Value(), 3);
 
-  //$(`#${TestCase1ViewModel.GroupSelectItem2Id}`).val(1);
-  //$(`#${TestCase1ViewModel.GroupSelectItem2Id}`).trigger($.Event("change"));
-  // 
-  //assert.strictEqual(tc1vm.GroupSelectForm1Value(), 3);
-  //assert.strictEqual(tc1vm.GroupSelectForm2Value(), 1);
-  //assert.strictEqual(tc1vm.GroupSelectForm3Value(), 3);
+  $(`#${TestCase1ViewModel.GroupSelectItem2Id}`).val(1);
+  $(`#${TestCase1ViewModel.GroupSelectItem2Id}`).trigger($.Event("change"));
+
+  assert.strictEqual(tc1vm.GroupSelectForm1Value(), 3);
+  assert.strictEqual(tc1vm.GroupSelectForm2Value(), 1);
+  assert.strictEqual(tc1vm.GroupSelectForm3Value(), 3);
 
   // Reset Values
   $(`#${TestCase1ViewModel.SelectItemId}`).val(0);

@@ -74,7 +74,16 @@ namespace FrontEndFramework {
                     break;
                 case Array:
                     for (let i = 0; i < bP.id.length; i++) {
-                        this.processBindablePropertySingle(bP, bP.id[i]);
+                        this.processBindablePropertySingle({
+                            id: (<any>bP).id[i],
+                            bindingMode: (<any>bP).bindingMode,
+                            value: (<any>bP).value,
+                            setDataFunc: (<any>bP).setDataFunc,
+                            getDataFunc: (<any>bP).getDataFunc,
+                            onChangeFunc: (<any>bP).onChangeFunc,
+                            converterFunc: (<any>bP).converterFunc,
+                            viewModelRef: (<any>bP).viewModelRef
+                        } as IViewModelPropertyBase<ViewModel>);
                     }
                     break;
                 default:
@@ -83,8 +92,8 @@ namespace FrontEndFramework {
                 }
             }
 
-            private processBindablePropertySingle(bP: IViewModelPropertyBase<ViewModel>, id: string|undefined = undefined) {
-                let bindablePropertyId: string = (id === undefined) ? (<string>bP.id) : (<string>id);
+            private processBindablePropertySingle(bP: IViewModelPropertyBase<ViewModel>) {
+                let bindablePropertyId: string = <string>bP.id;
                 try {
                     // Store and attach bindable properties that do not have a OneTime bindingMode.
                     // Note that OneTime bindingMode properties are not stored.
