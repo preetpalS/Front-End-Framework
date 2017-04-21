@@ -11,15 +11,15 @@ QUnit.test("version number export", function(assert) {
 //
 
 QUnit.test("global handle basics", function(assert) {
-  assert.notStrictEqual((typeof gHndl), 'undefined');
-  assert.equal(gHndl, window);
+  assert.notStrictEqual((typeof FrontEndFramework.gHndl), 'undefined');
+  assert.equal(FrontEndFramework.gHndl, window);
 });
 
 QUnit.test("hooks basics", function(assert) {
-  assert.notStrictEqual((typeof hooks), 'undefined');
-  assert.equal((<any>gHndl).hooks, hooks);
-  assert.ok(hooks.pre instanceof Array);
-  assert.ok(hooks.post instanceof Array);
+  assert.notStrictEqual((typeof FrontEndFramework.hooks), 'undefined');
+  assert.equal((<any>FrontEndFramework.gHndl).FrontEndFramework.hooks, FrontEndFramework.hooks);
+  assert.ok(FrontEndFramework.hooks.pre instanceof Array);
+  assert.ok(FrontEndFramework.hooks.post instanceof Array);
 });
 
 //

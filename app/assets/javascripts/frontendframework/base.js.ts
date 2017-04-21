@@ -1,30 +1,29 @@
 /// <reference path="../__jquery.d.ts" />
 
-// Has a dependency on JQuery. Should be loaded after Turbolinks to register
-// cleanupFunc on 'turbolinks:before-render' event.
-namespace FrontEndFramework {
-    export interface GlobalHandle extends Window {
-        stateToClearOnNavigation : any;
-    }
-}
-
-// Add the script tag below in the header of your page:
-// <script> "use strict"; var gHndl = this; var stateToClearOnNavigation = {}; var hooks = { pre: [], post: [], pageCleanup: [] }; </script>
-declare var hooks : {
-    // Invoked after document is ready (but before MiniHtmlViewModel.readyFunc)
-    pre: (() => void)[],
-
-    // Invoked after document is ready (but after MiniHtmlViewModel.readyFunc)
-    post: (() => void)[],
-
-    // Experimental: Only makes sense if used with Turbolinks
-    pageCleanup?: (() => void)[]
-};
-
-declare var gHndl : FrontEndFramework.GlobalHandle;
 declare var Turbolinks : any;
 
 namespace FrontEndFramework {
+    // Has a dependency on JQuery. Should be loaded after Turbolinks to register
+    // cleanupFunc on 'turbolinks:before-render' event.
+    export interface GlobalHandle extends Window {
+    }
+
+    // Add the script tag below in the header of your page:
+    // <script> "use strict"; var gHndl = this; var stateToClearOnNavigation = {}; var hooks = { pre: [], post: [], pageCleanup: [] }; </script>
+    export declare var hooks : {
+        // Invoked after document is ready (but before MiniHtmlViewModel.readyFunc)
+        pre: (() => void)[],
+
+        // Invoked after document is ready (but after MiniHtmlViewModel.readyFunc)
+        post: (() => void)[],
+
+        // Experimental: Only makes sense if used with Turbolinks
+        pageCleanup?: (() => void)[]
+    };
+
+    export let gHndl : GlobalHandle = window;
+    export declare var stateToClearOnNavigation : any;
+
     // TODO: Add support for other SPA frameworks here.
     export const TurbolinksAvailable = ((typeof Turbolinks !== 'undefined') && (Turbolinks != null)) ? true : false;
     export const SinglePageApplication = TurbolinksAvailable;
@@ -59,7 +58,7 @@ namespace FrontEndFramework {
         }
     }
     let clearStateOnNavigationFunc = function() {
-        gHndl.stateToClearOnNavigation = {};
+        stateToClearOnNavigation = {};
     };
 
     // Visits site using Turbolinks (or another SPA framework when support is added) if possible.
