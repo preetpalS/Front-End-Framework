@@ -12,13 +12,13 @@ Add this line to your application's Gemfile:
 ```ruby
 gem 'frontendframework',
     git: 'https://github.com/preetpalS/Front-End-Framework.git',
-    tag: '0.2.0',
+    tag: '0.5.1',
     require: 'frontendframework'
 
 # For compiling TypeScript
 gem 'typescript-sprockets',
     git: 'https://github.com/preetpalS/typescript-sprockets.git',
-    tag: '0.3.0',
+    tag: '0.5.0',
     require: 'typescript-sprockets'
 ```
 
