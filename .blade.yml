@@ -8,6 +8,6 @@ load_paths:
 
 logical_paths:
   - _header_script_js.js
-  - jquery.js
+  - jquery3.js
   - frontendframework.js
   - frontendframework-tests.js
