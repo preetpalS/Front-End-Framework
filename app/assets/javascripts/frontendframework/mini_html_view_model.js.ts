@@ -54,7 +54,7 @@ namespace FrontEndFramework {
         }
 
         // Should inherit from this class instead of instantiating it directly.
-        export abstract class ViewModel {
+        export abstract class ViewModel implements IObjectLifeCycleDeterminable {
             protected idToBindableProperty: { [index: string]: IViewModelPropertyBase<ViewModel> };
             public readonly objectLifeCycle: FrontEndFramework.ObjectLifeCycle;
             private static readonly ChangeEvents = 'change textInput input';

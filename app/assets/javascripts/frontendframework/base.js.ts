@@ -34,6 +34,10 @@ namespace FrontEndFramework {
         Persistent // Not to be destroyed (intended to be persistent across infinite page navigations)
     };
 
+    export interface IObjectLifeCycleDeterminable {
+        objectLifeCycle?: FrontEndFramework.ObjectLifeCycle;
+    }
+
     // TODO: Add support for other SPA frameworks here.
     export const TurbolinksAvailable = ((typeof Turbolinks !== 'undefined') && (Turbolinks != null)) ? true : false;
     export const SinglePageApplication = TurbolinksAvailable;
