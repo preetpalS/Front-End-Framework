@@ -6,7 +6,7 @@
 
 namespace FrontEndFramework {
     export namespace MiniHtmlViewModel {
-        export const VERSION = '0.5.0';
+        export const VERSION = '0.6.0';
 
         export const enum BindingMode { OneTime, OneWayRead, OneWayWrite, TwoWay };
 
@@ -56,12 +56,18 @@ namespace FrontEndFramework {
         // Should inherit from this class instead of instantiating it directly.
         export abstract class ViewModel {
             protected idToBindableProperty: { [index: string]: IViewModelPropertyBase<ViewModel> };
+            public readonly objectLifeCycle: FrontEndFramework.ObjectLifeCycle;
             private static readonly ChangeEvents = 'change textInput input';
-            protected constructor(...bindableProperties: IViewModelPropertyBase<ViewModel>[]) {
+            protected constructor(
+                objectLifeCycle: FrontEndFramework.ObjectLifeCycle,
+                ...bindableProperties: IViewModelPropertyBase<ViewModel>[]
+            ) {
+                this.objectLifeCycle = objectLifeCycle;
                 this.idToBindableProperty = {};
                 bindableProperties.forEach(this.processBindableProperty, this);
 
-                if (FrontEndFramework.SinglePageApplication &&
+                if (this.objectLifeCycle === FrontEndFramework.ObjectLifeCycle.TeardownOnNavigation &&
+                    FrontEndFramework.SinglePageApplication &&
                     (hooks.pageCleanup != null)) {
                     (<(() => void)[]>hooks.pageCleanup).push(this.genTeardownFunc(this));
                 }
@@ -160,7 +166,13 @@ namespace FrontEndFramework {
                 return function() {self.teardown.call(self);};
             }
 
-            teardown() {
+            teardown(overrideObjectLifeCycle:boolean = false) {
+                if (this.objectLifeCycle === FrontEndFramework.ObjectLifeCycle.Persistent &&
+                    !overrideObjectLifeCycle) {
+                    console.error('Failed to teardown FrontEndFramework.MiniHtmlViewModel.ViewModel instance due to objectLifeCycle not being overridden');
+                    return;
+                }
+
                 Object.keys(this.idToBindableProperty).forEach((id: string) => {
                     console.log(`Cleaning up event handlers set up in ViewModel (id: ${id})`);
                     $('#' + id).off(ViewModel.ChangeEvents);

@@ -24,6 +24,13 @@ namespace FrontEndFramework {
     export let gHndl : GlobalHandle = window;
     export declare var stateToClearOnNavigation : any;
 
+    // A part of the SPA suppport
+    export const enum ObjectLifeCycle {
+        TeardownOnNavigation, // Only for single page, object should automatically be destroyed when navigating from page
+        Variable, // Lifetime is managed manually (should not be automatically destroyed when navigating pages)
+        Persistent // Not to be destroyed (intended to be persistent across infinite page navigations)
+    };
+
     // TODO: Add support for other SPA frameworks here.
     export const TurbolinksAvailable = ((typeof Turbolinks !== 'undefined') && (Turbolinks != null)) ? true : false;
     export const SinglePageApplication = TurbolinksAvailable;
