@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 gemspec
 
 group :development do
+  gem 'blade'
+  gem 'erubis'
   gem 'rake'
   gem 'sprockets'
   gem 'uglifier'
-  gem 'blade'
-  gem 'erubis'
 end
 
 gem 'typescript-sprockets',

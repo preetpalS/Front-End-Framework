@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'frontendframework/header_script'
 require 'frontendframework/version'
 

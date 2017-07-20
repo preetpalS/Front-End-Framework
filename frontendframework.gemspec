@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
@@ -8,15 +10,15 @@ Gem::Specification.new do |gem|
   gem.version = FrontEndFramework::VERSION
   gem.platform = Gem::Platform::RUBY
   gem.authors = ['Preetpal Sohal']
-  gem.email = %w(preetpal.sohal@gmail.com)
+  gem.email = %w[preetpal.sohal@gmail.com]
 
-  gem.summary       = %q{Front-End Framework.}
-  gem.description   = %q{Some SASS and TypeScript code that I extracted from some of the websites that I have built.}
-  gem.homepage      = "https://github.com/preetpalS/Front-End-Framework"
-  gem.license       = "MIT"
+  gem.summary       = 'Front-End Framework.'
+  gem.description   = 'Some SASS and TypeScript code that I extracted from some of the websites that I have built.'
+  gem.homepage      = 'https://github.com/preetpalS/Front-End-Framework'
+  gem.license       = 'MIT'
 
-  gem.files         = `git ls-files`.split($/)
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
+  gem.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
+  gem.executables   = gem.files.grep(%r{^bin/}).map { |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ['lib']
 
