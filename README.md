@@ -12,13 +12,13 @@ Add this line to your application's Gemfile:
 ```ruby
 gem 'frontendframework',
     git: 'https://github.com/preetpalS/Front-End-Framework.git',
-    tag: '0.5.1',
+    tag: '0.6.0',
     require: 'frontendframework'
 
 # For compiling TypeScript
 gem 'typescript-sprockets',
     git: 'https://github.com/preetpalS/typescript-sprockets.git',
-    tag: '0.5.0',
+    tag: '0.6.1',
     require: 'typescript-sprockets'
 ```
 
@@ -33,3 +33,7 @@ And then execute:
 Run bundler (`bundle`). Run npm (`npm install`). Fetch submodules (`git submodule update --init --recursive`). Run tests with `bundle exec rake blade:runner`
 
 Requires having a working Node.js and Ruby development environment available.
+
+Note that if you are using the TypeScript `--outFile` which concatenates and emits output to a single file, do not require framework components individually (require
+`framework/all` only). If you want to require framework components individually (assuming that you are not using the TypeScript `--outFile` option), explicitly look
+at the references in the source file for the specific component.
