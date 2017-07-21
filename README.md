@@ -5,6 +5,8 @@
 
 Some SASS and TypeScript code that I extracted from some of the websites that I have built.
 
+Intended to work with all modern browsers (Chrome, Edge, FireFox, IE (IE11), Opera, Safari).
+
 ## Installation
 
 Add this line to your application's Gemfile:
