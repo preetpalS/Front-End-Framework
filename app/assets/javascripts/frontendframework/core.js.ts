@@ -359,7 +359,14 @@ namespace FrontEndFramework {
                 subscribe(
                     subscriptionIdentifier,
                     `#${htmlId}`,
-                    (message:any) => { $(`#${htmlId}`).val(message); },
+                    (message:any) => {
+                        $(`#${htmlId}`).val(message);
+                        if (this.onChangeFunc != null) {
+                            try {
+                                this.onChangeFunc();
+                            } catch (e) { console.error(e) }
+                        }
+                    },
                     this.objectLifeCycle
                 );
 
@@ -370,10 +377,13 @@ namespace FrontEndFramework {
                         (<HTMLInputElement>document.getElementById(htmlId)).value
                     );
 
-                    if (this.onChangeFunc != null)
+                    // console.info(`Detected change in (${htmlId}): ${(<HTMLInputElement>document.getElementById(htmlId)).value}`)
+
+                    if (this.onChangeFunc != null) {
                         try {
                             this.onChangeFunc();
                         } catch (e) { console.error(e) }
+                    } // else { console.info('Did not fire null onChangeFunc') }
                 });
 
                 if (this.objectLifeCycle === FrontEndFramework.ObjectLifeCycle.Transient &&
