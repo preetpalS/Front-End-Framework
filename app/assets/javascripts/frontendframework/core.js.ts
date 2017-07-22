@@ -43,13 +43,13 @@ namespace FrontEndFramework {
     };
 
     export namespace PubSub {
-        export interface PubSubRelaySubscriberInfo extends IObjectLifeCycleDeterminable {
+        interface PubSubRelaySubscriberInfo extends IObjectLifeCycleDeterminable {
             subscriberIdentifier: string;
             subscriberSetter: ((message:any) => void)|null|undefined;
             objectLifeCycle: FrontEndFramework.ObjectLifeCycle;
         }
 
-        export class PubSubRelay implements IObjectLifeCycleDeterminable {
+        class PubSubRelay implements IObjectLifeCycleDeterminable {
             public static DefaultObjectLifeCycle = FrontEndFramework.ObjectLifeCycle.Transient;
             public objectLifeCycle: FrontEndFramework.ObjectLifeCycle;
             public readonly subscriptionIdentifier: string;
@@ -117,7 +117,7 @@ namespace FrontEndFramework {
             }
         }
 
-        export class PubSubRelayStorage implements Storage.IKeyValueStorage, IObjectLifeCycleDeterminable {
+        class PubSubRelayStorage implements Storage.IKeyValueStorage, IObjectLifeCycleDeterminable {
             // TODO: Allow the PubSubRelayStorage to have a transient object life cycle
             public readonly objectLifeCycle = FrontEndFramework.ObjectLifeCycle.InfinitePersistence;
             private mapFromSubscriptionIdentifierToPubSubRelays: any;
@@ -151,7 +151,7 @@ namespace FrontEndFramework {
             }
         }
 
-        export class PubSubRelayManager {
+        class PubSubRelayManager {
             // TODO: Allow the PubSubRelayManager to have a transient object life cycle
             public readonly objectLifeCycle = FrontEndFramework.ObjectLifeCycle.InfinitePersistence;
             private pubSubRelayStorage: PubSubRelayStorage = new PubSubRelayStorage();
