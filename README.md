@@ -14,7 +14,7 @@ Add this line to your application's Gemfile:
 ```ruby
 gem 'frontendframework',
     git: 'https://github.com/preetpalS/Front-End-Framework.git',
-    tag: '0.6.0',
+    tag: '0.6.5',
     require: 'frontendframework'
 
 # For compiling TypeScript
