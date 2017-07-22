@@ -8,7 +8,7 @@ GIT
 PATH
   remote: .
   specs:
-    frontendframework (0.6.1)
+    frontendframework (0.6.2)
 
 GEM
   remote: https://rubygems.org/
