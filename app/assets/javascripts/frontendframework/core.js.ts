@@ -54,6 +54,8 @@ namespace FrontEndFramework {
             public objectLifeCycle: FrontEndFramework.ObjectLifeCycle;
             public readonly subscriptionIdentifier: string;
             private pubSubRelaySubscribers: PubSubRelaySubscriberInfo[] = [];
+            private lastSentMessage: any; // To be re-broadcast after navigating pages
+            private firstMessageSentP: boolean = false;
 
             constructor(subscriptionIdentifier:string) {
                 this.subscriptionIdentifier = subscriptionIdentifier;
@@ -79,6 +81,8 @@ namespace FrontEndFramework {
             }
 
             public relayMessage(sendingSubscriberIdentifier:string, message:any) {
+                this.lastSentMessage = message;
+                this.firstMessageSentP = true;
                 for (let i = 0; i < this.pubSubRelaySubscribers.length; i++) {
                     let relevantSubscriber = this.pubSubRelaySubscribers[i];
                     if (relevantSubscriber.subscriberIdentifier !==
@@ -96,6 +100,26 @@ namespace FrontEndFramework {
                         } catch(e) {
                             console.error(e);
                         }
+                    }
+                }
+            }
+
+            public rebroadcastLastSentMessage() {
+                if (!this.firstMessageSentP) return;
+                for (let i = 0; i < this.pubSubRelaySubscribers.length; i++) {
+                    let relevantSubscriber = this.pubSubRelaySubscribers[i];
+                    try {
+                        if (relevantSubscriber.subscriberSetter != null &&
+                            typeof(relevantSubscriber.subscriberSetter) === 'function') {
+                            relevantSubscriber.subscriberSetter(this.lastSentMessage);
+                        } else {
+                            // Assumes that a trigger change event should not be fired on setting value.
+                            // Use subscriberSetter arg when subscribing.
+                            // console.info(`Setting value (${this.lastSentMessage}) for ${relevantSubscriber.subscriberIdentifier} id.`);
+                            $(relevantSubscriber.subscriberIdentifier).val(this.lastSentMessage)
+                        }
+                    } catch(e) {
+                        console.error(e);
                     }
                 }
             }
@@ -150,6 +174,12 @@ namespace FrontEndFramework {
                     delete this.mapFromSubscriptionIdentifierToPubSubRelays[keysToDelete[i]];
                 }
             }
+
+            public rebroadcastAllMessageLastRelayedByStoredPubSubRelays() : void {
+                Object.keys(this.mapFromSubscriptionIdentifierToPubSubRelays).forEach((subscriptionIdentifier:string) => {
+                    this.mapFromSubscriptionIdentifierToPubSubRelays[subscriptionIdentifier].rebroadcastLastSentMessage();
+                });
+            }
         }
 
         class PubSubRelayManager {
@@ -159,6 +189,7 @@ namespace FrontEndFramework {
             constructor() {
                 if (FrontEndFramework.SinglePageApplication) {
                     (<(() => void)[]>cleanupHooks).push(this.genHandleNavigationFunc(this));
+                    (<(() => void)[]>postReadyHooks).push(this.genRebroadcastLastMessagesFunc(this));
                 }
             }
 
@@ -166,8 +197,16 @@ namespace FrontEndFramework {
                 this.pubSubRelayStorage.handleNavigation();
             }
 
+            rebroadcastLastSentMessages() {
+                this.pubSubRelayStorage.rebroadcastAllMessageLastRelayedByStoredPubSubRelays();
+            }
+
             private genHandleNavigationFunc(self: PubSubRelayManager) {
                 return self.handleNavigation.call(self);
+            }
+
+            private genRebroadcastLastMessagesFunc(self: PubSubRelayManager) {
+                return self.rebroadcastLastSentMessages.call(self);
             }
 
             public handleSubscription(
