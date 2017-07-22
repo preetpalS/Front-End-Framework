@@ -81,10 +81,13 @@ namespace FrontEndFramework {
             }
 
             public relayMessage(sendingSubscriberIdentifier:string, message:any) {
+                //console.info(`Relaying message from PubSubRelay#relayMessage for subscription: ${this.subscriptionIdentifier}}`)
                 this.lastSentMessage = message;
                 this.firstMessageSentP = true;
                 for (let i = 0; i < this.pubSubRelaySubscribers.length; i++) {
                     let relevantSubscriber = this.pubSubRelaySubscribers[i];
+                    //console.info(`Printing ${i}-th relevantSubscriber`);
+                    //console.info(relevantSubscriber);
                     if (relevantSubscriber.subscriberIdentifier !==
                         sendingSubscriberIdentifier) {
                         try {
@@ -106,6 +109,7 @@ namespace FrontEndFramework {
 
             public rebroadcastLastSentMessage() {
                 if (!this.firstMessageSentP) return;
+                //console.info(`Relaying message from PubSubRelay#rebroadcastLastSentMessage for subscription: ${this.subscriptionIdentifier}}`)
                 for (let i = 0; i < this.pubSubRelaySubscribers.length; i++) {
                     let relevantSubscriber = this.pubSubRelaySubscribers[i];
                     try {
@@ -262,12 +266,20 @@ namespace FrontEndFramework {
             selfSetter:((message:any) => void)|null|undefined = undefined,
             objectLifeCycle = FrontEndFramework.ObjectLifeCycle.Transient
         ) : any|void => {
+            //console.info("Printing FrontEndFramework.PubSub.subscribe args");
+            //console.info(subscriptionIdentifier);
+            //console.info(selfIdentifier);
+            //console.info(selfSetter);
+            //console.info(objectLifeCycle);
             pubSubRelayManager.handleSubscription(
                 subscriptionIdentifier, selfIdentifier, selfSetter, objectLifeCycle
             );
         }
 
         export let publish = (subscriptionIdentifier:string, message:any) => {
+            //console.info("Printing FrontEndFramework.PubSub.publish args");
+            //console.info(subscriptionIdentifier);
+            //console.info(message);
             pubSubRelayManager.handlePublishedMessage(subscriptionIdentifier, message);
         }
 
@@ -312,7 +324,7 @@ namespace FrontEndFramework {
             }
 
             private genStoreInSessionStorageFunc(self: PubSubSessionStorageSubscriber) {
-                return () => {self.storeInSessionStorageFunc.call(self);}
+                return (message:any) => {self.storeInSessionStorageFunc.call(self, message);}
             }
         }
 
