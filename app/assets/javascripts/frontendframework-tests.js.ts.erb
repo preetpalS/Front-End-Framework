@@ -47,10 +47,10 @@ QUnit.test("view sanity test", function(assert) {
 
 QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert) {
   class TestCase1ViewModel extends FrontEndFramework.MiniHtmlViewModel.ViewModel {
-    static SelectItemId = 'select-item';
-    static GroupSelectItem1Id = 'group-select-item-1';
-    static GroupSelectItem2Id = 'group-select-item-2';
-    static GroupSelectItem3Id = 'group-select-item-3';
+    static SelectItemId = 'test-case-1-select-item';
+    static GroupSelectItem1Id = 'test-case-1-group-select-item-1';
+    static GroupSelectItem2Id = 'test-case-1-group-select-item-2';
+    static GroupSelectItem3Id = 'test-case-1-group-select-item-3';
 
     constructor() {
       super(FrontEndFramework.ObjectLifeCycle.Transient, {
@@ -122,4 +122,44 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
   $(`#${TestCase1ViewModel.GroupSelectItem1Id}`).val(3);
   $(`#${TestCase1ViewModel.GroupSelectItem2Id}`).val(4);
   $(`#${TestCase1ViewModel.GroupSelectItem3Id}`).val(3);
+});
+
+QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", (assert) => {
+  new FrontEndFramework.PubSub.HtmlInputElementPublisherAndSubscrber(
+    'test-case-2-color-sync',
+    'test-case-2-select-item-1'
+  );
+
+  new FrontEndFramework.PubSub.HtmlInputElementPublisherAndSubscrber(
+    'test-case-2-color-sync',
+    'test-case-2-select-item-2'
+  );
+
+  FrontEndFramework.PubSub.subscribe(
+    'test-case-2-color-sync',
+    '#test-case-2-select-item-3'
+  );
+
+  assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-1')).value, 'red');
+  assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'green');
+  assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value, 'green');
+
+  FrontEndFramework.PubSub.publish('test-case-2-color-sync', 'blue');
+
+  assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-1')).value, 'blue');
+  assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'blue');
+  assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value, 'blue');
+
+  $('#test-case-2-select-item-3').val('red');
+
+  assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-1')).value, 'blue');
+  assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'blue');
+  assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value, 'red');
+
+  $('#test-case-2-select-item-2').val('green');
+  $('#test-case-2-select-item-2').trigger('change');
+
+  assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-1')).value, 'green');
+  assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'green');
+  assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value, 'green');
 });
