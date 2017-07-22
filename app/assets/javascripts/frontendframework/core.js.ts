@@ -1,4 +1,5 @@
 /// <reference path="./base.js.ts"/>
+/// <reference path="./storage.js.ts"/>
 
 namespace FrontEndFramework {
     // Visits site using Turbolinks (or another SPA framework when support is added) if possible.
@@ -40,6 +41,310 @@ namespace FrontEndFramework {
     let clearStateOnNavigationFunc = function() {
         FrontEndFramework.stateToClearOnNavigation = {};
     };
+
+    export namespace PubSub {
+        export interface PubSubRelaySubscriberInfo extends IObjectLifeCycleDeterminable {
+            subscriberIdentifier: string;
+            subscriberSetter: ((message:any) => void)|null|undefined;
+            objectLifeCycle: FrontEndFramework.ObjectLifeCycle;
+        }
+
+        export class PubSubRelay implements IObjectLifeCycleDeterminable {
+            public static DefaultObjectLifeCycle = FrontEndFramework.ObjectLifeCycle.Transient;
+            public objectLifeCycle: FrontEndFramework.ObjectLifeCycle;
+            public readonly subscriptionIdentifier: string;
+            private pubSubRelaySubscribers: PubSubRelaySubscriberInfo[] = [];
+
+            constructor(subscriptionIdentifier:string) {
+                this.subscriptionIdentifier = subscriptionIdentifier;
+                this.objectLifeCycle = PubSubRelay.DefaultObjectLifeCycle;
+            }
+
+            public addSubscriber(subscriberInfo:PubSubRelaySubscriberInfo) : void {
+                if (subscriberInfo.objectLifeCycle != null) {
+                    if ((<number>this.objectLifeCycle) < (<number>subscriberInfo.objectLifeCycle)) {
+                        this.objectLifeCycle = subscriberInfo.objectLifeCycle;
+                    }
+                }
+
+                for (let i = 0; i < this.pubSubRelaySubscribers.length; i++) {
+                    if (this.pubSubRelaySubscribers[i].subscriberIdentifier ===
+                        subscriberInfo.subscriberIdentifier) {
+                        console.warn(`Cannot subscribe more than once to (${this.subscriptionIdentifier}) with (${subscriberInfo.subscriberIdentifier}).`);
+                        return;
+                    }
+                }
+
+                this.pubSubRelaySubscribers.push(subscriberInfo);
+            }
+
+            public relayMessage(message:any, sendingSubscriberIdentifier:string) {
+                for (let i = 0; i < this.pubSubRelaySubscribers.length; i++) {
+                    let relevantSubscriber = this.pubSubRelaySubscribers[i];
+                    if (relevantSubscriber.subscriberIdentifier !==
+                        sendingSubscriberIdentifier) {
+                        try {
+                            if (relevantSubscriber.subscriberSetter != null &&
+                                typeof(relevantSubscriber.subscriberSetter) === 'function') {
+                                relevantSubscriber.subscriberSetter(message);
+                            } else {
+                                // Assumes that a trigger change event should not be fired on setting value.
+                                // Use subscriberSetter arg when subscribing.
+                                $(relevantSubscriber.subscriberIdentifier).val(message)
+                            }
+                        } catch(e) {
+                            console.error(e);
+                        }
+                    }
+                }
+            }
+
+            public handleNavigation() {
+                if (this.objectLifeCycle == FrontEndFramework.ObjectLifeCycle.Transient)
+                    return; // Short-circuit if item will be PubSubRelay itself will be destroyed anyways
+
+                let toRemove : number[] = []; // indices (this.pubSubRelaySubscribers) of subscribers to remove
+
+                for (let i = 0; i < this.pubSubRelaySubscribers.length; i++) {
+                    if (this.pubSubRelaySubscribers[i].objectLifeCycle != null) {
+                        toRemove.push(i);
+                    }
+                }
+
+                while (toRemove.length !== 0) {
+                    this.pubSubRelaySubscribers.splice(<number>toRemove.pop(), 1);
+                }
+            }
+        }
+
+        export class PubSubRelayStorage implements Storage.IKeyValueStorage, IObjectLifeCycleDeterminable {
+            // TODO: Allow the PubSubRelayStorage to have a transient object life cycle
+            public readonly objectLifeCycle = FrontEndFramework.ObjectLifeCycle.InfinitePersistence;
+            private mapFromSubscriptionIdentifierToPubSubRelays: any;
+            constructor() {
+                this.mapFromSubscriptionIdentifierToPubSubRelays = {};
+            }
+
+            public get(subscriptionIdentifier:string) : PubSubRelay|null|undefined {
+                return this.mapFromSubscriptionIdentifierToPubSubRelays[subscriptionIdentifier];
+            }
+
+            public set(subscriptionIdentifier:string, pubSubRelay: PubSubRelay) : void {
+                this.mapFromSubscriptionIdentifierToPubSubRelays[subscriptionIdentifier] = pubSubRelay;
+            }
+
+            public handleNavigation() {
+                let keysToDelete : string[] = [];
+                Object.keys(this.mapFromSubscriptionIdentifierToPubSubRelays).forEach((subscriptionIdentifier:string) => {
+                    let pubSubRelayInstance = this.mapFromSubscriptionIdentifierToPubSubRelays[subscriptionIdentifier];
+                    pubSubRelayInstance.handleNavigation();
+
+                    if (pubSubRelayInstance.objectLifeCycle === FrontEndFramework.ObjectLifeCycle.Transient) {
+                        // Remove pubSubRelayInstance
+                        keysToDelete.push(subscriptionIdentifier);
+                    }
+                })
+
+                for (let i = 0; i < keysToDelete.length; i++) {
+                    delete this.mapFromSubscriptionIdentifierToPubSubRelays[keysToDelete[i]];
+                }
+            }
+        }
+
+        export class PubSubRelayManager {
+            // TODO: Allow the PubSubRelayManager to have a transient object life cycle
+            public readonly objectLifeCycle = FrontEndFramework.ObjectLifeCycle.InfinitePersistence;
+            private pubSubRelayStorage: PubSubRelayStorage = new PubSubRelayStorage();
+            constructor() {
+                if (FrontEndFramework.SinglePageApplication) {
+                    (<(() => void)[]>cleanupHooks).push(this.genHandleNavigationFunc(this));
+                }
+            }
+
+            handleNavigation() {
+                this.pubSubRelayStorage.handleNavigation();
+            }
+
+            private genHandleNavigationFunc(self: PubSubRelayManager) {
+                return self.handleNavigation.call(self);
+            }
+
+            public handleSubscription(
+                subscriptionIdentifier:string,
+                selfIdentifier:string, // should be a CSS selector (JQuery selector)
+                selfSetter:((message:any) => void)|null|undefined = undefined,
+                objectLifeCycle = FrontEndFramework.ObjectLifeCycle.Transient
+            ) {
+                let pubSubRelay = this.handlePubSubRelayInitializationAndRetrieval(subscriptionIdentifier);
+
+                // TODO: See if given `objectLifeCycle` is greater than designated objectLifeCycle,
+                // if it is, change how it is managed (not relevant until object life cycle other
+                // than FrontEndFramework.ObjectLifeCycle.InfinitePersistence is supported).
+
+                (<PubSubRelay>pubSubRelay).addSubscriber({
+                    subscriberIdentifier: selfIdentifier,
+                    subscriberSetter: selfSetter,
+                    objectLifeCycle: objectLifeCycle
+                });
+            }
+
+            public handlePublishedMessage(
+                subscriptionIdentifier:string,
+                message:any
+            ) {
+                let pubSubRelay = this.handlePubSubRelayInitializationAndRetrieval(subscriptionIdentifier);
+                pubSubRelay.relayMessage(subscriptionIdentifier, message);
+            }
+
+            private handlePubSubRelayInitializationAndRetrieval(subscriptionIdentifier:string) : PubSubRelay {
+                let pubSubRelay : PubSubRelay|null|undefined = null;
+                // Create pub sub relay if it does not exist
+                if ((pubSubRelay = this.pubSubRelayStorage.get(subscriptionIdentifier)) == null) {
+                    pubSubRelay = new PubSubRelay(subscriptionIdentifier);
+                    this.pubSubRelayStorage.set(
+                        subscriptionIdentifier,
+                        <PubSubRelay>pubSubRelay
+                    );
+                }
+                return <PubSubRelay>pubSubRelay;
+            }
+        }
+
+        // Internal library state
+        // TODO: Manage internal library state without using globals
+        let pubSubRelayManager : PubSubRelayManager = new PubSubRelayManager();;
+
+        // Treat the first two arguments to this function as being more a part of a stable
+        // API vs the the third and fourth arguments which are subject to change.
+        export let subscribe = (
+            subscriptionIdentifier:string,
+            selfIdentifier:string, // should be a CSS selector (JQuery selector)
+            selfSetter:((message:any) => void)|null|undefined = undefined,
+            objectLifeCycle = FrontEndFramework.ObjectLifeCycle.Transient
+        ) : any|void => {
+            pubSubRelayManager.handleSubscription(
+                subscriptionIdentifier, selfIdentifier, selfSetter, objectLifeCycle
+            );
+        }
+
+        export let publish = (subscriptionIdentifier:string, message:any) => {
+            pubSubRelayManager.handlePublishedMessage(subscriptionIdentifier, message);
+        }
+
+        // Usage: During initialization subscribe in pre-hooks and publish in post-hooks.
+
+        // Assumed to be constructed in pre-hook
+        export class PubSubSessionStorageSubscriber implements IObjectLifeCycleDeterminable {
+            // TODO: Support other object life cycles
+            public readonly objectLifeCycle = FrontEndFramework.ObjectLifeCycle.InfinitePersistence;
+            public storageKey: string;
+            constructor(
+                subscriptionIdentifier:string,
+                storageKey:string,
+                publishExistingStoredValue:boolean = true
+            ) {
+                this.storageKey = storageKey;
+
+                // TODO: Short-Circuit if session storage not available
+                if (!Storage.IsSessionStorageAvailable) {
+                    console.log('Abandoning PubSubSessionStorageSubscriber initialization since session storage is not available');
+                    return;
+                }
+
+                subscribe(
+                    subscriptionIdentifier,
+                    storageKey,
+                    this.genStoreInSessionStorageFunc(this),
+                    this.objectLifeCycle
+                )
+
+                let initialStoredValue = sessionStorage.getItem(storageKey);
+
+                if (initialStoredValue != null &&
+                    publishExistingStoredValue)
+                    hooks.post.push(() => {
+                        publish(subscriptionIdentifier, initialStoredValue);
+                    });
+            }
+
+            storeInSessionStorageFunc(val:any) {
+                sessionStorage.setItem(this.storageKey, val.toString());
+            }
+
+            private genStoreInSessionStorageFunc(self: PubSubSessionStorageSubscriber) {
+                return () => {self.storeInSessionStorageFunc.call(self);}
+            }
+        }
+
+        // Assumed to be constructed in pre-hook
+        export class HtmlInputElementPublisherAndSubscrber implements IObjectLifeCycleDeterminable {
+            public readonly objectLifeCycle : FrontEndFramework.ObjectLifeCycle;
+            public readonly htmlId : string;
+            constructor(
+                subscriptionIdentifier:string,
+                htmlId:string,
+                objectLifeCycle = FrontEndFramework.ObjectLifeCycle.Transient,
+                publishValuePredicate:boolean = false
+            ) {
+                this.objectLifeCycle = objectLifeCycle;
+                this.htmlId = htmlId;
+
+                // Publish value when appropriate
+                if (publishValuePredicate &&
+                    ((<HTMLInputElement>document.getElementById(htmlId)).value != null)) {
+                    hooks.post.push(() => {
+                        publish(
+                            subscriptionIdentifier,
+                            (<HTMLInputElement>document.getElementById(htmlId)).value
+                        );
+                    });
+                }
+
+                // Subscribe
+                subscribe(
+                    subscriptionIdentifier,
+                    `#${htmlId}`,
+                    (message:any) => { $(`#${htmlId}`).val(message); },
+                    this.objectLifeCycle
+                );
+
+                // Publish on changes
+                $(`#${htmlId}`).on(FrontEndFramework.HtmlInputChangeEvents, () => {
+                    publish(
+                        subscriptionIdentifier,
+                        (<HTMLInputElement>document.getElementById(htmlId)).value
+                    );
+                });
+
+                if (this.objectLifeCycle === FrontEndFramework.ObjectLifeCycle.Transient &&
+                    FrontEndFramework.SinglePageApplication &&
+                    (hooks.pageCleanup != null)) {
+                    (<(() => void)[]>hooks.pageCleanup).push(this.genHandleNavigationFunc(this));
+                }
+            }
+
+            handleNavigation() {
+                if (this.objectLifeCycle === FrontEndFramework.ObjectLifeCycle.Transient) {
+                    this.teardown();
+                }
+            }
+
+            private genHandleNavigationFunc(self: HtmlInputElementPublisherAndSubscrber) {
+                return () => {self.handleNavigation.call(self);}
+            }
+
+            teardown(overrideObjectLifeCycle:boolean = false) {
+                if (this.objectLifeCycle === FrontEndFramework.ObjectLifeCycle.InfinitePersistence &&
+                    !overrideObjectLifeCycle) {
+                    console.error('Failed to teardown FrontEndFramework.PubSub.HtmlInputElementPublisherAndSubscrber instance due to objectLifeCycle not being overridden');
+                    return;
+                }
+
+                console.log(`Cleaning up event handlers set up in HtmlInputElementPublisherAndSubscrber (id: ${this.htmlId})`);
+                $('#' + this.htmlId).off(FrontEndFramework.HtmlInputChangeEvents);
+            }
+        }
+    }
 
     $(document).ready(function() {
         // Fire functions in hooks.pre Array

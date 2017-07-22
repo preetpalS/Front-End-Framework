@@ -4,7 +4,7 @@
 
 namespace FrontEndFramework {
     export namespace Storage {
-        export const VERSION = '0.0.1';
+        export const VERSION = '0.1.0';
         export const enum DataPersistenceDuration { Transient, Session, AcrossSessions }
         export interface ICacheExpirationDuration {
             indefinite?: boolean;
@@ -44,7 +44,11 @@ namespace FrontEndFramework {
         }
         export const IsSessionStorageAvailable = is_session_storage_available;
 
-        export class ClientProfile {
+        export interface IKeyValueStorageProfile {
+            DataPersistanceDurationCapabilities: DataPersistenceDuration[];
+        }
+
+        export class ClientStorageProfile implements IKeyValueStorageProfile {
             public DataPersistanceDurationCapabilities: Array<DataPersistenceDuration>;
             constructor() {
                 this.DataPersistanceDurationCapabilities = [DataPersistenceDuration.Transient];
@@ -53,8 +57,24 @@ namespace FrontEndFramework {
             }
         }
 
-        export class Database {
-            public clientProfile = new ClientProfile();
+        export interface IKeyValueStorage {
+            set: ((key:any, val:any) => void);
+            get: ((key:any) => any);
+        }
+        /*
+        export class TransientStorage implements IKeyValueStorage {
+            constructor() {
+            }
+
+            set(key:any, val:any) : void => {
+            }
+
+            get(key:any) : any => {
+            }
+        }
+        */
+        export class ClientStorage implements IKeyValueStorage {
+            public clientProfile = new ClientStorageProfile();
             constructor(
                 private errorOnFail = false
             ) { }
@@ -64,6 +84,7 @@ namespace FrontEndFramework {
                        dataPersistenceDuration = DataPersistenceDuration.Session,
                        cacheExpirationDuration?: ICacheExpirationDuration) {
                 try {
+                    // TODO: Remove upon adding support for DataPersistenceDuration.AcrossSessions
                     if (cacheExpirationDuration != null)
                         console.error("cacheExpirationDuration ignored in Database#set.");
 
@@ -83,7 +104,7 @@ namespace FrontEndFramework {
                 }
             }
 
-            public get(key: any, dataPersistenceDuration?: DataPersistenceDuration) : string|null|undefined {
+            public get(key: any, dataPersistenceDuration?: DataPersistenceDuration) : any|null|undefined {
                 try {
                     if (dataPersistenceDuration != null) {
                         switch(dataPersistenceDuration) {
