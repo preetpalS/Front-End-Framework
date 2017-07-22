@@ -78,7 +78,7 @@ namespace FrontEndFramework {
                 this.pubSubRelaySubscribers.push(subscriberInfo);
             }
 
-            public relayMessage(message:any, sendingSubscriberIdentifier:string) {
+            public relayMessage(sendingSubscriberIdentifier:string, message:any) {
                 for (let i = 0; i < this.pubSubRelaySubscribers.length; i++) {
                     let relevantSubscriber = this.pubSubRelaySubscribers[i];
                     if (relevantSubscriber.subscriberIdentifier !==
@@ -90,6 +90,7 @@ namespace FrontEndFramework {
                             } else {
                                 // Assumes that a trigger change event should not be fired on setting value.
                                 // Use subscriberSetter arg when subscribing.
+                                // console.info(`Setting value (${message}) for ${relevantSubscriber.subscriberIdentifier} id.`);
                                 $(relevantSubscriber.subscriberIdentifier).val(message)
                             }
                         } catch(e) {
@@ -218,7 +219,7 @@ namespace FrontEndFramework {
         // API vs the the third and fourth arguments which are subject to change.
         export let subscribe = (
             subscriptionIdentifier:string,
-            selfIdentifier:string, // should be a CSS selector (JQuery selector)
+            selfIdentifier:string, // should be a CSS selector (JQuery selector) unless providing `selfSetter` argument
             selfSetter:((message:any) => void)|null|undefined = undefined,
             objectLifeCycle = FrontEndFramework.ObjectLifeCycle.Transient
         ) : any|void => {
