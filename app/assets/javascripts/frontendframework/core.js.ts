@@ -329,17 +329,20 @@ namespace FrontEndFramework {
         }
 
         // Assumed to be constructed in pre-hook
-        export class HtmlInputElementPublisherAndSubscrber implements IObjectLifeCycleDeterminable {
+        export class HtmlInputElementPublisherAndSubscriber implements IObjectLifeCycleDeterminable {
             public readonly objectLifeCycle : FrontEndFramework.ObjectLifeCycle;
             public readonly htmlId : string;
+            public readonly onChangeFunc : (() => void)|null;
             constructor(
                 subscriptionIdentifier:string,
                 htmlId:string,
+                onChangeFunc:(() => void)|null = null,
                 objectLifeCycle = FrontEndFramework.ObjectLifeCycle.Transient,
                 publishValuePredicate:boolean = false
             ) {
                 this.objectLifeCycle = objectLifeCycle;
                 this.htmlId = htmlId;
+                this.onChangeFunc = onChangeFunc;
 
                 // Publish value when appropriate
                 if (publishValuePredicate &&
@@ -362,6 +365,10 @@ namespace FrontEndFramework {
 
                 // Publish on changes
                 $(`#${htmlId}`).on(FrontEndFramework.HtmlInputChangeEvents, () => {
+                    if (this.onChangeFunc != null)
+                        try {
+                            this.onChangeFunc();
+                        } catch (e) { console.error(e) }
                     publish(
                         subscriptionIdentifier,
                         (<HTMLInputElement>document.getElementById(htmlId)).value
@@ -381,7 +388,7 @@ namespace FrontEndFramework {
                 }
             }
 
-            private genHandleNavigationFunc(self: HtmlInputElementPublisherAndSubscrber) {
+            private genHandleNavigationFunc(self: HtmlInputElementPublisherAndSubscriber) {
                 return () => {self.handleNavigation.call(self);}
             }
 
