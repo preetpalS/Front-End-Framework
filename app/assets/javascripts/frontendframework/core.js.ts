@@ -283,7 +283,7 @@ namespace FrontEndFramework {
             pubSubRelayManager.handlePublishedMessage(subscriptionIdentifier, message);
         }
 
-        // Usage: During initialization subscribe in pre-hooks and publish in post-hooks.
+        // Usage: During initialization subscribe before post-hooks (preferably pre-hooks) and publish in post-hooks.
 
         // Assumed to be constructed in pre-hook
         export class PubSubSessionStorageSubscriber implements IObjectLifeCycleDeterminable {
