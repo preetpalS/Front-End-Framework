@@ -53,7 +53,7 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
     static GroupSelectItem3Id = 'group-select-item-3';
 
     constructor() {
-      super(FrontEndFramework.ObjectLifeCycle.TeardownOnNavigation, {
+      super(FrontEndFramework.ObjectLifeCycle.Transient, {
         bindingMode: FrontEndFramework.MiniHtmlViewModel.BindingMode.OneWayRead,
         id: TestCase1ViewModel.SelectItemId
       }, {

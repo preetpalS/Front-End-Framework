@@ -57,7 +57,7 @@ namespace FrontEndFramework {
         export abstract class ViewModel implements IObjectLifeCycleDeterminable {
             protected idToBindableProperty: { [index: string]: IViewModelPropertyBase<ViewModel> };
             public readonly objectLifeCycle: FrontEndFramework.ObjectLifeCycle;
-            private static readonly ChangeEvents = 'change textInput input';
+            private static readonly ChangeEvents = FrontEndFramework.HtmlInputChangeEvents;
             protected constructor(
                 objectLifeCycle: FrontEndFramework.ObjectLifeCycle,
                 ...bindableProperties: IViewModelPropertyBase<ViewModel>[]
@@ -66,7 +66,7 @@ namespace FrontEndFramework {
                 this.idToBindableProperty = {};
                 bindableProperties.forEach(this.processBindableProperty, this);
 
-                if (this.objectLifeCycle === FrontEndFramework.ObjectLifeCycle.TeardownOnNavigation &&
+                if (this.objectLifeCycle === FrontEndFramework.ObjectLifeCycle.Transient &&
                     FrontEndFramework.SinglePageApplication &&
                     (hooks.pageCleanup != null)) {
                     (<(() => void)[]>hooks.pageCleanup).push(this.genTeardownFunc(this));
@@ -163,11 +163,11 @@ namespace FrontEndFramework {
             }
 
             private genTeardownFunc(self: ViewModel) {
-                return function() {self.teardown.call(self);};
+                return () => {self.teardown.call(self);};
             }
 
             teardown(overrideObjectLifeCycle:boolean = false) {
-                if (this.objectLifeCycle === FrontEndFramework.ObjectLifeCycle.Persistent &&
+                if (this.objectLifeCycle === FrontEndFramework.ObjectLifeCycle.InfinitePersistence &&
                     !overrideObjectLifeCycle) {
                     console.error('Failed to teardown FrontEndFramework.MiniHtmlViewModel.ViewModel instance due to objectLifeCycle not being overridden');
                     return;

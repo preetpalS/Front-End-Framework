@@ -29,10 +29,12 @@ namespace FrontEndFramework {
 
     // A part of the SPA suppport
     export const enum ObjectLifeCycle {
-        TeardownOnNavigation, // Only for single page, object should automatically be destroyed when navigating from page
-        Variable, // Lifetime is managed manually (should not be automatically destroyed when navigating pages)
-        Persistent // Not to be destroyed (intended to be persistent across infinite page navigations)
+        Transient = 0, // Only for single page, object should automatically be destroyed when navigating from page
+        VariablePersistence = 1, // Lifetime is managed manually (should not be automatically destroyed when navigating pages)
+        InfinitePersistence = 2 // Not to be destroyed (intended to be persistent across infinite page navigations)
     };
+
+    export const HtmlInputChangeEvents = 'change textInput input';
 
     export interface IObjectLifeCycleDeterminable {
         objectLifeCycle?: FrontEndFramework.ObjectLifeCycle;
