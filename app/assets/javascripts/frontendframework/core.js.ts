@@ -365,14 +365,15 @@ namespace FrontEndFramework {
 
                 // Publish on changes
                 $(`#${htmlId}`).on(FrontEndFramework.HtmlInputChangeEvents, () => {
-                    if (this.onChangeFunc != null)
-                        try {
-                            this.onChangeFunc();
-                        } catch (e) { console.error(e) }
                     publish(
                         subscriptionIdentifier,
                         (<HTMLInputElement>document.getElementById(htmlId)).value
                     );
+
+                    if (this.onChangeFunc != null)
+                        try {
+                            this.onChangeFunc();
+                        } catch (e) { console.error(e) }
                 });
 
                 if (this.objectLifeCycle === FrontEndFramework.ObjectLifeCycle.Transient &&
