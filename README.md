@@ -1,4 +1,4 @@
-[![Test Coverage](https://api.codeclimate.com/v1/badges/9867ac1c979ba60bd137/test_coverage)](https://codeclimate.com/github/preetpalS/Front-End-Framework/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/9867ac1c979ba60bd137/maintainability)](https://codeclimate.com/github/preetpalS/Front-End-Framework/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/9867ac1c979ba60bd137/test_coverage)](https://codeclimate.com/github/preetpalS/Front-End-Framework/test_coverage)
 
 # Front-End Framework
 
