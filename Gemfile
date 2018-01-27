@@ -14,5 +14,5 @@ end
 
 gem 'typescript-sprockets',
     git: 'https://github.com/preetpalS/typescript-sprockets.git',
-    tag: '0.6.1',
+    tag: '0.6.2',
     require: 'typescript-sprockets'

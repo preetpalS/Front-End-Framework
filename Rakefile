@@ -12,23 +12,7 @@ require 'typescript-sprockets'
 
 # TypeScript compiler options
 ::Typescript::Sprockets::TypescriptProcessor.register
-::Typescript::Sprockets::TypescriptProcessor.options(
-  compiler_flags: [
-    '--alwaysStrict',
-    '--forceConsistentCasingInFileNames',
-    '--inlineSourceMap',
-    '--inlineSources',
-    '--lib dom,es2015.promise,es5,scripthost',
-    '--noEmitOnError',
-    '--noFallthroughCasesInSwitch',
-    '--noImplicitAny',
-    '--noImplicitReturns',
-    '--noImplicitThis',
-    '--noUnusedLocals',
-    '--noUnusedParameters',
-    '--strictNullChecks'
-  ]
-)
+::Typescript::Sprockets::TypescriptProcessor.options
 
 namespace :blade do
   task :build do

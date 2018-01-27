@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/preetpalS/typescript-sprockets.git
-  revision: 359949d55302bceceab004ad57a505c4b269a443
-  tag: 0.6.1
+  revision: 302fcccfa01c060696672ad4800077b16b1ef32a
+  tag: 0.6.2
   specs:
-    typescript-sprockets (0.6.1)
+    typescript-sprockets (0.6.2)
 
 PATH
   remote: .
@@ -103,4 +103,4 @@ DEPENDENCIES
   uglifier
 
 BUNDLED WITH
-   1.15.1
+   1.16.1
