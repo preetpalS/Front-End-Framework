@@ -206,11 +206,11 @@ namespace FrontEndFramework {
             }
 
             private genHandleNavigationFunc(self: PubSubRelayManager) {
-                return self.handleNavigation.call(self);
+                return self.handleNavigation.bind(self);
             }
 
             private genRebroadcastLastMessagesFunc(self: PubSubRelayManager) {
-                return self.rebroadcastLastSentMessages.call(self);
+                return self.rebroadcastLastSentMessages.bind(self);
             }
 
             public handleSubscription(
