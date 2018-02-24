@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 # Rakefile
@@ -12,7 +11,11 @@ require 'typescript-sprockets'
 
 # TypeScript compiler options
 ::Typescript::Sprockets::TypescriptProcessor.register
-::Typescript::Sprockets::TypescriptProcessor.options
+::Typescript::Sprockets::TypescriptProcessor.options(
+  compiler_flags: ::Typescript::Sprockets::TypescriptProcessor::DEFAULT_COMPILER_FLAGS.reject do |x|
+    ['--allowJs', '--checkJs'].include?(x)
+  end
+)
 
 namespace :blade do
   task :build do
@@ -63,6 +66,14 @@ CMD
   puts 'Deleting generated file: frontendframework.js'
   File.delete 'frontendframework.js'
   puts 'Generated: frontendframework.d.ts'
+end
+
+desc 'Generates dist/ folder contents for release (only full framework currently supported)'
+task :dist do
+  Dir.mkdir('dist') unless Dir.exist?('dist')
+  system <<~CMD
+      node node_modules/typescript/bin/tsc -d app/assets/javascripts/frontendframework/all.js.ts --types #{Typescript::Sprockets::TypescriptProcessor.options[:compiler_flags].join(' ')} --outFile dist/frontendframework.js
+  CMD
 end
 
 task default: :main
