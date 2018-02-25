@@ -1,6 +1,6 @@
 {
   "name": "frontendframework",
-  "version": "0.6.8",
+  "version": "0.6.9",
   "description": "Front end framework",
   "main": "app/assets/javascripts/frontendframework.js",
   "homepage": "https://github.com/preetpalS/Front-End-Framework",
@@ -22,8 +22,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "files": [
-    "lib/",
     "app/",
+    "dist/",
+    "lib/",
     "README.md"
   ]
 }

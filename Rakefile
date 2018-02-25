@@ -76,6 +76,11 @@ task :dist do
   CMD
 end
 
+task :clean do
+  File.delete 'dist/frontendframework.js'
+  File.delete 'dist/frontendframework.d.ts'
+end
+
 task default: :main
 
 ALL_JS_TS_ERB = <<~ERB

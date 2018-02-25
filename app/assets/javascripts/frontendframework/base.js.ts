@@ -1,4 +1,4 @@
-/// <reference path="../__jquery.d.ts" />
+/// <reference types="jquery"/>
 
 // This file contains types and internal state used by the framework that individual components
 // in the library need knowledge of such as FrontEndFramework.ObjectLifeCycle.
