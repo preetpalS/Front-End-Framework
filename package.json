@@ -1,8 +1,9 @@
 {
   "name": "frontendframework",
-  "version": "0.6.9",
+  "version": "0.6.10",
   "description": "Front end framework",
-  "main": "app/assets/javascripts/frontendframework.js",
+  "main": "dist/frontendframework.js",
+  "types": "dist/frontendframework.d.ts",
   "homepage": "https://github.com/preetpalS/Front-End-Framework",
   "author": "Preetpal Sohal (https://github.com/preetpalS)",
   "license": "MIT",
@@ -13,8 +14,11 @@
   "directories": {
     "test": "test"
   },
+  "dependencies": {
+    "jquery": "~> 3.3.0",
+    "@types/jquery": "~> 3.3.0"
+  },
   "devDependencies": {
-    "@types/jquery": "~> 3.3.0",
     "@types/d3": "^4.4.1",
     "typescript": "~> 2.7.0"
   },
@@ -23,7 +27,8 @@
   },
   "files": [
     "app/",
-    "dist/",
+    "dist/frontendframework.js",
+    "dist/frontendframework.d.ts",
     "lib/",
     "README.md"
   ]
