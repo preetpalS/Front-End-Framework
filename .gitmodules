@@ -1,3 +1,0 @@
-[submodule "vendor/jquery-rails"]
-	path = vendor/jquery-rails
-	url = https://github.com/rails/jquery-rails

@@ -15,6 +15,8 @@ namespace FrontEndFramework {
             readonly id: string|string[]; // Represents HTML id
             value?: any; // Represents displayed initial value
             viewModelRef?: T;
+            boundEventFunc?: EventListener;
+            boundEventFuncs?: EventListener[];
         }
 
         export interface IViewModelPropertyWritable<T extends ViewModel> extends IViewModelPropertyBase<T> {
@@ -118,7 +120,7 @@ namespace FrontEndFramework {
                     // Attach onChange event handler for TwoWay and OneWayRead properties.
                     if (bP.bindingMode === BindingMode.TwoWay ||
                         bP.bindingMode === BindingMode.OneWayRead) {
-                        $('#' + bindablePropertyId).on(ViewModel.ChangeEvents, () => {
+                        let boundedFunc = (_ev : Event) => {
                             console.info(`Detected change in: ${bindablePropertyId}`);
                             this.handlePropertyChangedEvent(bindablePropertyId);
 
@@ -128,6 +130,24 @@ namespace FrontEndFramework {
                                 (<any>bP.viewModelRef).onChange(bindablePropertyId);
                             } else {
                                 console.error('Failed to provide onChangeFunc (alternatively implement onChange [(htmlId: string) => void] method) for implentation of IViewModelProperty for id: ' + bindablePropertyId);
+                            }
+                        };
+                        ViewModel.ChangeEvents.split(' ').forEach((evString) => {
+                            switch (bP.id.constructor) {
+                                case String:
+                                    bP.boundEventFunc = boundedFunc;
+                                    (<HTMLElement>document.getElementById(bindablePropertyId)).addEventListener(evString, (<any>bP).boundEventFunc);
+                                    break;
+                                case Array:
+                                    if (bP.boundEventFuncs == null) {
+                                        bP.boundEventFuncs = [];
+                                    }
+                                    (<any>bP).boundEventFuncs.push(boundedFunc);
+                                    (<HTMLElement>document.getElementById(bindablePropertyId)).addEventListener(evString, (<any>bP).boundEventFuncs[<number>((<any>bP).boundEventFuncs).length - 1]);
+                                    break;
+                                default:
+                                    console.error(`Unacceptable id detected in IViewModelPropertyBase: ${bP}`);
+                                    break;
                             }
                         });
                     }
@@ -175,7 +195,36 @@ namespace FrontEndFramework {
 
                 Object.keys(this.idToBindableProperty).forEach((id: string) => {
                     console.log(`Cleaning up event handlers set up in ViewModel (id: ${id})`);
-                    $('#' + id).off(ViewModel.ChangeEvents);
+                    let bP = this.idToBindableProperty[id];
+                    switch (bP.id.constructor) {
+                        case String:
+                            if (bP.boundEventFunc != null) {
+                                ViewModel.ChangeEvents.split(' ').forEach((evString) => {
+                                    (<HTMLElement>document.getElementById(id)).removeEventListener(evString, (<any>bP).boundEventFunc);
+                                });
+                            }
+                            break;
+                        case Array:
+                            if ((bP.boundEventFuncs != null) &&
+                                (bP.boundEventFuncs.constructor === Array) &&
+                                (bP.boundEventFuncs.length === (<string[]>bP.id).length)) {
+                                let idx = (<string[]>bP.id).indexOf(id);
+                                if (idx !== -1) {
+                                    ViewModel.ChangeEvents.split(' ').forEach((evString) => {
+                                        (<HTMLElement>document.getElementById(id)).removeEventListener(evString, (<any>bP).boundEventFuncs[idx]);
+                                    });
+                                } else {
+                                    console.error('Internal invariant violated (guid: Dtsa43252xxq)');
+                                }
+                            } else {
+                                console.error('Internal invariant violated (guid: pta423taDTD)');
+                            }
+                            break;
+                        default:
+                            console.error(`Unacceptable id detected in IViewModelPropertyBase: ${bP}`);
+                            break;
+                    }
+
                 }, this);
             }
 
@@ -191,7 +240,12 @@ namespace FrontEndFramework {
             private static setValueForBindableProperty<T extends ViewModel>(bP: IViewModelPropertyWritable<T>, propertyId: string) {
                 var cnvrtr = bP.converterFunc || function(x) { return x; };
                 if (bP.setDataFunc == null) {
-                    $('#' + propertyId).val(cnvrtr(bP.value));
+                    if (typeof gHndl.$ === 'undefined') {
+                        // Replaces: $('#' + propertyId).val(bP.value);
+                        (<HTMLInputElement>document.getElementById(propertyId)).value = cnvrtr(bP.value);
+                    } else {
+                        (<any>gHndl.$)('#' + propertyId).val(bP.value);
+                    }
                 } else {
                     bP.setDataFunc(cnvrtr(bP.value));
                 }

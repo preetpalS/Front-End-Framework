@@ -1,4 +1,3 @@
-/// <reference types="jquery"/>
 
 // This file contains types and internal state used by the framework that individual components
 // in the library need knowledge of such as FrontEndFramework.ObjectLifeCycle.
@@ -9,6 +8,8 @@ namespace FrontEndFramework {
     // Has a dependency on JQuery. Should be loaded after Turbolinks to register
     // cleanupFunc on 'turbolinks:before-render' event.
     export interface GlobalHandle extends Window {
+        Windows?: any;
+        $?: any;
     }
 
     // Add the script tag below in the header of your page:
@@ -31,7 +32,7 @@ namespace FrontEndFramework {
     export const enum ObjectLifeCycle {
         Transient = 0, // Only for single page, object should automatically be destroyed when navigating from page
         VariablePersistence = 1, // Lifetime is managed manually (should not be automatically destroyed when navigating pages)
-        InfinitePersistence = 2 // Not to be destroyed (intended to be persistent across infinite page navigations)
+        InfinitePersistence = 2 // Not to be destroyed (intended to be persistent across page navigation)
     };
 
     export const HtmlInputChangeEvents = 'change textInput input';
@@ -40,9 +41,30 @@ namespace FrontEndFramework {
         objectLifeCycle?: FrontEndFramework.ObjectLifeCycle;
     }
 
+    export const enum SupportedIntegration {
+        NoFramework = 0,
+        Turbolinks = 1,
+        WindowsUWP = 2
+    };
+
+    export interface SupportedIntegrationMetadata {
+        supportedIntegration: SupportedIntegration;
+        singlePageApplicationSupport: boolean;
+        pagePreCacheEvent?: string|null; // Probably going to be removed
+    };
     // TODO: Add support for other SPA frameworks here.
-    export const TurbolinksAvailable = ((typeof Turbolinks !== 'undefined') && (Turbolinks != null)) ? true : false;
+    export const WindowsUwpEnvironment = (typeof gHndl.Windows !== 'undefined') && (gHndl.Windows != null);
+    export const TurbolinksAvailable = (typeof Turbolinks !== 'undefined') && (Turbolinks != null);
     export const SinglePageApplication = TurbolinksAvailable;
+
+    export let RuntimeSupportedIntegration : SupportedIntegration = SupportedIntegration.NoFramework;
+
+    // TODO: Support Turbolinks in Windows UWP Environment
+    if (WindowsUwpEnvironment) {
+        RuntimeSupportedIntegration = SupportedIntegration.WindowsUWP;
+    } else if (TurbolinksAvailable) {
+        RuntimeSupportedIntegration = SupportedIntegration.Turbolinks;
+    }
 
     // TODO: Add support for other SPA frameworks here.
     export let PagePreCacheEvent: string|null = TurbolinksAvailable ? 'turbolinks:before-cache' : null;

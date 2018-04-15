@@ -1,4 +1,3 @@
-/// <reference types="jquery"/>
 /// <reference path="type_definitions/qunit/qunit.d.ts"/>
 /// <reference path="frontendframework/all.js.ts"/>
 
@@ -98,11 +97,11 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
   let tc1vm = new TestCase1ViewModel();
 
   assert.strictEqual(tc1vm.selectFormValue(), 0);
-  assert.strictEqual(<number>+(<any>($(`#${TestCase1ViewModel.SelectItemId}`).val())), 0);
-  assert.strictEqual(tc1vm.selectFormValue(), <number>+(<any>($(`#${TestCase1ViewModel.SelectItemId}`).val())));
+  assert.strictEqual(<number>+(((<any>document.getElementById(TestCase1ViewModel.SelectItemId)).value)), 0);
+  assert.strictEqual(tc1vm.selectFormValue(), <number>+((<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value));
 
-  $(`#${TestCase1ViewModel.SelectItemId}`).val(1);
-  $(`#${TestCase1ViewModel.SelectItemId}`).trigger($.Event("change"));
+  (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value = "1";
+  (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(new Event("change"));
 
   assert.strictEqual(tc1vm.selectFormValue(), 1);
 
@@ -110,18 +109,19 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
   assert.strictEqual(tc1vm.GroupSelectForm2Value(), 4);
   assert.strictEqual(tc1vm.GroupSelectForm3Value(), 3);
 
-  $(`#${TestCase1ViewModel.GroupSelectItem2Id}`).val(1);
-  $(`#${TestCase1ViewModel.GroupSelectItem2Id}`).trigger($.Event("change"));
+  (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.GroupSelectItem2Id}`)).value = "1";
+  (<any>document.getElementById(`${TestCase1ViewModel.GroupSelectItem2Id}`)).dispatchEvent(new Event("change"));
 
   assert.strictEqual(tc1vm.GroupSelectForm1Value(), 3);
   assert.strictEqual(tc1vm.GroupSelectForm2Value(), 1);
   assert.strictEqual(tc1vm.GroupSelectForm3Value(), 3);
 
   // Reset Values
-  $(`#${TestCase1ViewModel.SelectItemId}`).val(0);
-  $(`#${TestCase1ViewModel.GroupSelectItem1Id}`).val(3);
-  $(`#${TestCase1ViewModel.GroupSelectItem2Id}`).val(4);
-  $(`#${TestCase1ViewModel.GroupSelectItem3Id}`).val(3);
+
+  (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value = "0";
+  (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.GroupSelectItem1Id}`)).value = "3";
+  (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.GroupSelectItem2Id}`)).value = "4";
+  (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.GroupSelectItem3Id}`)).value = "3";
 });
 
 QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", (assert) => {
@@ -150,14 +150,14 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", (assert) => {
   assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'blue');
   assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value, 'blue');
 
-  $('#test-case-2-select-item-3').val('red');
+  (<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value = 'red';
 
   assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-1')).value, 'blue');
   assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'blue');
   assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value, 'red');
 
-  $('#test-case-2-select-item-2').val('green');
-  $('#test-case-2-select-item-2').trigger('change');
+  (<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value = 'green';
+  (<HTMLElement>document.getElementById('test-case-2-select-item-2')).dispatchEvent(new Event('change'));
 
   assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-1')).value, 'green');
   assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'green');

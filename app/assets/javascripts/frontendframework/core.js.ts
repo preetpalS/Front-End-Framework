@@ -10,7 +10,8 @@ namespace FrontEndFramework {
         } else {
             if (FrontEndFramework.SinglePageApplication && !((forceReload != null) && <boolean>forceReload)) {
                 // TODO: Add support for other SPA frameworks here.
-                if (FrontEndFramework.TurbolinksAvailable &&
+                if ((FrontEndFramework.RuntimeSupportedIntegration ===
+                     FrontEndFramework.SupportedIntegration.Turbolinks) &&
                     (typeof(Turbolinks.visit) === 'function')) {
                     Turbolinks.visit(link);
                 }
@@ -98,7 +99,19 @@ namespace FrontEndFramework {
                                 // Assumes that a trigger change event should not be fired on setting value.
                                 // Use subscriberSetter arg when subscribing.
                                 // console.info(`Setting value (${message}) for ${relevantSubscriber.subscriberIdentifier} id.`);
-                                $(relevantSubscriber.subscriberIdentifier).val(message)
+
+                                // Replaces: $(relevantSubscriber.subscriberIdentifier).val(message);
+                                if (typeof gHndl.$ === 'undefined') {
+                                    let elemsOfInterest = document.querySelectorAll(relevantSubscriber.subscriberIdentifier);
+                                    for (let x = 0; x < elemsOfInterest.length; x++) {
+                                        if (message.constructor === Array) {
+                                            console.warn(`Something probably is not going to work as planned in setting values (${message}) for element with id: ${relevantSubscriber.subscriberIdentifier}`);
+                                        }
+                                        (<HTMLInputElement>elemsOfInterest[x]).value = message;
+                                    }
+                                } else {
+                                    (<any>gHndl.$)(relevantSubscriber.subscriberIdentifier).val(message);
+                                }
                             }
                         } catch(e) {
                             console.error(e);
@@ -120,7 +133,19 @@ namespace FrontEndFramework {
                             // Assumes that a trigger change event should not be fired on setting value.
                             // Use subscriberSetter arg when subscribing.
                             // console.info(`Setting value (${this.lastSentMessage}) for ${relevantSubscriber.subscriberIdentifier} id.`);
-                            $(relevantSubscriber.subscriberIdentifier).val(this.lastSentMessage)
+
+                            // Replaces: $(relevantSubscriber.subscriberIdentifier).val(this.lastSentMessage)
+                            if (typeof gHndl.$ === 'undefined') {
+                                let elemsOfInterest = document.querySelectorAll(relevantSubscriber.subscriberIdentifier);
+                                for (let x = 0; x < elemsOfInterest.length; x++) {
+                                    if (this.lastSentMessage.constructor === Array) {
+                                        console.warn(`Something probably is not going to work as planned in setting values (${this.lastSentMessage}) for element with id: ${relevantSubscriber.subscriberIdentifier}`);
+                                    }
+                                    (<HTMLInputElement>elemsOfInterest[x]).value = this.lastSentMessage;
+                                }
+                            } else {
+                                (<any>gHndl.$)(relevantSubscriber.subscriberIdentifier).val(this.lastSentMessage);
+                            }
                         }
                     } catch(e) {
                         console.error(e);
@@ -330,9 +355,12 @@ namespace FrontEndFramework {
 
         // Assumed to be constructed in pre-hook
         export class HtmlInputElementPublisherAndSubscriber implements IObjectLifeCycleDeterminable {
+            public readonly subscriptionIdentifier : string;
             public readonly objectLifeCycle : FrontEndFramework.ObjectLifeCycle;
             public readonly htmlId : string;
             public readonly onChangeFunc : (() => void)|null;
+            public readonly publishValuePredicate : boolean;
+            private _publishOnChangeFunc?: ((ev: Event) => void);
             constructor(
                 subscriptionIdentifier:string,
                 htmlId:string,
@@ -340,9 +368,11 @@ namespace FrontEndFramework {
                 objectLifeCycle = FrontEndFramework.ObjectLifeCycle.Transient,
                 publishValuePredicate:boolean = false
             ) {
-                this.objectLifeCycle = objectLifeCycle;
+                this.subscriptionIdentifier = subscriptionIdentifier;
                 this.htmlId = htmlId;
                 this.onChangeFunc = onChangeFunc;
+                this.objectLifeCycle = objectLifeCycle;
+                this.publishValuePredicate = publishValuePredicate;
 
                 // Publish value when appropriate
                 if (publishValuePredicate &&
@@ -360,21 +390,29 @@ namespace FrontEndFramework {
                     subscriptionIdentifier,
                     `#${htmlId}`,
                     (message:any) => {
-                        $(`#${htmlId}`).val(message);
+                        if (typeof gHndl.$ === 'undefined') {
+                            // Replaces: $(`#${htmlId}`).val(message);
+                            let elemsOfInterest = document.querySelectorAll(`#${htmlId}`);
+                            for (let x = 0; x < elemsOfInterest.length; x++) {
+                                (<HTMLInputElement>elemsOfInterest[x]).value = message;
+                            }
+                        } else {
+                            (<any>gHndl.$)(`#${htmlId}`).val(message);
+                        }
+
                         if (this.onChangeFunc != null) {
                             try {
-                                this.onChangeFunc();
+                                (<any>this.onChangeFunc)();
                             } catch (e) { console.error(e) }
                         }
                     },
                     this.objectLifeCycle
                 );
 
-                // Publish on changes
-                $(`#${htmlId}`).on(FrontEndFramework.HtmlInputChangeEvents, () => {
+                this._publishOnChangeFunc = ((_ev: Event) => {
                     publish(
-                        subscriptionIdentifier,
-                        (<HTMLInputElement>document.getElementById(htmlId)).value
+                        this.subscriptionIdentifier,
+                        (<HTMLInputElement>document.getElementById(this.htmlId)).value
                     );
 
                     // console.info(`Detected change in (${htmlId}): ${(<HTMLInputElement>document.getElementById(htmlId)).value}`)
@@ -384,6 +422,11 @@ namespace FrontEndFramework {
                             this.onChangeFunc();
                         } catch (e) { console.error(e) }
                     } // else { console.info('Did not fire null onChangeFunc') }
+                }).bind(this);
+
+                // Publish on changes
+                FrontEndFramework.HtmlInputChangeEvents.split(' ').forEach((evString) => {
+                    (<HTMLElement>document.getElementById(htmlId)).addEventListener(evString, (<((ev: Event) => void)>this._publishOnChangeFunc));
                 });
 
                 if (this.objectLifeCycle === FrontEndFramework.ObjectLifeCycle.Transient &&
@@ -411,12 +454,15 @@ namespace FrontEndFramework {
                 }
 
                 console.log(`Cleaning up event handlers set up in HtmlInputElementPublisherAndSubscrber (id: ${this.htmlId})`);
-                $('#' + this.htmlId).off(FrontEndFramework.HtmlInputChangeEvents);
+                // Replaces: $('#' + this.htmlId).off(FrontEndFramework.HtmlInputChangeEvents);
+                FrontEndFramework.HtmlInputChangeEvents.split(' ').forEach((evString) => {
+                    (<HTMLElement>document.getElementById(this.htmlId)).removeEventListener(evString, (<((ev: Event) => void)>this._publishOnChangeFunc));
+                });
             }
         }
     }
 
-    $(document).ready(function() {
+    const READY_FUNC = () => {
         // Fire functions in hooks.pre Array
         while (hooks.pre.length > 0) {
             try { (<(() => void)>hooks.pre.shift())(); }
@@ -443,11 +489,22 @@ namespace FrontEndFramework {
             try { (<(() => void)>hooks.post.shift())(); }
             catch(e) { console.error(e); }
         };
-    });
+    };
+
+    switch (FrontEndFramework.RuntimeSupportedIntegration) {
+        case FrontEndFramework.SupportedIntegration.Turbolinks:
+            document.addEventListener('turbolinks:load', READY_FUNC);
+            break;
+        case FrontEndFramework.SupportedIntegration.NoFramework:
+        case FrontEndFramework.SupportedIntegration.WindowsUWP:
+        default:
+            document.addEventListener('DOMContentLoaded', READY_FUNC);
+    }
 
     if (FrontEndFramework.SinglePageApplication) {
         // TODO: Add support for other SPA frameworks here.
-        if (FrontEndFramework.TurbolinksAvailable) {
+        if (FrontEndFramework.RuntimeSupportedIntegration === FrontEndFramework.SupportedIntegration.Turbolinks &&
+            FrontEndFramework.TurbolinksAvailable) {
             document.addEventListener('turbolinks:before-render', cleanupFunc);
             if (hooks.pageCleanup != null)
                 document.addEventListener('turbolinks:before-render', function() {
