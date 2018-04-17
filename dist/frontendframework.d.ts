@@ -1,6 +1,8 @@
 declare var Turbolinks: any;
 declare namespace FrontEndFramework {
     interface GlobalHandle extends Window {
+        Windows?: any;
+        $?: any;
     }
     var hooks: {
         pre: (() => void)[];
@@ -18,8 +20,20 @@ declare namespace FrontEndFramework {
     interface IObjectLifeCycleDeterminable {
         objectLifeCycle?: FrontEndFramework.ObjectLifeCycle;
     }
+    const enum SupportedIntegration {
+        NoFramework = 0,
+        Turbolinks = 1,
+        WindowsUWP = 2,
+    }
+    interface SupportedIntegrationMetadata {
+        supportedIntegration: SupportedIntegration;
+        singlePageApplicationSupport: boolean;
+        pagePreCacheEvent?: string | null;
+    }
+    const WindowsUwpEnvironment: boolean;
     const TurbolinksAvailable: boolean;
     const SinglePageApplication: boolean;
+    let RuntimeSupportedIntegration: SupportedIntegration;
     let PagePreCacheEvent: string | null;
     let readyFunc: (() => void) | null;
     let cleanupHooks: (() => void)[];
@@ -39,7 +53,7 @@ declare namespace FrontEndFramework {
 }
 declare namespace FrontEndFramework {
     namespace MiniHtmlViewModel {
-        const VERSION = "0.6.0";
+        const VERSION = "0.6.1";
         const enum BindingMode {
             OneTime = 0,
             OneWayRead = 1,
@@ -51,6 +65,8 @@ declare namespace FrontEndFramework {
             readonly id: string | string[];
             value?: any;
             viewModelRef?: T;
+            boundEventFunc?: EventListener;
+            boundEventFuncs?: EventListener[];
         }
         interface IViewModelPropertyWritable<T extends ViewModel> extends IViewModelPropertyBase<T> {
             setDataFunc?: ((a: any) => void);
@@ -207,9 +223,12 @@ declare namespace FrontEndFramework {
             private genStoreInSessionStorageFunc(self);
         }
         class HtmlInputElementPublisherAndSubscriber implements IObjectLifeCycleDeterminable {
+            readonly subscriptionIdentifier: string;
             readonly objectLifeCycle: FrontEndFramework.ObjectLifeCycle;
             readonly htmlId: string;
             readonly onChangeFunc: (() => void) | null;
+            readonly publishValuePredicate: boolean;
+            private _publishOnChangeFunc?;
             constructor(subscriptionIdentifier: string, htmlId: string, onChangeFunc?: (() => void) | null, objectLifeCycle?: ObjectLifeCycle, publishValuePredicate?: boolean);
             handleNavigation(): void;
             private genHandleNavigationFunc(self);
@@ -218,5 +237,5 @@ declare namespace FrontEndFramework {
     }
 }
 declare namespace FrontEndFramework {
-    const VERSION = "0.6.10";
+    const VERSION = "0.6.11";
 }
