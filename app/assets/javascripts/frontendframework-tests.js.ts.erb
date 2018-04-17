@@ -101,7 +101,15 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
   assert.strictEqual(tc1vm.selectFormValue(), <number>+((<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value));
 
   (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value = "1";
-  (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(new Event("change"));
+
+  if (typeof Event === "function") {
+    (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(new Event("change"));
+  } else {
+    // IE11 compatibility for test suite
+    let ev1 = (<any>document).createEvent("Event");
+    ev1.initEvent("change", true, true);
+    (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(<Event>ev1);
+  }
 
   assert.strictEqual(tc1vm.selectFormValue(), 1);
 
@@ -110,7 +118,14 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
   assert.strictEqual(tc1vm.GroupSelectForm3Value(), 3);
 
   (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.GroupSelectItem2Id}`)).value = "1";
-  (<any>document.getElementById(`${TestCase1ViewModel.GroupSelectItem2Id}`)).dispatchEvent(new Event("change"));
+  if (typeof Event === "function") {
+    (<any>document.getElementById(`${TestCase1ViewModel.GroupSelectItem2Id}`)).dispatchEvent(new Event("change"));
+  } else {
+    // IE11 compatibility for test suite
+    let ev2 = (<any>document).createEvent("Event");
+    ev2.initEvent("change", true, true);
+    (<any>document.getElementById(`${TestCase1ViewModel.GroupSelectItem2Id}`)).dispatchEvent(<Event>ev2);
+  }
 
   assert.strictEqual(tc1vm.GroupSelectForm1Value(), 3);
   assert.strictEqual(tc1vm.GroupSelectForm2Value(), 1);
@@ -157,7 +172,14 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", (assert) => {
   assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value, 'red');
 
   (<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value = 'green';
-  (<HTMLElement>document.getElementById('test-case-2-select-item-2')).dispatchEvent(new Event('change'));
+  if (typeof Event === "function") {
+    (<HTMLElement>document.getElementById('test-case-2-select-item-2')).dispatchEvent(new Event('change'));
+  } else {
+    // IE11 compatibility for test suite
+    let ev3 = (<any>document).createEvent("Event");
+    ev3.initEvent("change", true, true);
+    (<HTMLElement>document.getElementById('test-case-2-select-item-2')).dispatchEvent(<Event>ev3);
+  }
 
   assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-1')).value, 'green');
   assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'green');
