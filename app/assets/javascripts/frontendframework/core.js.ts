@@ -456,7 +456,8 @@ namespace FrontEndFramework {
                 console.log(`Cleaning up event handlers set up in HtmlInputElementPublisherAndSubscrber (id: ${this.htmlId})`);
                 // Replaces: $('#' + this.htmlId).off(FrontEndFramework.HtmlInputChangeEvents);
                 FrontEndFramework.HtmlInputChangeEvents.split(' ').forEach((evString) => {
-                    (<HTMLElement>document.getElementById(this.htmlId)).removeEventListener(evString, (<((ev: Event) => void)>this._publishOnChangeFunc));
+                    if (document.getElementById(this.htmlId) != null)
+                        (<HTMLElement>document.getElementById(this.htmlId)).removeEventListener(evString, (<((ev: Event) => void)>this._publishOnChangeFunc));
                 });
             }
         }

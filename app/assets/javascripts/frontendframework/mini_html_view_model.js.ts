@@ -6,7 +6,7 @@
 
 namespace FrontEndFramework {
     export namespace MiniHtmlViewModel {
-        export const VERSION = '0.6.1';
+        export const VERSION = '0.6.2';
 
         export const enum BindingMode { OneTime, OneWayRead, OneWayWrite, TwoWay };
 
@@ -200,7 +200,8 @@ namespace FrontEndFramework {
                         case String:
                             if (bP.boundEventFunc != null) {
                                 ViewModel.ChangeEvents.split(' ').forEach((evString) => {
-                                    (<HTMLElement>document.getElementById(id)).removeEventListener(evString, (<any>bP).boundEventFunc);
+                                    if (document.getElementById(id) != null)
+                                        (<HTMLElement>document.getElementById(id)).removeEventListener(evString, (<any>bP).boundEventFunc);
                                 });
                             }
                             break;
@@ -211,7 +212,8 @@ namespace FrontEndFramework {
                                 let idx = (<string[]>bP.id).indexOf(id);
                                 if (idx !== -1) {
                                     ViewModel.ChangeEvents.split(' ').forEach((evString) => {
-                                        (<HTMLElement>document.getElementById(id)).removeEventListener(evString, (<any>bP).boundEventFuncs[idx]);
+                                        if (document.getElementById(id) != null)
+                                            (<HTMLElement>document.getElementById(id)).removeEventListener(evString, (<any>bP).boundEventFuncs[idx]);
                                     });
                                 } else {
                                     console.error('Internal invariant violated (guid: Dtsa43252xxq)');
