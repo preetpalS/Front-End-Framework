@@ -53,7 +53,7 @@ declare namespace FrontEndFramework {
 }
 declare namespace FrontEndFramework {
     namespace MiniHtmlViewModel {
-        const VERSION = "0.6.2";
+        const VERSION = "0.6.3";
         const enum BindingMode {
             OneTime = 0,
             OneWayRead = 1,
@@ -67,6 +67,7 @@ declare namespace FrontEndFramework {
             viewModelRef?: T;
             boundEventFunc?: EventListener;
             boundEventFuncs?: EventListener[];
+            changeEvents?: string;
         }
         interface IViewModelPropertyWritable<T extends ViewModel> extends IViewModelPropertyBase<T> {
             setDataFunc?: ((a: any) => void);
@@ -114,7 +115,8 @@ declare namespace FrontEndFramework {
             onChangeFunc: ((vm: T) => void) | undefined;
             converterFunc: ((a: any) => any) | undefined;
             viewModelRef: T | undefined;
-            constructor(bindingMode: BindingMode, id: string | string[], value?: any, setDataFunc?: ((a: any) => void) | undefined, getDataFunc?: (() => any) | undefined, onChangeFunc?: ((vm: T) => void) | undefined, converterFunc?: ((a: any) => any) | undefined, viewModelRef?: T | undefined);
+            changeEvents: string | undefined;
+            constructor(bindingMode: BindingMode, id: string | string[], value?: any, setDataFunc?: ((a: any) => void) | undefined, getDataFunc?: (() => any) | undefined, onChangeFunc?: ((vm: T) => void) | undefined, converterFunc?: ((a: any) => any) | undefined, viewModelRef?: T | undefined, changeEvents?: string | undefined);
         }
         class ViewModelPropertyOneTimeBinding<T extends ViewModel> implements IViewModelPropertyOneTimeBinding<T> {
             readonly id: string | string[];
@@ -122,8 +124,9 @@ declare namespace FrontEndFramework {
             setDataFunc: ((a: any) => void) | undefined;
             converterFunc: ((a: any) => any) | undefined;
             viewModelRef: T | undefined;
+            changeEvents: string | undefined;
             readonly bindingMode: BindingMode.OneTime;
-            constructor(id: string | string[], value?: any, setDataFunc?: ((a: any) => void) | undefined, converterFunc?: ((a: any) => any) | undefined, viewModelRef?: T | undefined);
+            constructor(id: string | string[], value?: any, setDataFunc?: ((a: any) => void) | undefined, converterFunc?: ((a: any) => any) | undefined, viewModelRef?: T | undefined, changeEvents?: string | undefined);
         }
         class ViewModelPropertyOneWayReadBinding<T extends ViewModel> implements IViewModelPropertyOneWayReadBinding<T> {
             readonly id: string | string[];
@@ -131,8 +134,9 @@ declare namespace FrontEndFramework {
             getDataFunc: (() => any) | undefined;
             onChangeFunc: ((vm: T) => void) | undefined;
             viewModelRef: T | undefined;
+            changeEvents: string | undefined;
             readonly bindingMode: BindingMode.OneWayRead;
-            constructor(id: string | string[], value?: any, getDataFunc?: (() => any) | undefined, onChangeFunc?: ((vm: T) => void) | undefined, viewModelRef?: T | undefined);
+            constructor(id: string | string[], value?: any, getDataFunc?: (() => any) | undefined, onChangeFunc?: ((vm: T) => void) | undefined, viewModelRef?: T | undefined, changeEvents?: string | undefined);
         }
         class ViewModelPropertyOneWayWriteBinding<T extends ViewModel> implements IViewModelPropertyOneWayWriteBinding<T> {
             readonly id: string | string[];
@@ -140,8 +144,9 @@ declare namespace FrontEndFramework {
             setDataFunc: ((a: any) => void) | undefined;
             converterFunc: ((a: any) => any) | undefined;
             viewModelRef: T | undefined;
+            changeEvents: string | undefined;
             readonly bindingMode: BindingMode.OneWayWrite;
-            constructor(id: string | string[], value?: any, setDataFunc?: ((a: any) => void) | undefined, converterFunc?: ((a: any) => any) | undefined, viewModelRef?: T | undefined);
+            constructor(id: string | string[], value?: any, setDataFunc?: ((a: any) => void) | undefined, converterFunc?: ((a: any) => any) | undefined, viewModelRef?: T | undefined, changeEvents?: string | undefined);
         }
         class ViewModelPropertyTwoWayBinding<T extends ViewModel> implements IViewModelPropertyTwoWayBinding<T> {
             readonly id: string | string[];
@@ -151,8 +156,9 @@ declare namespace FrontEndFramework {
             onChangeFunc: ((vm: T) => void) | undefined;
             converterFunc: ((a: any) => any) | undefined;
             viewModelRef: T | undefined;
+            changeEvents: string | undefined;
             readonly bindingMode: BindingMode.TwoWay;
-            constructor(id: string | string[], value?: any, setDataFunc?: ((a: any) => void) | undefined, getDataFunc?: (() => any) | undefined, onChangeFunc?: ((vm: T) => void) | undefined, converterFunc?: ((a: any) => any) | undefined, viewModelRef?: T | undefined);
+            constructor(id: string | string[], value?: any, setDataFunc?: ((a: any) => void) | undefined, getDataFunc?: (() => any) | undefined, onChangeFunc?: ((vm: T) => void) | undefined, converterFunc?: ((a: any) => any) | undefined, viewModelRef?: T | undefined, changeEvents?: string | undefined);
         }
     }
 }
@@ -237,5 +243,5 @@ declare namespace FrontEndFramework {
     }
 }
 declare namespace FrontEndFramework {
-    const VERSION = "0.6.12";
+    const VERSION = "0.6.13";
 }

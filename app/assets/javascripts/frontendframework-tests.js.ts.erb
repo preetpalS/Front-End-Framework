@@ -54,7 +54,8 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
     constructor() {
       super(FrontEndFramework.ObjectLifeCycle.Transient, {
         bindingMode: FrontEndFramework.MiniHtmlViewModel.BindingMode.OneWayRead,
-        id: TestCase1ViewModel.SelectItemId
+        id: TestCase1ViewModel.SelectItemId,
+        changeEvents: 'textInput input'
       }, {
         bindingMode: FrontEndFramework.MiniHtmlViewModel.BindingMode.OneWayRead,
         id: [TestCase1ViewModel.GroupSelectItem1Id, TestCase1ViewModel.GroupSelectItem2Id,
@@ -100,7 +101,7 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
   assert.strictEqual(<number>+(((<any>document.getElementById(TestCase1ViewModel.SelectItemId)).value)), 0);
   assert.strictEqual(tc1vm.selectFormValue(), <number>+((<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value));
 
-  (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value = "1";
+  (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value = "21";
 
   if (typeof Event === "function") {
     (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(new Event("change"));
@@ -108,6 +109,31 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
     // IE11 compatibility for test suite
     let ev1 = (<any>document).createEvent("Event");
     ev1.initEvent("change", true, true);
+    (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(<Event>ev1);
+  }
+
+  // Change Event should not affect value stored in ViewModel
+  assert.strictEqual(tc1vm.selectFormValue(), 0);
+
+  if (typeof Event === "function") {
+    (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(new Event("input"));
+  } else {
+    // IE11 compatibility for test suite
+    let ev1 = (<any>document).createEvent("Event");
+    ev1.initEvent("input", true, true);
+    (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(<Event>ev1);
+  }
+
+  assert.strictEqual(tc1vm.selectFormValue(), 21);
+
+  (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value = "1";
+
+  if (typeof Event === "function") {
+    (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(new Event("textInput"));
+  } else {
+    // IE11 compatibility for test suite
+    let ev1 = (<any>document).createEvent("Event");
+    ev1.initEvent("textInput", true, true);
     (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(<Event>ev1);
   }
 
@@ -155,7 +181,9 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", (assert) => {
     '#test-case-2-select-item-3'
   );
 
+  // Single test still fails on IE11 after refresh (used to fail on Firefox as well)
   assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-1')).value, 'red');
+
   assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'green');
   assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value, 'green');
 

@@ -6,7 +6,7 @@
 
 namespace FrontEndFramework {
     export namespace MiniHtmlViewModel {
-        export const VERSION = '0.6.2';
+        export const VERSION = '0.6.3';
 
         export const enum BindingMode { OneTime, OneWayRead, OneWayWrite, TwoWay };
 
@@ -17,6 +17,7 @@ namespace FrontEndFramework {
             viewModelRef?: T;
             boundEventFunc?: EventListener;
             boundEventFuncs?: EventListener[];
+            changeEvents?: string; // TODO: Investigate also allowing an array of strings
         }
 
         export interface IViewModelPropertyWritable<T extends ViewModel> extends IViewModelPropertyBase<T> {
@@ -90,7 +91,8 @@ namespace FrontEndFramework {
                             getDataFunc: (<any>bP).getDataFunc,
                             onChangeFunc: (<any>bP).onChangeFunc,
                             converterFunc: (<any>bP).converterFunc,
-                            viewModelRef: (<any>bP).viewModelRef
+                            viewModelRef: (<any>bP).viewModelRef,
+                            changeEvents: (<any>bP).changeEvents
                         } as IViewModelPropertyBase<ViewModel>);
                     }
                     break;
@@ -132,7 +134,7 @@ namespace FrontEndFramework {
                                 console.error('Failed to provide onChangeFunc (alternatively implement onChange [(htmlId: string) => void] method) for implentation of IViewModelProperty for id: ' + bindablePropertyId);
                             }
                         };
-                        ViewModel.ChangeEvents.split(' ').forEach((evString) => {
+                        ((bP.changeEvents == null) ? ViewModel.ChangeEvents : bP.changeEvents).split(' ').forEach((evString) => {
                             switch (bP.id.constructor) {
                                 case String:
                                     bP.boundEventFunc = boundedFunc;
@@ -263,7 +265,8 @@ namespace FrontEndFramework {
                 public getDataFunc?: (() => any),
                 public onChangeFunc?: ((vm: T) => void), // Either implement onChange on IViewModel OR provide onChangeFunc
                 public converterFunc?: ((a: any) => any),
-                public viewModelRef?: T
+                public viewModelRef?: T,
+                public changeEvents?: string
             ) { }
         }
 
@@ -274,7 +277,8 @@ namespace FrontEndFramework {
                 public value?: any, // Represents displayed initial value
                 public setDataFunc?: ((a: any) => void),
                 public converterFunc?: ((a: any) => any),
-                public viewModelRef?: T
+                public viewModelRef?: T,
+                public changeEvents?: string
             ) { }
         }
 
@@ -285,7 +289,8 @@ namespace FrontEndFramework {
                 public value?: any, // Represents displayed initial value
                 public getDataFunc?: (() => any),
                 public onChangeFunc?: ((vm: T) => void), // Either implement onChange on IViewModel OR provide onChangeFunc
-                public viewModelRef?: T
+                public viewModelRef?: T,
+                public changeEvents?: string
             ) { }
         }
 
@@ -296,7 +301,8 @@ namespace FrontEndFramework {
                 public value?: any, // Represents displayed initial value
                 public setDataFunc?: ((a: any) => void),
                 public converterFunc?: ((a: any) => any),
-                public viewModelRef?: T
+                public viewModelRef?: T,
+                public changeEvents?: string
             ) { }
         }
 
@@ -309,7 +315,8 @@ namespace FrontEndFramework {
                 public getDataFunc?: (() => any),
                 public onChangeFunc?: ((vm: T) => void), // Either implement onChange on IViewModel OR provide onChangeFunc
                 public converterFunc?: ((a: any) => any),
-                public viewModelRef?: T
+                public viewModelRef?: T,
+                public changeEvents?: string
             ) { }
         }
     }
