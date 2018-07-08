@@ -50,6 +50,7 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
     static GroupSelectItem1Id = 'test-case-1-group-select-item-1';
     static GroupSelectItem2Id = 'test-case-1-group-select-item-2';
     static GroupSelectItem3Id = 'test-case-1-group-select-item-3';
+    static TwoWayBindingItemId = 'test-case-1-two-way-binding-item';
 
     constructor() {
       super(FrontEndFramework.ObjectLifeCycle.Transient, {
@@ -60,17 +61,20 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
         bindingMode: FrontEndFramework.MiniHtmlViewModel.BindingMode.OneWayRead,
         id: [TestCase1ViewModel.GroupSelectItem1Id, TestCase1ViewModel.GroupSelectItem2Id,
              TestCase1ViewModel.GroupSelectItem3Id]
+      }, {
+        bindingMode: FrontEndFramework.MiniHtmlViewModel.BindingMode.TwoWay,
+        id: TestCase1ViewModel.TwoWayBindingItemId,
+        changeEvents: 'input'
       });
     }
 
     onChange(htmlId: string) {
       switch(htmlId) {
         case TestCase1ViewModel.SelectItemId:
-          assert.ok(true);
-          break;
         case TestCase1ViewModel.GroupSelectItem1Id:
         case TestCase1ViewModel.GroupSelectItem2Id:
         case TestCase1ViewModel.GroupSelectItem3Id:
+        case TestCase1ViewModel.TwoWayBindingItemId:
           assert.ok(true);
           break;
         default:
@@ -94,12 +98,17 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
     GroupSelectForm3Value() : number {
       return <number>+(this.idToBindableProperty[TestCase1ViewModel.GroupSelectItem3Id].value);
     }
+
+    TwoWayBindingItemFormValue() : number {
+      return <number>+(this.idToBindableProperty[TestCase1ViewModel.TwoWayBindingItemId].value);
+    }
   }
   let tc1vm = new TestCase1ViewModel();
 
   assert.strictEqual(tc1vm.selectFormValue(), 0);
   assert.strictEqual(<number>+(((<any>document.getElementById(TestCase1ViewModel.SelectItemId)).value)), 0);
   assert.strictEqual(tc1vm.selectFormValue(), <number>+((<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value));
+  assert.strictEqual(tc1vm.TwoWayBindingItemFormValue(), 0);
 
   (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value = "21";
 
@@ -125,6 +134,20 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
   }
 
   assert.strictEqual(tc1vm.selectFormValue(), 21);
+
+  (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.TwoWayBindingItemId}`)).value = "3";
+
+  if (typeof Event === "function") {
+    (<any>document.getElementById(`${TestCase1ViewModel.TwoWayBindingItemId}`)).dispatchEvent(new Event("input"));
+  } else {
+    // IE11 compatibility for test suite
+    let ev1 = (<any>document).createEvent("Event");
+    ev1.initEvent("input", true, true);
+    (<any>document.getElementById(`${TestCase1ViewModel.TwoWayBindingItemId}`)).dispatchEvent(<Event>ev1);
+  }
+
+  assert.notStrictEqual(tc1vm.TwoWayBindingItemFormValue(), 0); // Implies internal form value resets itself
+  assert.strictEqual(tc1vm.TwoWayBindingItemFormValue(), 3);
 
   (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value = "1";
 
@@ -163,9 +186,10 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
   (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.GroupSelectItem1Id}`)).value = "3";
   (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.GroupSelectItem2Id}`)).value = "4";
   (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.GroupSelectItem3Id}`)).value = "3";
+  (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.TwoWayBindingItemId}`)).value = "0";
 });
 
-QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", (assert) => {
+QUnit.test("Pub Sub system is able to relay data to subscribers", (assert) => {
   new FrontEndFramework.PubSub.HtmlInputElementPublisherAndSubscriber(
     'test-case-2-color-sync',
     'test-case-2-select-item-1'

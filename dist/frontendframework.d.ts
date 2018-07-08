@@ -53,12 +53,16 @@ declare namespace FrontEndFramework {
 }
 declare namespace FrontEndFramework {
     namespace MiniHtmlViewModel {
-        const VERSION = "0.6.3";
+        const VERSION = "0.7.0";
         const enum BindingMode {
             OneTime = 0,
             OneWayRead = 1,
             OneWayWrite = 2,
             TwoWay = 3,
+        }
+        const enum BindingOperationType {
+            Read = 0,
+            Write = 1,
         }
         interface IViewModelPropertyBase<T extends ViewModel> {
             readonly bindingMode: BindingMode;
@@ -100,7 +104,7 @@ declare namespace FrontEndFramework {
             protected constructor(objectLifeCycle: FrontEndFramework.ObjectLifeCycle, ...bindableProperties: IViewModelPropertyBase<ViewModel>[]);
             protected processBindableProperty(bP: IViewModelPropertyBase<ViewModel>): void;
             private processBindablePropertySingle(bP);
-            protected handlePropertyChangedEvent(propertyId: string): void;
+            protected handlePropertyChangedEvent(propertyId: string, bindingOperationType?: BindingOperationType): void;
             private genTeardownFunc(self);
             teardown(overrideObjectLifeCycle?: boolean): void;
             private static retrieveAndSetValueForBindableProperty<T>(bP, propertyId);
@@ -243,5 +247,5 @@ declare namespace FrontEndFramework {
     }
 }
 declare namespace FrontEndFramework {
-    const VERSION = "0.6.13";
+    const VERSION = "0.7.0";
 }

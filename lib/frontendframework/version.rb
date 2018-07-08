@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module FrontEndFramework
-  VERSION = '0.6.13'
+  VERSION = '0.7.0'
 end

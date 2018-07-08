@@ -6,9 +6,11 @@
 
 namespace FrontEndFramework {
     export namespace MiniHtmlViewModel {
-        export const VERSION = '0.6.3';
+        export const VERSION = '0.7.0';
 
         export const enum BindingMode { OneTime, OneWayRead, OneWayWrite, TwoWay };
+
+        export const enum BindingOperationType { Read, Write };
 
         export interface IViewModelPropertyBase<T extends ViewModel> {
             readonly bindingMode: BindingMode;
@@ -124,7 +126,7 @@ namespace FrontEndFramework {
                         bP.bindingMode === BindingMode.OneWayRead) {
                         let boundedFunc = (_ev : Event) => {
                             console.info(`Detected change in: ${bindablePropertyId}`);
-                            this.handlePropertyChangedEvent(bindablePropertyId);
+                            this.handlePropertyChangedEvent(bindablePropertyId, BindingOperationType.Read);
 
                             if ((<IViewModelPropertyReadable<ViewModel>>bP).onChangeFunc != null) {
                                 (<((vm: ViewModel) => void)>(<IViewModelPropertyReadable<ViewModel>>bP).onChangeFunc)(<ViewModel>bP.viewModelRef);
@@ -159,26 +161,50 @@ namespace FrontEndFramework {
             }
 
             // Triggers change in UI to match value of property in idToBindableProperty.
-            protected handlePropertyChangedEvent(propertyId: string) {
+            protected handlePropertyChangedEvent(propertyId: string,
+                                                 bindingOperationType = BindingOperationType.Write) {
                 try {
                     var bindableProperty = this.idToBindableProperty[propertyId];
-                    switch (bindableProperty.bindingMode) {
-                    // case BindingMode.OneTime:
-                    //     console.error("IMPOSSIBLE");
-                    //     break;
-                    case BindingMode.OneWayRead:
-                        ViewModel.retrieveAndSetValueForBindableProperty(<IViewModelPropertyOneWayReadBinding<ViewModel>>bindableProperty, propertyId);
-                        break;
-                    case BindingMode.OneWayWrite:
-                        ViewModel.setValueForBindableProperty(<IViewModelPropertyOneWayWriteBinding<ViewModel>>bindableProperty, propertyId);
-                        break;
-                    case BindingMode.TwoWay:
-                        ViewModel.setValueForBindableProperty(<IViewModelPropertyTwoWayBinding<ViewModel>>bindableProperty, propertyId);
-                        break;
-                    default:
-                        console.warn(`Invalid bindingMode for Binding Property associated with id: ${propertyId}`);
-                        break;
+                    switch (bindingOperationType) {
+                        case BindingOperationType.Write:
+                            switch (bindableProperty.bindingMode) {
+                                case BindingMode.OneTime:
+                                case BindingMode.OneWayRead:
+                                    console.warn("NOOP");
+                                    break;
+                                case BindingMode.OneWayWrite:
+                                    ViewModel.setValueForBindableProperty(<IViewModelPropertyOneWayWriteBinding<ViewModel>>bindableProperty, propertyId);
+                                    break;
+                                case BindingMode.TwoWay:
+                                    ViewModel.setValueForBindableProperty(<IViewModelPropertyTwoWayBinding<ViewModel>>bindableProperty, propertyId);
+                                    break;
+                                default:
+                                    console.warn(`Invalid bindingMode (${bindableProperty.bindingMode}) for Binding Property associated with id: ${propertyId}`);
+                                    break;
+                            }
+                            break;
+                        case BindingOperationType.Read:
+                            switch (bindableProperty.bindingMode) {
+                                case BindingMode.OneTime:
+                                case BindingMode.OneWayWrite:
+                                    console.warn("NOOP");
+                                    break;
+                                case BindingMode.OneWayRead:
+                                    ViewModel.retrieveAndSetValueForBindableProperty(<IViewModelPropertyOneWayReadBinding<ViewModel>>bindableProperty, propertyId);
+                                    break;
+                                case BindingMode.TwoWay:
+                                    ViewModel.retrieveAndSetValueForBindableProperty(<IViewModelPropertyTwoWayBinding<ViewModel>>bindableProperty, propertyId);
+                                    break;
+                                default:
+                                    console.warn(`Invalid bindingMode (${bindableProperty.bindingMode}) for Binding Property associated with id: ${propertyId}`);
+                                    break;
+                            }
+                            break;
+                        default:
+                            console.error(`Invalid bindingOperationType: ${bindingOperationType}`);
+                            break;
                     }
+
                 } catch (e) {
                     console.log(e);
                 }

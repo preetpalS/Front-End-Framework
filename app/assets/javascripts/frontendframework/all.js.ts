@@ -15,4 +15,4 @@
 
 // The load order currently matters.
 
-namespace FrontEndFramework { export const VERSION = '0.6.13'; }
+namespace FrontEndFramework { export const VERSION = '0.7.0'; }
