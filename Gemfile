@@ -8,7 +8,7 @@ group :development do
   gem 'blade'
   gem 'erubis'
   gem 'rake'
-  gem 'sprockets'
+  gem 'sprockets', '~> 3.7.2' # only to avoid security vulnerability in testing environment
   gem 'uglifier'
 end
 

@@ -150,7 +150,9 @@ namespace FrontEndFramework {
                                     (<HTMLElement>document.getElementById(bindablePropertyId)).addEventListener(evString, (<any>bP).boundEventFuncs[<number>((<any>bP).boundEventFuncs).length - 1]);
                                     break;
                                 default:
-                                    console.error(`Unacceptable id detected in IViewModelPropertyBase: ${bP}`);
+                                    // For debugging
+                                    console.error(`Unacceptable id detected in IViewModelPropertyBase (bindable property displayed below): ${bP.id}`);
+                                    console.info(bP);
                                     break;
                             }
                         });
