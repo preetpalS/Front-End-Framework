@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Front-End Framework Test Suite</title>
+    <meta charset="utf-8">
+    <script src="../app/assets/javascripts/header-script.js"></script>
+    <link rel="stylesheet" href="../node_modules/qunit/qunit/qunit.css">
+    <script src="../node_modules/qunit/qunit/qunit.js"></script>
+    <script src="../dist/frontendframework.js"></script>
+    <script src="./frontendframework-tests.js"></script>
+  </head>
+
+  <body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture">
+      <div id="fef">
+        <section id="test-case-1" hidden>
+          <form id="test-case-1-form">
+            <select id="test-case-1-select-item">
+              <option value="0" selected="selected">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="21">21</option>
+            </select>
+
+            <select id="test-case-1-group-select-item-1">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3" selected="selected">3</option>
+              <option value="4">4</option>
+            </select>
+
+            <select id="test-case-1-group-select-item-2">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4" selected="selected">4</option>
+            </select>
+
+            <select id="test-case-1-group-select-item-3">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3" selected="selected">3</option>
+              <option value="4">4</option>
+            </select>
+
+            <select id="test-case-1-two-way-binding-item">
+              <option value="0" selected="selected">0</option>
+              <option value="1">1</option>
+              <option value="3">3</option>
+              <option value="17">17</option>
+            </select>
+          </form>
+        </section>
+
+        <section id="test-case-2">
+          <!-- Tests pub sub -->
+          <form id="test-case-2-form" autocomplete="off">
+            <select id="test-case-2-select-item-1">
+              <option value="red" selected="selected">Red</option>
+              <option value="green">Green</option>
+              <option value="blue">Blue</option>
+            </select>
+
+            <select id="test-case-2-select-item-2">
+              <option value="red">Red</option>
+              <option value="green" selected="selected">Green</option>
+              <option value="blue">Blue</option>
+            </select>
+
+            <select id="test-case-2-select-item-3">
+              <option value="red">Red</option>
+              <option value="green" selected="selected">Green</option>
+              <option value="blue">Blue</option>
+            </select>
+          </form>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>
