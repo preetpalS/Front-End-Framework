@@ -1,5 +1,5 @@
-/// <reference path="./base.js.ts"/>
-/// <reference path="./storage.js.ts"/>
+/// <reference path="./base.ts"/>
+/// <reference path="./storage.ts"/>
 
 namespace FrontEndFramework {
     // Visits site using Turbolinks (or another SPA framework when support is added) if possible.

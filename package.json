@@ -1,6 +1,6 @@
 {
   "name": "frontendframework",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Front end framework",
   "main": "dist/frontendframework.js",
   "types": "dist/frontendframework.d.ts",
@@ -17,7 +17,7 @@
   "dependencies": {
   },
   "devDependencies": {
-    "typescript": "~> 2.7.0"
+    "typescript": "~> 3.2.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,7 +26,6 @@
     "app/",
     "dist/frontendframework.js",
     "dist/frontendframework.d.ts",
-    "lib/",
     "README.md"
   ]
 }

@@ -1,7 +1,7 @@
-/// <reference path="./base.js.ts" />
+/// <reference path="./base.ts" />
 
 // Depends on JQuery
-// Depends on ./base.js.ts due to the fact that the future IUserInterfaceElement might rely on cleanupHooks
+// Depends on ./base.ts due to the fact that the future IUserInterfaceElement might rely on cleanupHooks
 // for teardown logic.
 
 namespace FrontEndFramework {

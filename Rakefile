@@ -1,39 +1,9 @@
 # frozen_string_literal: true
 
-# Rakefile
-
-require_relative './lib/frontendframework'
-
-require 'blade'
-require 'erubis'
-require 'sprockets'
-require 'typescript-sprockets'
-
-# TypeScript compiler options
-::Typescript::Sprockets::TypescriptProcessor.register
-::Typescript::Sprockets::TypescriptProcessor.options(
-  compiler_flags: ::Typescript::Sprockets::TypescriptProcessor::DEFAULT_COMPILER_FLAGS.reject do |x|
-    ['--allowJs', '--checkJs'].include?(x)
-  end
-)
-
-namespace :blade do
-  task :build do
-    system <<~CMD
-      node node_modules/typescript/bin/tsc -d app/assets/javascripts/frontendframework/all.js.ts --types #{Typescript::Sprockets::TypescriptProcessor.options[:compiler_flags].join(' ')} --outFile tmp/frontendframework.js
-CMD
-  end
-
-  desc 'Runs blade runner'
-  task runner: :build do
-    Blade.start(interface: :runner)
-  end
-end
-
 desc 'Generates type definition file'
 task :generate_type_definition_file do
   cmd = <<~CMD
-    node node_modules/typescript/bin/tsc -d app/assets/javascripts/frontendframework/all.js.ts --types #{Typescript::Sprockets::TypescriptProcessor.options[:compiler_flags].join(' ')} --outFile frontendframework.js
+    node node_modules/typescript/bin/tsc -d app/assets/javascripts/frontendframework/all.ts --types --outFile frontendframework.js
 CMD
   puts "Executing command: #{cmd}"
   system cmd
@@ -46,7 +16,7 @@ desc 'Generates dist/ folder contents for release (only full framework currently
 task :dist do
   Dir.mkdir('dist') unless Dir.exist?('dist')
   system <<~CMD
-      node node_modules/typescript/bin/tsc -d app/assets/javascripts/frontendframework/all.js.ts --types #{Typescript::Sprockets::TypescriptProcessor.options[:compiler_flags].join(' ')} --outFile dist/frontendframework.js
+      node node_modules/typescript/bin/tsc -d app/assets/javascripts/frontendframework/all.ts --types --outFile dist/frontendframework.js
   CMD
 end
 

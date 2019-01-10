@@ -1,6 +1,6 @@
-/// <reference path="./base.js.ts"/>
+/// <reference path="./base.ts"/>
 
-// Relies on ./base.js.ts because this library should be able to take advantage of Turbolinks not reloading page.
+// Relies on ./base.ts because this library should be able to take advantage of Turbolinks not reloading page.
 
 namespace FrontEndFramework {
     export namespace Storage {
