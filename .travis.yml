@@ -15,4 +15,6 @@ branches:
     - master
 
 before_install:
+  - yarn
+  - yarn dist
   - yarn test-preparation
