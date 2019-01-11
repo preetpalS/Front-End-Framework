@@ -1,4 +1,4 @@
-/// <reference path="type_definitions/qunit/qunit.d.ts"/>
+/// <reference path="../../../node_modules/@types/qunit/index.d.ts"/>
 /// <reference path="frontendframework/all.ts"/>
 
 QUnit.test("version number export", function(assert) {
