@@ -1,0 +1,18 @@
+os:
+  - linux
+  - windows
+
+addons:
+  chrome: stable
+
+language: node_js
+
+node_js:
+  - "10"
+
+branches:
+  only:
+    - master
+
+before_install:
+  - yarn test-preparation
