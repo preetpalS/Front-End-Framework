@@ -31,8 +31,30 @@ module.exports = function(grunt) {
         child_process.execSync('node node_modules/typescript/bin/tsc -d app/assets/javascripts/frontendframework/all.ts --types --outFile dist/frontendframework.js', {stdio: 'inherit'});
     });
     grunt.registerTask('clean', 'Removes build artifacts', () => {
-        // TODO: Implement me.
-        throw new Error('Not implemented.');
+        const fs = require('fs');
+
+        var relevantFiles = [
+            './dist/frontendframework.d.ts',
+            './dist/frontendframework.js',
+            './tmp/frontendframework-tests.d.ts',
+            './tmp/frontendframework-tests.js',
+            './tmp/index.html'
+        ];
+
+        for (let i = 0; i < relevantFiles.length; i++) {
+            const file = relevantFiles[i];
+            if (fs.existsSync(file)) {
+                fs.unlinkSync(file);
+            }
+        }
+
+        var relevantDirectories = ['./dist/', './tmp/'];
+        for (let i = 0; i < relevantDirectories.length; i++) {
+            const directory = relevantDirectories[i];
+            if (fs.existsSync(directory)) {
+                fs.rmdirSync(directory);
+            }
+        }
     });
     grunt.registerTask('test-preparation', 'Generates files needed to run test cases', () => {
         const child_process = require('child_process');
