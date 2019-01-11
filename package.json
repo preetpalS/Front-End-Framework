@@ -28,7 +28,9 @@
     "typescript": "~> 3.2.0"
   },
   "scripts": {
-    "test": "node node_modules/grunt-cli/bin/grunt test"
+    "dist": "node node_modules/grunt-cli/bin/grunt dist",
+    "test": "node node_modules/grunt-cli/bin/grunt test",
+    "test-preparation": "node node_modules/grunt-cli/bin/grunt test-preparation"
   },
   "files": [
     "app/",
