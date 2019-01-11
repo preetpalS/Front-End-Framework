@@ -2,6 +2,9 @@ os:
   - linux
   - windows
 
+env:
+  - YARN_GPG=no
+
 addons:
   chrome: stable
 
@@ -13,6 +16,9 @@ node_js:
 branches:
   only:
     - master
+
+matrix:
+  fast_finish: true
 
 before_install:
   - yarn
