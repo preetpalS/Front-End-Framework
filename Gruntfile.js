@@ -65,6 +65,6 @@ module.exports = function(grunt) {
         fs.copyFile('./test/index.html', './tmp/index.html', (error) => {
             if (error) throw error;
         });
-        child_process.execSync('node node_modules/typescript/bin/tsc -d app/assets/javascripts/frontendframework-tests.ts --types --outFile tmp/frontendframework-tests.js', {stdio: 'inherit'});
+        child_process.execSync('node node_modules/typescript/bin/tsc -d test/frontendframework-tests.ts --types --outFile tmp/frontendframework-tests.js', {stdio: 'inherit'});
     });
 };

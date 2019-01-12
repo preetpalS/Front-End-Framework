@@ -1,5 +1,5 @@
-/// <reference path="../../../node_modules/@types/qunit/index.d.ts"/>
-/// <reference path="frontendframework/all.ts"/>
+/// <reference path="../node_modules/@types/qunit/index.d.ts"/>
+/// <reference path="../app/assets/javascripts/frontendframework/all.ts"/>
 
 QUnit.test("version number export", function(assert) {
     assert.ok(FrontEndFramework.VERSION != null);
