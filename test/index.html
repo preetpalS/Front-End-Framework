@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../node_modules/qunit/qunit/qunit.css">
     <script src="../node_modules/qunit/qunit/qunit.js"></script>
     <script src="../dist/frontendframework.js"></script>
+    <script src="../test/test-main.js"></script>
     <script src="./frontendframework-tests.js"></script>
   </head>
 
@@ -77,6 +78,13 @@
               <option value="blue">Blue</option>
             </select>
           </form>
+        </section>
+
+        <section id="test-case-3">
+          <!-- Tests body script activation system -->
+          <p id="test-case-3-hidden-text-message" hidden>Body script activation system is not working.</p>
+          <section class="front_end_framework-body_script_activator"
+                   data-activation-index="#test-case-3-hidden-text-message"></section>
         </section>
       </div>
     </div>

@@ -237,3 +237,25 @@ QUnit.test("Pub Sub system is able to relay data to subscribers", (assert) => {
     assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'green');
     assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value, 'green');
 });
+
+QUnit.test("Body Script Activation system is active", (assert) => {
+    let testFunc = () => {
+        const testCase3HiddenTextMessage = (<any>document).getElementById('test-case-3-hidden-text-message').innerHTML;
+        assert.strictEqual(testCase3HiddenTextMessage, "Body script activation system is working!");
+    }
+    const done = assert.async();
+    FrontEndFramework.hooks.post.push(() => {
+        console.log('FEF post hook from test-case-3')
+        testFunc();
+        done();
+    });
+    if (document.readyState === "complete") {
+        // FrontEndFramework post hooks have already fired
+        if (FrontEndFramework.hooks.post.length > 0) {
+            if (FrontEndFramework.hooks.post.length > 1) {
+                assert.ok(false, "FrontEndFramework post hooks invariant violated. GUID: 4f2a5150-79e1-4f24-9489-00f7defe98c1");
+            }
+            FrontEndFramework.hooks.post.shift()();
+        }
+    }
+});
