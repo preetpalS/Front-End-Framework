@@ -14,7 +14,7 @@ declare namespace FrontEndFramework {
     const enum ObjectLifeCycle {
         Transient = 0,
         VariablePersistence = 1,
-        InfinitePersistence = 2,
+        InfinitePersistence = 2
     }
     const HtmlInputChangeEvents = "change textInput input";
     interface IObjectLifeCycleDeterminable {
@@ -23,7 +23,7 @@ declare namespace FrontEndFramework {
     const enum SupportedIntegration {
         NoFramework = 0,
         Turbolinks = 1,
-        WindowsUWP = 2,
+        WindowsUWP = 2
     }
     interface SupportedIntegrationMetadata {
         supportedIntegration: SupportedIntegration;
@@ -58,11 +58,11 @@ declare namespace FrontEndFramework {
             OneTime = 0,
             OneWayRead = 1,
             OneWayWrite = 2,
-            TwoWay = 3,
+            TwoWay = 3
         }
         const enum BindingOperationType {
             Read = 0,
-            Write = 1,
+            Write = 1
         }
         interface IViewModelPropertyBase<T extends ViewModel> {
             readonly bindingMode: BindingMode;
@@ -103,66 +103,79 @@ declare namespace FrontEndFramework {
             private static readonly ChangeEvents;
             protected constructor(objectLifeCycle: FrontEndFramework.ObjectLifeCycle, ...bindableProperties: IViewModelPropertyBase<ViewModel>[]);
             protected processBindableProperty(bP: IViewModelPropertyBase<ViewModel>): void;
-            private processBindablePropertySingle(bP);
+            private processBindablePropertySingle;
             protected handlePropertyChangedEvent(propertyId: string, bindingOperationType?: BindingOperationType): void;
-            private genTeardownFunc(self);
+            private genTeardownFunc;
             teardown(overrideObjectLifeCycle?: boolean): void;
-            private static retrieveAndSetValueForBindableProperty<T>(bP, propertyId);
-            private static setValueForBindableProperty<T>(bP, propertyId);
+            private static retrieveAndSetValueForBindableProperty;
+            private static setValueForBindableProperty;
         }
         class ViewModelProperty<T extends ViewModel> implements IViewModelProperty<T> {
             readonly bindingMode: BindingMode;
             readonly id: string | string[];
-            value: any;
-            setDataFunc: ((a: any) => void) | undefined;
-            getDataFunc: (() => any) | undefined;
-            onChangeFunc: ((vm: T) => void) | undefined;
-            converterFunc: ((a: any) => any) | undefined;
-            viewModelRef: T | undefined;
-            changeEvents: string | undefined;
-            constructor(bindingMode: BindingMode, id: string | string[], value?: any, setDataFunc?: ((a: any) => void) | undefined, getDataFunc?: (() => any) | undefined, onChangeFunc?: ((vm: T) => void) | undefined, converterFunc?: ((a: any) => any) | undefined, viewModelRef?: T | undefined, changeEvents?: string | undefined);
+            value?: any;
+            setDataFunc?: ((a: any) => void);
+            getDataFunc?: (() => any);
+            onChangeFunc?: ((vm: T) => void);
+            converterFunc?: ((a: any) => any);
+            viewModelRef?: T;
+            changeEvents?: string;
+            constructor(bindingMode: BindingMode, id: string | string[], // Represents HTML id
+            value?: any, // Represents displayed initial value
+            setDataFunc?: ((a: any) => void), getDataFunc?: (() => any), onChangeFunc?: ((vm: T) => void), // Either implement onChange on IViewModel OR provide onChangeFunc
+            converterFunc?: ((a: any) => any), viewModelRef?: T, changeEvents?: string);
         }
         class ViewModelPropertyOneTimeBinding<T extends ViewModel> implements IViewModelPropertyOneTimeBinding<T> {
             readonly id: string | string[];
-            value: any;
-            setDataFunc: ((a: any) => void) | undefined;
-            converterFunc: ((a: any) => any) | undefined;
-            viewModelRef: T | undefined;
-            changeEvents: string | undefined;
+            value?: any;
+            setDataFunc?: ((a: any) => void);
+            converterFunc?: ((a: any) => any);
+            viewModelRef?: T;
+            changeEvents?: string;
             readonly bindingMode: BindingMode.OneTime;
-            constructor(id: string | string[], value?: any, setDataFunc?: ((a: any) => void) | undefined, converterFunc?: ((a: any) => any) | undefined, viewModelRef?: T | undefined, changeEvents?: string | undefined);
+            constructor(id: string | string[], // Represents HTML id
+            value?: any, // Represents displayed initial value
+            setDataFunc?: ((a: any) => void), converterFunc?: ((a: any) => any), viewModelRef?: T, changeEvents?: string);
         }
         class ViewModelPropertyOneWayReadBinding<T extends ViewModel> implements IViewModelPropertyOneWayReadBinding<T> {
             readonly id: string | string[];
-            value: any;
-            getDataFunc: (() => any) | undefined;
-            onChangeFunc: ((vm: T) => void) | undefined;
-            viewModelRef: T | undefined;
-            changeEvents: string | undefined;
+            value?: any;
+            getDataFunc?: (() => any);
+            onChangeFunc?: ((vm: T) => void);
+            viewModelRef?: T;
+            changeEvents?: string;
             readonly bindingMode: BindingMode.OneWayRead;
-            constructor(id: string | string[], value?: any, getDataFunc?: (() => any) | undefined, onChangeFunc?: ((vm: T) => void) | undefined, viewModelRef?: T | undefined, changeEvents?: string | undefined);
+            constructor(id: string | string[], // Represents HTML id
+            value?: any, // Represents displayed initial value
+            getDataFunc?: (() => any), onChangeFunc?: ((vm: T) => void), // Either implement onChange on IViewModel OR provide onChangeFunc
+            viewModelRef?: T, changeEvents?: string);
         }
         class ViewModelPropertyOneWayWriteBinding<T extends ViewModel> implements IViewModelPropertyOneWayWriteBinding<T> {
             readonly id: string | string[];
-            value: any;
-            setDataFunc: ((a: any) => void) | undefined;
-            converterFunc: ((a: any) => any) | undefined;
-            viewModelRef: T | undefined;
-            changeEvents: string | undefined;
+            value?: any;
+            setDataFunc?: ((a: any) => void);
+            converterFunc?: ((a: any) => any);
+            viewModelRef?: T;
+            changeEvents?: string;
             readonly bindingMode: BindingMode.OneWayWrite;
-            constructor(id: string | string[], value?: any, setDataFunc?: ((a: any) => void) | undefined, converterFunc?: ((a: any) => any) | undefined, viewModelRef?: T | undefined, changeEvents?: string | undefined);
+            constructor(id: string | string[], // Represents HTML id
+            value?: any, // Represents displayed initial value
+            setDataFunc?: ((a: any) => void), converterFunc?: ((a: any) => any), viewModelRef?: T, changeEvents?: string);
         }
         class ViewModelPropertyTwoWayBinding<T extends ViewModel> implements IViewModelPropertyTwoWayBinding<T> {
             readonly id: string | string[];
-            value: any;
-            setDataFunc: ((a: any) => void) | undefined;
-            getDataFunc: (() => any) | undefined;
-            onChangeFunc: ((vm: T) => void) | undefined;
-            converterFunc: ((a: any) => any) | undefined;
-            viewModelRef: T | undefined;
-            changeEvents: string | undefined;
+            value?: any;
+            setDataFunc?: ((a: any) => void);
+            getDataFunc?: (() => any);
+            onChangeFunc?: ((vm: T) => void);
+            converterFunc?: ((a: any) => any);
+            viewModelRef?: T;
+            changeEvents?: string;
             readonly bindingMode: BindingMode.TwoWay;
-            constructor(id: string | string[], value?: any, setDataFunc?: ((a: any) => void) | undefined, getDataFunc?: (() => any) | undefined, onChangeFunc?: ((vm: T) => void) | undefined, converterFunc?: ((a: any) => any) | undefined, viewModelRef?: T | undefined, changeEvents?: string | undefined);
+            constructor(id: string | string[], // Represents HTML id
+            value?: any, // Represents displayed initial value
+            setDataFunc?: ((a: any) => void), getDataFunc?: (() => any), onChangeFunc?: ((vm: T) => void), // Either implement onChange on IViewModel OR provide onChangeFunc
+            converterFunc?: ((a: any) => any), viewModelRef?: T, changeEvents?: string);
         }
     }
 }
@@ -172,7 +185,7 @@ declare namespace FrontEndFramework {
         const enum DataPersistenceDuration {
             Transient = 0,
             Session = 1,
-            AcrossSessions = 2,
+            AcrossSessions = 2
         }
         interface ICacheExpirationDuration {
             indefinite?: boolean;
@@ -219,18 +232,18 @@ declare namespace FrontEndFramework {
 }
 declare namespace FrontEndFramework {
     let visitLink: (link: string, { forceReload, newTab }?: {
-        forceReload?: boolean | undefined;
-        newTab?: boolean | undefined;
+        forceReload?: boolean;
+        newTab?: boolean;
     }) => void;
     namespace PubSub {
-        let subscribe: (subscriptionIdentifier: string, selfIdentifier: string, selfSetter?: ((message: any) => void) | null | undefined, objectLifeCycle?: ObjectLifeCycle) => any;
+        let subscribe: (subscriptionIdentifier: string, selfIdentifier: string, selfSetter?: (message: any) => void, objectLifeCycle?: ObjectLifeCycle) => any;
         let publish: (subscriptionIdentifier: string, message: any) => void;
         class PubSubSessionStorageSubscriber implements IObjectLifeCycleDeterminable {
-            readonly objectLifeCycle: ObjectLifeCycle;
+            readonly objectLifeCycle = ObjectLifeCycle.InfinitePersistence;
             storageKey: string;
             constructor(subscriptionIdentifier: string, storageKey: string, publishExistingStoredValue?: boolean);
             storeInSessionStorageFunc(val: any): void;
-            private genStoreInSessionStorageFunc(self);
+            private genStoreInSessionStorageFunc;
         }
         class HtmlInputElementPublisherAndSubscriber implements IObjectLifeCycleDeterminable {
             readonly subscriptionIdentifier: string;
@@ -241,11 +254,19 @@ declare namespace FrontEndFramework {
             private _publishOnChangeFunc?;
             constructor(subscriptionIdentifier: string, htmlId: string, onChangeFunc?: (() => void) | null, objectLifeCycle?: ObjectLifeCycle, publishValuePredicate?: boolean);
             handleNavigation(): void;
-            private genHandleNavigationFunc(self);
+            private genHandleNavigationFunc;
             teardown(overrideObjectLifeCycle?: boolean): void;
         }
     }
 }
 declare namespace FrontEndFramework {
-    const VERSION = "0.7.0";
+    namespace BodyScriptActivation {
+        const VERSION = "0.1.0";
+        const BODY_SCRIPT_ACTIVATION_SECTION_SELECTOR = ".front_end_framework-body_script_activator";
+        const BODY_SCRIPT_ACTIVATION_SECTION_DATASET_ACTIVATION_INDEX_KEY = "activationIndex";
+        const AddEntryToLookupTable: (key: string, value: (activationHtmlElement: HTMLElement) => void) => void;
+    }
+}
+declare namespace FrontEndFramework {
+    const VERSION = "0.8.0";
 }
