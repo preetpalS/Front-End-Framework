@@ -4,9 +4,13 @@
 
 *Please note that this is a WORK-IN-PROGRESS and is NOT stable.*
 
-Some SASS and TypeScript code that I extracted from some of the websites that I have built.
+Some SASS and TypeScript code that I extracted from some of the
+websites that I have built.
 
-Intended to work with all modern browsers (Chrome, Edge, FireFox, IE (IE11), Opera, Safari).
+Intended to work with all modern browsers (Chrome, Edge, FireFox, IE
+(IE11), Opera, Safari).
+
+Currently migrating code to make use of ES6 modules.
 
 ## Installation
 
@@ -18,6 +22,6 @@ Installing using NPM or Yarn.
 
 Requires having a working Node.js development environment available.
 
-Note that if you are using the TypeScript `--outFile` which concatenates and emits output to a single file, do not require framework components individually (require
-`framework/all` only). If you want to require framework components individually (assuming that you are not using the TypeScript `--outFile` option), explicitly look
-at the references in the source file for the specific component.
+The test suite can be run using the `yarn run test` command. The test
+suite is known to work on Windows and should work on Linux, macOS and
+FreeBSD.
