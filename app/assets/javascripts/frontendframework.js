@@ -1,2 +1,0 @@
-
-//= require frontendframework/all

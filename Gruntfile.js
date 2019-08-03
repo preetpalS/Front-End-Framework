@@ -28,7 +28,7 @@ module.exports = function(grunt) {
         if (!fs.existsSync('./dist')) {
             fs.mkdirSync('./dist');
         }
-        child_process.execSync('node node_modules/typescript/bin/tsc -d app/assets/javascripts/frontendframework/all.ts --types --outFile dist/frontendframework.js', {stdio: 'inherit'});
+        child_process.execSync('node node_modules/typescript/bin/tsc -d javascripts/all.ts --types --outFile dist/frontendframework.js', {stdio: 'inherit'});
     });
     grunt.registerTask('clean', 'Removes build artifacts', () => {
         const fs = require('fs');
