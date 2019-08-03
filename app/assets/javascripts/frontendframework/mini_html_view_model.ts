@@ -6,7 +6,7 @@
 
 namespace FrontEndFramework {
     export namespace MiniHtmlViewModel {
-        export const VERSION = '0.7.0';
+        export const VERSION = '0.7.1';
 
         export const enum BindingMode { OneTime, OneWayRead, OneWayWrite, TwoWay };
 
@@ -105,7 +105,7 @@ namespace FrontEndFramework {
             }
 
             private processBindablePropertySingle(bP: IViewModelPropertyBase<ViewModel>) {
-                let bindablePropertyId: string = <string>bP.id;
+                const bindablePropertyId: string = <string>bP.id;
                 try {
                     // Store and attach bindable properties that do not have a OneTime bindingMode.
                     // Note that OneTime bindingMode properties are not stored.
@@ -124,7 +124,7 @@ namespace FrontEndFramework {
                     // Attach onChange event handler for TwoWay and OneWayRead properties.
                     if (bP.bindingMode === BindingMode.TwoWay ||
                         bP.bindingMode === BindingMode.OneWayRead) {
-                        let boundedFunc = (_ev : Event) => {
+                        const boundedFunc = (_ev : Event) => {
                             console.info(`Detected change in: ${bindablePropertyId}`);
                             this.handlePropertyChangedEvent(bindablePropertyId, BindingOperationType.Read);
 
@@ -166,7 +166,7 @@ namespace FrontEndFramework {
             protected handlePropertyChangedEvent(propertyId: string,
                                                  bindingOperationType = BindingOperationType.Write) {
                 try {
-                    var bindableProperty = this.idToBindableProperty[propertyId];
+                    const bindableProperty = this.idToBindableProperty[propertyId];
                     switch (bindingOperationType) {
                         case BindingOperationType.Write:
                             switch (bindableProperty.bindingMode) {
@@ -225,7 +225,7 @@ namespace FrontEndFramework {
 
                 Object.keys(this.idToBindableProperty).forEach((id: string) => {
                     console.log(`Cleaning up event handlers set up in ViewModel (id: ${id})`);
-                    let bP = this.idToBindableProperty[id];
+                    const bP = this.idToBindableProperty[id];
                     switch (bP.id.constructor) {
                         case String:
                             if (bP.boundEventFunc != null) {
@@ -239,7 +239,7 @@ namespace FrontEndFramework {
                             if ((bP.boundEventFuncs != null) &&
                                 (bP.boundEventFuncs.constructor === Array) &&
                                 (bP.boundEventFuncs.length === (<string[]>bP.id).length)) {
-                                let idx = (<string[]>bP.id).indexOf(id);
+                                const idx = (<string[]>bP.id).indexOf(id);
                                 if (idx !== -1) {
                                     ViewModel.ChangeEvents.split(' ').forEach((evString) => {
                                         if (document.getElementById(id) != null)
@@ -270,16 +270,17 @@ namespace FrontEndFramework {
             }
 
             private static setValueForBindableProperty<T extends ViewModel>(bP: IViewModelPropertyWritable<T>, propertyId: string) {
-                var cnvrtr = bP.converterFunc || function(x) { return x; };
+                const cnvrtr = bP.converterFunc || function(x) { return x; };
+                const valueToSet = cnvrtr(bP.value);
                 if (bP.setDataFunc == null) {
                     if (typeof gHndl.$ === 'undefined') {
                         // Replaces: $('#' + propertyId).val(bP.value);
-                        (<HTMLInputElement>document.getElementById(propertyId)).value = cnvrtr(bP.value);
+                        (<HTMLInputElement>document.getElementById(propertyId)).value = valueToSet
                     } else {
-                        (<any>gHndl.$)('#' + propertyId).val(bP.value);
+                        (<any>gHndl.$)('#' + propertyId).val(valueToSet);
                     }
                 } else {
-                    bP.setDataFunc(cnvrtr(bP.value));
+                    bP.setDataFunc(valueToSet);
                 }
             }
         }

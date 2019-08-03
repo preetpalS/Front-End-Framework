@@ -53,7 +53,7 @@ declare namespace FrontEndFramework {
 }
 declare namespace FrontEndFramework {
     namespace MiniHtmlViewModel {
-        const VERSION = "0.7.0";
+        const VERSION = "0.7.1";
         const enum BindingMode {
             OneTime = 0,
             OneWayRead = 1,
@@ -268,5 +268,5 @@ declare namespace FrontEndFramework {
     }
 }
 declare namespace FrontEndFramework {
-    const VERSION = "0.8.0";
+    const VERSION = "0.8.1";
 }

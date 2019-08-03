@@ -53,7 +53,7 @@ var FrontEndFramework;
 (function (FrontEndFramework) {
     var MiniHtmlViewModel;
     (function (MiniHtmlViewModel) {
-        MiniHtmlViewModel.VERSION = '0.7.0';
+        MiniHtmlViewModel.VERSION = '0.7.1';
         ;
         ;
         // Should inherit from this class instead of instantiating it directly.
@@ -264,17 +264,18 @@ var FrontEndFramework;
             };
             ViewModel.setValueForBindableProperty = function (bP, propertyId) {
                 var cnvrtr = bP.converterFunc || function (x) { return x; };
+                var valueToSet = cnvrtr(bP.value);
                 if (bP.setDataFunc == null) {
                     if (typeof FrontEndFramework.gHndl.$ === 'undefined') {
                         // Replaces: $('#' + propertyId).val(bP.value);
-                        document.getElementById(propertyId).value = cnvrtr(bP.value);
+                        document.getElementById(propertyId).value = valueToSet;
                     }
                     else {
-                        FrontEndFramework.gHndl.$('#' + propertyId).val(bP.value);
+                        FrontEndFramework.gHndl.$('#' + propertyId).val(valueToSet);
                     }
                 }
                 else {
-                    bP.setDataFunc(cnvrtr(bP.value));
+                    bP.setDataFunc(valueToSet);
                 }
             };
             ViewModel.ChangeEvents = FrontEndFramework.HtmlInputChangeEvents;
@@ -1021,5 +1022,5 @@ var FrontEndFramework;
 // The load order currently matters (except for reference paths that come after "./core.ts").
 var FrontEndFramework;
 (function (FrontEndFramework) {
-    FrontEndFramework.VERSION = '0.8.0';
+    FrontEndFramework.VERSION = '0.8.1';
 })(FrontEndFramework || (FrontEndFramework = {}));
