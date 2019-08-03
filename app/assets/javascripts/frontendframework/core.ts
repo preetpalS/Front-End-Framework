@@ -12,8 +12,8 @@ namespace FrontEndFramework {
                 // TODO: Add support for other SPA frameworks here.
                 if ((FrontEndFramework.RuntimeSupportedIntegration ===
                      FrontEndFramework.SupportedIntegration.Turbolinks) &&
-                    (typeof(Turbolinks.visit) === 'function')) {
-                    Turbolinks.visit(link);
+                    (typeof(gHndl.Turbolinks.visit) === 'function')) {
+                    gHndl.Turbolinks.visit(link);
                 }
             } else {
                 window.location.href = link;

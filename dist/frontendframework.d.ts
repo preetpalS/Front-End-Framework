@@ -1,7 +1,7 @@
-declare var Turbolinks: any;
 declare namespace FrontEndFramework {
     interface GlobalHandle extends Window {
         Windows?: any;
+        Turbolinks?: any;
         $?: any;
     }
     var hooks: {
@@ -268,5 +268,5 @@ declare namespace FrontEndFramework {
     }
 }
 declare namespace FrontEndFramework {
-    const VERSION = "0.8.1";
+    const VERSION = "0.8.2";
 }

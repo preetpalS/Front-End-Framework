@@ -1,6 +1,6 @@
 {
   "name": "frontendframework",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "Front end framework",
   "main": "dist/frontendframework.js",
   "types": "dist/frontendframework.d.ts",

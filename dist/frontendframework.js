@@ -11,7 +11,7 @@ var FrontEndFramework;
     ;
     // TODO: Add support for other SPA frameworks here.
     FrontEndFramework.WindowsUwpEnvironment = (typeof FrontEndFramework.gHndl.Windows !== 'undefined') && (FrontEndFramework.gHndl.Windows != null);
-    FrontEndFramework.TurbolinksAvailable = (typeof Turbolinks !== 'undefined') && (Turbolinks != null);
+    FrontEndFramework.TurbolinksAvailable = (typeof FrontEndFramework.gHndl.Turbolinks !== 'undefined') && (FrontEndFramework.gHndl.Turbolinks != null);
     FrontEndFramework.SinglePageApplication = FrontEndFramework.TurbolinksAvailable;
     FrontEndFramework.RuntimeSupportedIntegration = 0 /* NoFramework */;
     // TODO: Support Turbolinks in Windows UWP Environment
@@ -497,8 +497,8 @@ var FrontEndFramework;
                 // TODO: Add support for other SPA frameworks here.
                 if ((FrontEndFramework.RuntimeSupportedIntegration ===
                     1 /* Turbolinks */) &&
-                    (typeof (Turbolinks.visit) === 'function')) {
-                    Turbolinks.visit(link);
+                    (typeof (FrontEndFramework.gHndl.Turbolinks.visit) === 'function')) {
+                    FrontEndFramework.gHndl.Turbolinks.visit(link);
                 }
             }
             else {
@@ -1022,5 +1022,5 @@ var FrontEndFramework;
 // The load order currently matters (except for reference paths that come after "./core.ts").
 var FrontEndFramework;
 (function (FrontEndFramework) {
-    FrontEndFramework.VERSION = '0.8.1';
+    FrontEndFramework.VERSION = '0.8.2';
 })(FrontEndFramework || (FrontEndFramework = {}));

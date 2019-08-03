@@ -2,13 +2,12 @@
 // This file contains types and internal state used by the framework that individual components
 // in the library need knowledge of such as FrontEndFramework.ObjectLifeCycle.
 
-declare var Turbolinks : any;
-
 namespace FrontEndFramework {
     // Has a dependency on JQuery. Should be loaded after Turbolinks to register
     // cleanupFunc on 'turbolinks:before-render' event.
     export interface GlobalHandle extends Window {
         Windows?: any;
+        Turbolinks?: any;
         $?: any;
     }
 
@@ -54,7 +53,7 @@ namespace FrontEndFramework {
     };
     // TODO: Add support for other SPA frameworks here.
     export const WindowsUwpEnvironment = (typeof gHndl.Windows !== 'undefined') && (gHndl.Windows != null);
-    export const TurbolinksAvailable = (typeof Turbolinks !== 'undefined') && (Turbolinks != null);
+    export const TurbolinksAvailable = (typeof gHndl.Turbolinks !== 'undefined') && (gHndl.Turbolinks != null);
     export const SinglePageApplication = TurbolinksAvailable;
 
     export let RuntimeSupportedIntegration : SupportedIntegration = SupportedIntegration.NoFramework;

@@ -7,4 +7,4 @@
 
 // The load order currently matters (except for reference paths that come after "./core.ts").
 
-namespace FrontEndFramework { export const VERSION = '0.8.1'; }
+namespace FrontEndFramework { export const VERSION = '0.8.2'; }
