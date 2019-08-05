@@ -1,4 +1,3 @@
-/// <reference path="./base.ts"/>
 
 // WARNING: Must be included after base.ts
 
@@ -8,7 +7,7 @@
 
 namespace FrontEndFramework {
     export namespace BodyScriptActivation {
-        export const VERSION = '0.1.0';
+        export const VERSION = "0.1.0";
 
         export const BODY_SCRIPT_ACTIVATION_SECTION_SELECTOR = ".front_end_framework-body_script_activator";
         export const BODY_SCRIPT_ACTIVATION_SECTION_DATASET_ACTIVATION_INDEX_KEY = "activationIndex";
@@ -18,7 +17,7 @@ namespace FrontEndFramework {
 
         export const AddEntryToLookupTable = (key: string, value: ((activationHtmlElement: HTMLElement) => void)) => {
             BODY_SCRIPT_ACTIVATION_LOOKUP_TABLE[key] = value;
-        }
+        };
 
         preReadyHooks.push(() => {
             try {
@@ -61,6 +60,6 @@ namespace FrontEndFramework {
                 console.error(error);
                 console.error("Failed to execute body script evaluation logic");
             }
-        })
+        });
     }
 }

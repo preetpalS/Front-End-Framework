@@ -1,10 +1,9 @@
-/// <reference path="./base.ts"/>
 
 // Relies on ./base.ts because this library should be able to take advantage of Turbolinks not reloading page.
 
 namespace FrontEndFramework {
     export namespace Storage {
-        export const VERSION = '0.1.0';
+        export const VERSION = "0.2.0";
         export const enum DataPersistenceDuration { Transient, Session, AcrossSessions }
         export interface ICacheExpirationDuration {
             indefinite?: boolean;
@@ -28,6 +27,7 @@ namespace FrontEndFramework {
 
         export class IndefiniteCacheDuration implements IIndefiniteCacheDuration {
             public indefinite = true;
+            // tslint:disable-next-line:no-empty
             constructor() { }
         }
 
@@ -35,8 +35,8 @@ namespace FrontEndFramework {
         // as you try to do something.
         let is_session_storage_available = true;
         try {
-            sessionStorage.setItem('testa890a809', 'val');
-            sessionStorage.removeItem('testa890a809');
+            sessionStorage.setItem("testa890a809", "val");
+            sessionStorage.removeItem("testa890a809");
         } catch (_error) {
             is_session_storage_available = false;
         } finally {
@@ -49,17 +49,18 @@ namespace FrontEndFramework {
         }
 
         export class ClientStorageProfile implements IKeyValueStorageProfile {
-            public DataPersistanceDurationCapabilities: Array<DataPersistenceDuration>;
+            public DataPersistanceDurationCapabilities: DataPersistenceDuration[];
             constructor() {
                 this.DataPersistanceDurationCapabilities = [DataPersistenceDuration.Transient];
-                if (FrontEndFramework.TurbolinksAvailable || FrontEndFramework.Storage.IsSessionStorageAvailable)
+                if (FrontEndFramework.TurbolinksAvailable || FrontEndFramework.Storage.IsSessionStorageAvailable) {
                     this.DataPersistanceDurationCapabilities.push(DataPersistenceDuration.Session);
+                }
             }
         }
 
         export interface IKeyValueStorage {
-            set: ((key:any, val:any) => void);
-            get: ((key:any) => any);
+            set: ((key: any, val: any) => void);
+            get: ((key: any) => any);
         }
         /*
         export class TransientStorage implements IKeyValueStorage {
@@ -85,10 +86,11 @@ namespace FrontEndFramework {
                        cacheExpirationDuration?: ICacheExpirationDuration) {
                 try {
                     // TODO: Remove upon adding support for DataPersistenceDuration.AcrossSessions
-                    if (cacheExpirationDuration != null)
+                    if (cacheExpirationDuration != null) {
                         console.error("cacheExpirationDuration ignored in Database#set.");
+                    }
 
-                    switch(dataPersistenceDuration) {
+                    switch (dataPersistenceDuration) {
                     case DataPersistenceDuration.Transient:
                         break;
                     case DataPersistenceDuration.Session:
@@ -100,14 +102,14 @@ namespace FrontEndFramework {
                         break;
                     }
                 } catch (e) {
-                    if (this.errorOnFail) throw e;
+                    if (this.errorOnFail) { throw e; }
                 }
             }
 
-            public get(key: any, dataPersistenceDuration?: DataPersistenceDuration) : any|null|undefined {
+            public get(key: any, dataPersistenceDuration?: DataPersistenceDuration): any|null|undefined {
                 try {
                     if (dataPersistenceDuration != null) {
-                        switch(dataPersistenceDuration) {
+                        switch (dataPersistenceDuration) {
                         case DataPersistenceDuration.Transient:
                             break;
                         case DataPersistenceDuration.Session:
@@ -120,7 +122,7 @@ namespace FrontEndFramework {
                     } else {
                     }
                 } catch (e) {
-                    if (this.errorOnFail) throw e;
+                    if (this.errorOnFail) { throw e; }
                 }
                 return null;
             }

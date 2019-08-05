@@ -25,6 +25,7 @@
     "load-grunt-config": "^1.0.1",
     "load-grunt-tasks": "^4.0.0",
     "qunit": "^2.9.1",
+    "tslint": "^5.11.0",
     "typescript": "~> 3.2.0"
   },
   "scripts": {
