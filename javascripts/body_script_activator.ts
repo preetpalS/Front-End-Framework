@@ -1,32 +1,32 @@
 
 // WARNING: Must be included after base.ts
+import Base from "./base";
 
-// Use strict mode
-// tslint:disable-next-line:no-unused-expression
-"use strict";
+class BodyScriptActivator {
+    public static VERSION = "0.2.0";
+    public static BODY_SCRIPT_ACTIVATION_SECTION_SELECTOR = ".front_end_framework-body_script_activator";
+    public static BODY_SCRIPT_ACTIVATION_SECTION_DATASET_ACTIVATION_INDEX_KEY = "activationIndex";
+    public static getIntance() {
+        if (!BodyScriptActivator.instance) {
+            this.instance = new BodyScriptActivator(Base.getInstance());
+        }
+        return this.instance;
+    }
+    private static instance: BodyScriptActivator;
 
-namespace FrontEndFramework {
-    export namespace BodyScriptActivation {
-        export const VERSION = "0.1.0";
-
-        export const BODY_SCRIPT_ACTIVATION_SECTION_SELECTOR = ".front_end_framework-body_script_activator";
-        export const BODY_SCRIPT_ACTIVATION_SECTION_DATASET_ACTIVATION_INDEX_KEY = "activationIndex";
-
-        // OPTIMIZE: Investigate using an alternative data structure.
-        const BODY_SCRIPT_ACTIVATION_LOOKUP_TABLE = {};
-
-        export const AddEntryToLookupTable = (key: string, value: ((activationHtmlElement: HTMLElement) => void)) => {
-            BODY_SCRIPT_ACTIVATION_LOOKUP_TABLE[key] = value;
-        };
-
-        preReadyHooks.push(() => {
+    // OPTIMIZE: Investigate using an alternative data structure.
+    private readonly BODY_SCRIPT_ACTIVATION_LOOKUP_TABLE = {};
+    private constructor(
+        private base: Base
+    ) {
+        base.preReadyHooks.push(() => {
             try {
                 // console.log('before func eval');
                 (() => {
                     const activatedActivationIndices = [] as string[]; // Needed to prevent double usage of activation indices.
                     // console.log('at start of func eval');
                     const activationSections = Array.prototype.slice.call(
-                        document.querySelectorAll(BODY_SCRIPT_ACTIVATION_SECTION_SELECTOR)
+                        document.querySelectorAll(BodyScriptActivator.BODY_SCRIPT_ACTIVATION_SECTION_SELECTOR)
                     );
                     // console.log('after querySelectorAll invocation');
 
@@ -34,14 +34,14 @@ namespace FrontEndFramework {
                         const activationSection = activationSections[i] as HTMLElement;
                         // console.log(activationSection);
                         if (activationSection != null) {
-                            const activationIndex = activationSection.dataset[BODY_SCRIPT_ACTIVATION_SECTION_DATASET_ACTIVATION_INDEX_KEY] as string;
+                            const activationIndex = activationSection.dataset[BodyScriptActivator.BODY_SCRIPT_ACTIVATION_SECTION_DATASET_ACTIVATION_INDEX_KEY] as string;
 
                             if (activatedActivationIndices.indexOf(activationIndex) === -1) {
                                 activatedActivationIndices.push(activationIndex);
 
                                 try {
                                     // console.log(activationIndex);
-                                    (BODY_SCRIPT_ACTIVATION_LOOKUP_TABLE as any)[activationIndex](activationSection);
+                                    (this.BODY_SCRIPT_ACTIVATION_LOOKUP_TABLE as any)[activationIndex](activationSection);
                                 } catch (error) {
                                     console.log(error);
                                     console.error(`Failed to successfully execute lookup value func for activation index: ${activationIndex}`);
@@ -61,5 +61,9 @@ namespace FrontEndFramework {
                 console.error("Failed to execute body script evaluation logic");
             }
         });
+    }
+
+    public AddEntryToLookupTable(key: string, value: ((activationHtmlElement: HTMLElement) => void)) {
+        this.BODY_SCRIPT_ACTIVATION_LOOKUP_TABLE[key] = value;
     }
 }

@@ -5,9 +5,8 @@ import {SupportedIntegration} from "./enumerations/supported_integration";
 import IGlobalHandle from "./interfaces/i_global_handle";
 import ISupportedIntegrationMetadata from "./interfaces/i_supported_integration_metadata";
 
-// Has a dependency on JQuery. Should be loaded after Turbolinks to register
-// cleanupFunc on 'turbolinks:before-render' event.
-class Base implements ISupportedIntegrationMetadata {
+// Should be loaded after Turbolinks to register cleanupFunc on 'turbolinks:before-render' event.
+export default class Base implements ISupportedIntegrationMetadata {
     public static getInstance(globalHandle: IGlobalHandle = null) {
         if (!Base.instance) {
             if (globalHandle != null) {
