@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
     "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es6", "dom"],
-    "module": "esNext",
-    "moduleResolution": "node",
+    "module": "commonjs",
+    "moduleResolution": "classic",
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*", "javascripts/*"]
@@ -17,7 +18,8 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "strict": true
+    "strict": true,
+    "outDir": "tmp"
   },
   "exclude": [
     "**/*.spec.ts",
@@ -25,5 +27,6 @@
     "vendor",
     "public"
   ],
-  "compileOnSave": false
+  "compileOnSave": false,
+  "files": ["./test/frontendframework-tests.ts"]
 }

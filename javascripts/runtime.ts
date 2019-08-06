@@ -60,7 +60,7 @@ export default class Runtime {
             if ((Base.getInstance().readyFunc != null) &&
                 (typeof (Base.getInstance().readyFunc) === "function")) {
                 try {
-                    Base.getInstance().readyFunc();
+                    (Base.getInstance().readyFunc as (() => void))();
                 } catch (e) {
                     console.error(e);
                 }

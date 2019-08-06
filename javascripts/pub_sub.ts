@@ -244,14 +244,14 @@ class PubSubRelayManager {
 // Internal library state
 // TODO: Manage internal library state without using globals
 let pubSubRelayManager: PubSubRelayManager;
-export let setup = () => { pubSubRelayManager = new PubSubRelayManager(); }
+export let setup = () => { pubSubRelayManager = new PubSubRelayManager(); };
 
 // Treat the first two arguments to this function as being more a part of a stable
 // API vs the the third and fourth arguments which are subject to change.
 export let subscribe = (
     subscriptionIdentifier: string,
     selfIdentifier: string, // should be a CSS selector (JQuery selector) unless providing `selfSetter` argument
-    selfSetter: ((message: any) => void) | null | undefined = undefined,
+    selfSetter: ((message: any) => void) | undefined = undefined,
     objectLifeCycle = ObjectLifeCycle.Transient
 ): any | void => {
     // console.info("Printing FrontEndFramework.PubSub.subscribe args");

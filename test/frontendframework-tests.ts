@@ -2,7 +2,7 @@
 
 import Base from "../javascripts/base";
 import BodyScriptActivator from "../javascripts/body_script_activator";
-import VERSION from "../javascripts/constants//html_input_change_events";
+import VERSION from "../javascripts/constants/version";
 import { ObjectLifeCycle } from "../javascripts/enumerations/object_life_cycle";
 import {MiniHtmlViewModel} from "../javascripts/mini_html_view_model";
 import {HtmlInputElementPublisherAndSubscriber, publish, setup, subscribe} from "../javascripts/pub_sub";
@@ -14,7 +14,7 @@ Runtime.getInstance();
 
 baseInstance.hooks.pre.push(() => {
     BodyScriptActivator.getInstance().AddEntryToLookupTable("#test-case-3-hidden-text-message", (_activationHtmlElement) => {
-        document.getElementById("test-case-3-hidden-text-message").innerHTML = "Body script activation system is working!";
+        (document.getElementById("test-case-3-hidden-text-message") as HTMLElement).innerHTML = "Body script activation system is working!";
     });
 });
 
