@@ -22,5 +22,4 @@ matrix:
 
 before_install:
   - yarn
-  - yarn dist
   - yarn test-preparation
