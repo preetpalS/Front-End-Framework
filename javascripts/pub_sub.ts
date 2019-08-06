@@ -243,7 +243,8 @@ class PubSubRelayManager {
 
 // Internal library state
 // TODO: Manage internal library state without using globals
-const pubSubRelayManager: PubSubRelayManager = new PubSubRelayManager();
+let pubSubRelayManager: PubSubRelayManager;
+export let setup = () => { pubSubRelayManager = new PubSubRelayManager(); }
 
 // Treat the first two arguments to this function as being more a part of a stable
 // API vs the the third and fourth arguments which are subject to change.

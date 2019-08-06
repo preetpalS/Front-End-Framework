@@ -7,7 +7,7 @@ import ISupportedIntegrationMetadata from "./interfaces/i_supported_integration_
 
 // Should be loaded after Turbolinks to register cleanupFunc on 'turbolinks:before-render' event.
 export default class Base implements ISupportedIntegrationMetadata {
-    public static getInstance(globalHandle: IGlobalHandle = null) {
+    public static getInstance(globalHandle?: IGlobalHandle) {
         if (!Base.instance) {
             if (globalHandle != null) {
                 Base.instance = new Base(globalHandle as IGlobalHandle);
@@ -58,7 +58,7 @@ export default class Base implements ISupportedIntegrationMetadata {
             this.SUPPORTED_INTEGRATION = runtimeSupportedIntegration;
 
             // TODO: Add support for other SPA frameworks here.
-            this.pagePreCacheEvent = this.TURBOLINKS_AVAILABLE ? "turbolinks:before-cache" : null;
+            this.pagePreCacheEvent = this.TURBOLINKS_AVAILABLE ? "turbolinks:before-cache" : undefined;
 
             // To be set by user (fired when DOM is ready)
             this.readyFunc = null;
@@ -73,6 +73,6 @@ export default class Base implements ISupportedIntegrationMetadata {
     }
 
     public attachOnGlobalHandle(name: string = "FrontEndFramework") {
-        this.gHndl[name] = this;
+        this.gHndl[name] = this as Base;
     }
 }

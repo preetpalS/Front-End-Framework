@@ -2,11 +2,10 @@
 // WARNING: Must be included after base.ts
 import Base from "./base";
 
-class BodyScriptActivator {
-    public static VERSION = "0.2.0";
+export default class BodyScriptActivator {
     public static BODY_SCRIPT_ACTIVATION_SECTION_SELECTOR = ".front_end_framework-body_script_activator";
     public static BODY_SCRIPT_ACTIVATION_SECTION_DATASET_ACTIVATION_INDEX_KEY = "activationIndex";
-    public static getIntance() {
+    public static getInstance() {
         if (!BodyScriptActivator.instance) {
             this.instance = new BodyScriptActivator(Base.getInstance());
         }
@@ -15,11 +14,11 @@ class BodyScriptActivator {
     private static instance: BodyScriptActivator;
 
     // OPTIMIZE: Investigate using an alternative data structure.
-    private readonly BODY_SCRIPT_ACTIVATION_LOOKUP_TABLE = {};
+    private readonly BODY_SCRIPT_ACTIVATION_LOOKUP_TABLE: {[index: string]: ((activationHtmlElement: HTMLElement) => void)} = {};
     private constructor(
         private base: Base
     ) {
-        base.preReadyHooks.push(() => {
+        this.base.preReadyHooks.push(() => {
             try {
                 // console.log('before func eval');
                 (() => {

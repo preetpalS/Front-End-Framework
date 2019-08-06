@@ -5,8 +5,6 @@ import { ObjectLifeCycle } from "./enumerations/object_life_cycle";
 import IObjectLifeCycleDeterminable from "./interfaces/i_object_life_cycle_determinable";
 
 export namespace MiniHtmlViewModel {
-    export const VERSION = "0.8.0";
-
     export const enum BindingMode { OneTime, OneWayRead, OneWayWrite, TwoWay }
 
     export const enum BindingOperationType { Read, Write }
