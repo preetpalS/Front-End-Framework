@@ -3,3 +3,4 @@
 node_modules/
 *.gem
 frontendframework.d.ts
+dist/test/

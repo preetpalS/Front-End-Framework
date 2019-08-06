@@ -23,13 +23,12 @@ module.exports = function(grunt) {
     });
     grunt.registerTask('test', ['connect', 'qunit']);
     grunt.registerTask('dist', 'Generates dist/ folder contents for release (only full framework currently supported)', () => {
-        throw new Error("Task needs to be updated.");
         const child_process = require('child_process');
         const fs = require('fs');
         if (!fs.existsSync('./dist')) {
             fs.mkdirSync('./dist');
         }
-        child_process.execSync('node node_modules/typescript/bin/tsc -d javascripts/version.ts --types --outDir dist/javascripts', {stdio: 'inherit'});
+        child_process.execSync('node node_modules/typescript/bin/tsc --types --outDir dist', {stdio: 'inherit'});
     });
     grunt.registerTask('clean', 'Removes build artifacts', () => {
         // TODO: Updated clean task.
@@ -60,15 +59,17 @@ module.exports = function(grunt) {
         }
     });
     grunt.registerTask('test-preparation', 'Generates files needed to run test cases', () => {
+        console.log("Depends on `yarn dist` having been run");
         const child_process = require('child_process');
         const fs = require('fs');
+        const fse = require('fs-extra');
         if (!fs.existsSync('./tmp')) {
             fs.mkdirSync('./tmp');
         }
         fs.copyFile('./test/index.html', './tmp/index.html', (error) => {
             if (error) throw error;
         });
-        child_process.execSync('node node_modules/typescript/bin/tsc', {stdio: 'inherit'});
+        fse.copySync('dist', 'tmp');
         child_process.execSync('node node_modules/browserify/bin/cmd.js tmp/test/frontendframework-tests.js > tmp/bundle.js', {stdio: 'inherit'});
     });
 };
