@@ -23,6 +23,7 @@ module.exports = function(grunt) {
     });
     grunt.registerTask('test', ['connect', 'qunit']);
     grunt.registerTask('dist', 'Generates dist/ folder contents for release (only full framework currently supported)', () => {
+        throw new Error("Task needs to be updated.");
         const child_process = require('child_process');
         const fs = require('fs');
         if (!fs.existsSync('./dist')) {
