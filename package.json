@@ -14,8 +14,7 @@
   "directories": {
     "test": "test"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/qunit": "^2.5.3",
     "browserify": "^16.3.0",

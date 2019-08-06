@@ -69,6 +69,6 @@ module.exports = function(grunt) {
             if (error) throw error;
         });
         child_process.execSync('node node_modules/typescript/bin/tsc test/frontendframework-tests.ts --outDir tmp', {stdio: 'inherit'});
-        child_process.execSync('node node_modules\\browserify\\bin\\cmd.js tmp\\test\\frontendframework-tests.js > tmp\\bundle.js', {stdio: 'inherit'});
+        child_process.execSync('node node_modules/browserify/bin/cmd.js tmp/test/frontendframework-tests.js > tmp/bundle.js', {stdio: 'inherit'});
     });
 };
