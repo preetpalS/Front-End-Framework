@@ -1,80 +1,100 @@
 /// <reference path="../node_modules/@types/qunit/index.d.ts"/>
-/// <reference path="../javascripts/all.ts"/>
 
-QUnit.test("version number export", function(assert) {
-    assert.ok(FrontEndFramework.VERSION != null);
+import Base from "../javascripts/base";
+import BodyScriptActivator from "../javascripts/body_script_activator";
+import VERSION from "../javascripts/constants//html_input_change_events";
+import { ObjectLifeCycle } from "../javascripts/enumerations/object_life_cycle";
+import {MiniHtmlViewModel} from "../javascripts/mini_html_view_model";
+import {HtmlInputElementPublisherAndSubscriber, publish, setup, subscribe} from "../javascripts/pub_sub";
+import Runtime from "../javascripts/runtime";
+
+const baseInstance = Base.getInstance(window);
+setup();
+Runtime.getInstance();
+
+baseInstance.hooks.pre.push(() => {
+    BodyScriptActivator.getInstance().AddEntryToLookupTable("#test-case-3-hidden-text-message", (_activationHtmlElement) => {
+        document.getElementById("test-case-3-hidden-text-message").innerHTML = "Body script activation system is working!";
+    });
+});
+
+QUnit.test("version number export", (assert) => {
+    assert.ok(VERSION != null);
 });
 
 //
 // These mainly test to make sure that gHndl and hooks are not overwritten
 //
 
-QUnit.test("global handle basics", function(assert) {
-    assert.notStrictEqual((typeof FrontEndFramework.gHndl), 'undefined');
-    assert.equal(FrontEndFramework.gHndl, window);
+QUnit.test("global handle basics", (assert) => {
+    assert.notStrictEqual((typeof baseInstance.gHndl), "undefined");
+    assert.equal(baseInstance.gHndl, window);
 });
 
-QUnit.test("hooks basics", function(assert) {
-    assert.notStrictEqual((typeof FrontEndFramework.hooks), 'undefined');
-    assert.equal((<any>FrontEndFramework.gHndl).FrontEndFramework.hooks, FrontEndFramework.hooks);
-    assert.ok(FrontEndFramework.hooks.pre instanceof Array);
-    assert.ok(FrontEndFramework.hooks.post instanceof Array);
+QUnit.test("hooks basics", (assert) => {
+    assert.notStrictEqual((typeof baseInstance.hooks), "undefined");
+    // The behaviour as described in the following line is no longer guaranteed:
+    // assert.equal((baseInstance.gHndl as any).baseInstance.hooks, baseInstance.hooks);
+    assert.ok(baseInstance.hooks.pre instanceof Array);
+    assert.ok(baseInstance.hooks.post instanceof Array);
 });
 
 //
-// FrontEndFramework.MiniHtmlViewModel
+// MiniHtmlViewModel
 //
 
-QUnit.test("MiniHtmlViewModel basics", function(assert) {
+QUnit.test("MiniHtmlViewModel basics", (assert) => {
     // Tests if MiniHtmlViewModel namespace is available
-    assert.notStrictEqual(FrontEndFramework.MiniHtmlViewModel, 'undefined');
+    assert.notStrictEqual(MiniHtmlViewModel, "undefined");
 });
 
-QUnit.test("MiniHtmlViewModel ViewModelProperty basics", function(assert) {
-    assert.ok(FrontEndFramework.MiniHtmlViewModel.ViewModelProperty != null);
+QUnit.test("MiniHtmlViewModel ViewModelProperty basics", (assert) => {
+    assert.ok(MiniHtmlViewModel.ViewModelProperty != null);
     assert.ok(
-        (new FrontEndFramework.MiniHtmlViewModel.ViewModelProperty(
-            FrontEndFramework.MiniHtmlViewModel.BindingMode.OneTime,
-            'test'
-        )) instanceof FrontEndFramework.MiniHtmlViewModel.ViewModelProperty
+        (new MiniHtmlViewModel.ViewModelProperty(
+            MiniHtmlViewModel.BindingMode.OneTime,
+            "test"
+        )) instanceof MiniHtmlViewModel.ViewModelProperty
     );
 });
 
-QUnit.test("view sanity test", function(assert) {
-    assert.ok(document.getElementById('fef') != null);
+QUnit.test("view sanity test", (assert) => {
+    assert.ok(document.getElementById("fef") != null);
 });
 
-QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert) {
-    class TestCase1ViewModel extends FrontEndFramework.MiniHtmlViewModel.ViewModel {
-        static SelectItemId = 'test-case-1-select-item';
-        static GroupSelectItem1Id = 'test-case-1-group-select-item-1';
-        static GroupSelectItem2Id = 'test-case-1-group-select-item-2';
-        static GroupSelectItem3Id = 'test-case-1-group-select-item-3';
-        static TwoWayBindingItemId = 'test-case-1-two-way-binding-item';
+QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", (assert) => {
+    class TestCase1ViewModel extends MiniHtmlViewModel.ViewModel {
+        public static SELECT_ITEM_ID = "test-case-1-select-item";
+        public static GROUP_SELECT_ITEM1_ID = "test-case-1-group-select-item-1";
+        public static GROUP_SELECT_ITEM2_ID = "test-case-1-group-select-item-2";
+        public static GROUP_SELECT_ITEM3_ID = "test-case-1-group-select-item-3";
+        public static TWO_WAY_BINDING_ITEM_ID = "test-case-1-two-way-binding-item";
 
         constructor() {
-            super(FrontEndFramework.ObjectLifeCycle.Transient, {
-                bindingMode: FrontEndFramework.MiniHtmlViewModel.BindingMode.OneWayRead,
-                id: TestCase1ViewModel.SelectItemId,
-                changeEvents: 'textInput input'
+            super(ObjectLifeCycle.Transient, {
+                bindingMode: MiniHtmlViewModel.BindingMode.OneWayRead,
+                changeEvents: "textInput input",
+                id: TestCase1ViewModel.SELECT_ITEM_ID,
+
             }, {
-                bindingMode: FrontEndFramework.MiniHtmlViewModel.BindingMode.OneWayRead,
-                id: [TestCase1ViewModel.GroupSelectItem1Id, TestCase1ViewModel.GroupSelectItem2Id,
-                     TestCase1ViewModel.GroupSelectItem3Id]
+                bindingMode: MiniHtmlViewModel.BindingMode.OneWayRead,
+                id: [TestCase1ViewModel.GROUP_SELECT_ITEM1_ID, TestCase1ViewModel.GROUP_SELECT_ITEM2_ID,
+                     TestCase1ViewModel.GROUP_SELECT_ITEM3_ID],
             }, {
-                bindingMode: FrontEndFramework.MiniHtmlViewModel.BindingMode.TwoWay,
-                id: TestCase1ViewModel.TwoWayBindingItemId,
-                changeEvents: 'input'
+                bindingMode: MiniHtmlViewModel.BindingMode.TwoWay,
+                changeEvents: "input",
+                id: TestCase1ViewModel.TWO_WAY_BINDING_ITEM_ID,
+
             });
         }
 
-        onChange(htmlId: string) {
-            switch(htmlId) {
-                case TestCase1ViewModel.SelectItemId:
-                case TestCase1ViewModel.GroupSelectItem1Id:
-                case TestCase1ViewModel.GroupSelectItem2Id:
-                case TestCase1ViewModel.GroupSelectItem3Id:
-                case TestCase1ViewModel.TwoWayBindingItemId:
+        public onChange(htmlId: string) {
+            switch (htmlId) {
+                case TestCase1ViewModel.SELECT_ITEM_ID:
+                case TestCase1ViewModel.GROUP_SELECT_ITEM1_ID:
+                case TestCase1ViewModel.GROUP_SELECT_ITEM2_ID:
+                case TestCase1ViewModel.GROUP_SELECT_ITEM3_ID:
+                case TestCase1ViewModel.TWO_WAY_BINDING_ITEM_ID:
                     assert.ok(true);
                     break;
                 default:
@@ -83,81 +103,81 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
             }
         }
 
-        selectFormValue() : number {
-            return <number>+(this.idToBindableProperty[TestCase1ViewModel.SelectItemId].value);
+        public selectFormValue(): number {
+            return +(this.idToBindableProperty[TestCase1ViewModel.SELECT_ITEM_ID].value) as number;
         }
 
-        GroupSelectForm1Value() : number {
-            return <number>+(this.idToBindableProperty[TestCase1ViewModel.GroupSelectItem1Id].value);
+        public GroupSelectForm1Value(): number {
+            return +(this.idToBindableProperty[TestCase1ViewModel.GROUP_SELECT_ITEM1_ID].value) as number;
         }
 
-        GroupSelectForm2Value() : number {
-            return <number>+(this.idToBindableProperty[TestCase1ViewModel.GroupSelectItem2Id].value);
+        public GroupSelectForm2Value(): number {
+            return +(this.idToBindableProperty[TestCase1ViewModel.GROUP_SELECT_ITEM2_ID].value) as number;
         }
 
-        GroupSelectForm3Value() : number {
-            return <number>+(this.idToBindableProperty[TestCase1ViewModel.GroupSelectItem3Id].value);
+        public GroupSelectForm3Value(): number {
+            return +(this.idToBindableProperty[TestCase1ViewModel.GROUP_SELECT_ITEM3_ID].value) as number;
         }
 
-        TwoWayBindingItemFormValue() : number {
-            return <number>+(this.idToBindableProperty[TestCase1ViewModel.TwoWayBindingItemId].value);
+        public TwoWayBindingItemFormValue(): number {
+            return +(this.idToBindableProperty[TestCase1ViewModel.TWO_WAY_BINDING_ITEM_ID].value) as number;
         }
     }
-    let tc1vm = new TestCase1ViewModel();
+    const tc1vm = new TestCase1ViewModel();
 
     assert.strictEqual(tc1vm.selectFormValue(), 0);
-    assert.strictEqual(<number>+(((<any>document.getElementById(TestCase1ViewModel.SelectItemId)).value)), 0);
-    assert.strictEqual(tc1vm.selectFormValue(), <number>+((<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value));
+    assert.strictEqual(+(((document.getElementById(TestCase1ViewModel.SELECT_ITEM_ID) as any).value)) as number, 0);
+    assert.strictEqual(tc1vm.selectFormValue(), +((document.getElementById(`${TestCase1ViewModel.SELECT_ITEM_ID}`) as HTMLInputElement).value) as number);
     assert.strictEqual(tc1vm.TwoWayBindingItemFormValue(), 0);
 
-    (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value = "21";
+    (document.getElementById(`${TestCase1ViewModel.SELECT_ITEM_ID}`) as HTMLInputElement).value = "21";
 
     if (typeof Event === "function") {
-        (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(new Event("change"));
+        (document.getElementById(`${TestCase1ViewModel.SELECT_ITEM_ID}`) as any).dispatchEvent(new Event("change"));
     } else {
         // IE11 compatibility for test suite
-        let ev1 = (<any>document).createEvent("Event");
+        const ev1 = (document as any).createEvent("Event");
         ev1.initEvent("change", true, true);
-        (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(<Event>ev1);
+        (document.getElementById(`${TestCase1ViewModel.SELECT_ITEM_ID}`) as any).dispatchEvent(ev1 as Event);
     }
 
     // Change Event should not affect value stored in ViewModel
     assert.strictEqual(tc1vm.selectFormValue(), 0);
 
     if (typeof Event === "function") {
-        (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(new Event("input"));
+        (document.getElementById(`${TestCase1ViewModel.SELECT_ITEM_ID}`) as any).dispatchEvent(new Event("input"));
     } else {
         // IE11 compatibility for test suite
-        let ev1 = (<any>document).createEvent("Event");
+        const ev1 = (document as any).createEvent("Event");
         ev1.initEvent("input", true, true);
-        (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(<Event>ev1);
+        (document.getElementById(`${TestCase1ViewModel.SELECT_ITEM_ID}`) as any).dispatchEvent(ev1 as Event);
     }
 
     assert.strictEqual(tc1vm.selectFormValue(), 21);
 
-    (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.TwoWayBindingItemId}`)).value = "3";
+    (document.getElementById(`${TestCase1ViewModel.TWO_WAY_BINDING_ITEM_ID}`) as HTMLInputElement).value = "3";
 
     if (typeof Event === "function") {
-        (<any>document.getElementById(`${TestCase1ViewModel.TwoWayBindingItemId}`)).dispatchEvent(new Event("input"));
+        (document.getElementById(`${TestCase1ViewModel.TWO_WAY_BINDING_ITEM_ID}`) as any).dispatchEvent(new Event("input"));
     } else {
         // IE11 compatibility for test suite
-        let ev1 = (<any>document).createEvent("Event");
+        const ev1 = (document as any).createEvent("Event");
         ev1.initEvent("input", true, true);
-        (<any>document.getElementById(`${TestCase1ViewModel.TwoWayBindingItemId}`)).dispatchEvent(<Event>ev1);
+        (document.getElementById(`${TestCase1ViewModel.TWO_WAY_BINDING_ITEM_ID}`) as any).dispatchEvent(ev1 as Event);
     }
 
     assert.notStrictEqual(tc1vm.TwoWayBindingItemFormValue(), 0); // Implies internal form value resets itself
     assert.strictEqual(tc1vm.TwoWayBindingItemFormValue(), 3);
 
-    (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value = "1";
+    (document.getElementById(`${TestCase1ViewModel.SELECT_ITEM_ID}`) as HTMLInputElement).value = "1";
 
     if (typeof Event === "function") {
-        (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(new Event("textInput"));
+        (document.getElementById(`${TestCase1ViewModel.SELECT_ITEM_ID}`) as any).dispatchEvent(new Event("textInput"));
     } else {
         // IE11 compatibility for test suite
-        let ev1 = (<any>document).createEvent("Event");
+        const ev1 = (document as any).createEvent("Event");
         ev1.initEvent("textInput", true, true);
-        (<any>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).dispatchEvent(<Event>ev1);
+        (document.getElementById(`${TestCase1ViewModel.SELECT_ITEM_ID}`) as any).dispatchEvent(ev1 as Event);
     }
 
     assert.strictEqual(tc1vm.selectFormValue(), 1);
@@ -166,14 +186,14 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
     assert.strictEqual(tc1vm.GroupSelectForm2Value(), 4);
     assert.strictEqual(tc1vm.GroupSelectForm3Value(), 3);
 
-    (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.GroupSelectItem2Id}`)).value = "1";
+    (document.getElementById(`${TestCase1ViewModel.GROUP_SELECT_ITEM2_ID}`) as HTMLInputElement).value = "1";
     if (typeof Event === "function") {
-        (<any>document.getElementById(`${TestCase1ViewModel.GroupSelectItem2Id}`)).dispatchEvent(new Event("change"));
+        (document.getElementById(`${TestCase1ViewModel.GROUP_SELECT_ITEM2_ID}`) as any).dispatchEvent(new Event("change"));
     } else {
         // IE11 compatibility for test suite
-        let ev2 = (<any>document).createEvent("Event");
+        const ev2 = (document as any).createEvent("Event");
         ev2.initEvent("change", true, true);
-        (<any>document.getElementById(`${TestCase1ViewModel.GroupSelectItem2Id}`)).dispatchEvent(<Event>ev2);
+        (document.getElementById(`${TestCase1ViewModel.GROUP_SELECT_ITEM2_ID}`) as any).dispatchEvent(ev2 as Event);
     }
 
     assert.strictEqual(tc1vm.GroupSelectForm1Value(), 3);
@@ -182,80 +202,86 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", function(assert
 
     // Reset Values
 
-    (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.SelectItemId}`)).value = "0";
-    (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.GroupSelectItem1Id}`)).value = "3";
-    (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.GroupSelectItem2Id}`)).value = "4";
-    (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.GroupSelectItem3Id}`)).value = "3";
-    (<HTMLInputElement>document.getElementById(`${TestCase1ViewModel.TwoWayBindingItemId}`)).value = "0";
+    (document.getElementById(`${TestCase1ViewModel.SELECT_ITEM_ID}`) as HTMLInputElement).value = "0";
+    (document.getElementById(`${TestCase1ViewModel.GROUP_SELECT_ITEM1_ID}`) as HTMLInputElement).value = "3";
+    (document.getElementById(`${TestCase1ViewModel.GROUP_SELECT_ITEM2_ID}`) as HTMLInputElement).value = "4";
+    (document.getElementById(`${TestCase1ViewModel.GROUP_SELECT_ITEM3_ID}`) as HTMLInputElement).value = "3";
+    (document.getElementById(`${TestCase1ViewModel.TWO_WAY_BINDING_ITEM_ID}`) as HTMLInputElement).value = "0";
 });
 
 QUnit.test("Pub Sub system is able to relay data to subscribers", (assert) => {
-    new FrontEndFramework.PubSub.HtmlInputElementPublisherAndSubscriber(
-        'test-case-2-color-sync',
-        'test-case-2-select-item-1'
+    // tslint:disable-next-line:no-unused-expression
+    new HtmlInputElementPublisherAndSubscriber(
+        "test-case-2-color-sync",
+        "test-case-2-select-item-1"
     );
 
-    new FrontEndFramework.PubSub.HtmlInputElementPublisherAndSubscriber(
-        'test-case-2-color-sync',
-        'test-case-2-select-item-2'
+    // tslint:disable-next-line:no-unused-expression
+    new HtmlInputElementPublisherAndSubscriber(
+        "test-case-2-color-sync",
+        "test-case-2-select-item-2"
     );
 
-    FrontEndFramework.PubSub.subscribe(
-        'test-case-2-color-sync',
-        '#test-case-2-select-item-3'
+    subscribe(
+        "test-case-2-color-sync",
+        "#test-case-2-select-item-3"
     );
 
     // Single test still fails on IE11 after refresh (used to fail on Firefox as well)
-    assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-1')).value, 'red');
+    assert.strictEqual((document.getElementById("test-case-2-select-item-1") as HTMLInputElement).value, "red");
 
-    assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'green');
-    assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value, 'green');
+    assert.strictEqual((document.getElementById("test-case-2-select-item-2") as HTMLInputElement).value, "green");
+    assert.strictEqual((document.getElementById("test-case-2-select-item-3") as HTMLInputElement).value, "green");
 
-    FrontEndFramework.PubSub.publish('test-case-2-color-sync', 'blue');
+    publish("test-case-2-color-sync", "blue");
 
-    assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-1')).value, 'blue');
-    assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'blue');
-    assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value, 'blue');
+    assert.strictEqual((document.getElementById("test-case-2-select-item-1") as HTMLInputElement).value, "blue");
+    assert.strictEqual((document.getElementById("test-case-2-select-item-2") as HTMLInputElement).value, "blue");
+    assert.strictEqual((document.getElementById("test-case-2-select-item-3") as HTMLInputElement).value, "blue");
 
-    (<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value = 'red';
+    (document.getElementById("test-case-2-select-item-3") as HTMLInputElement).value = "red";
 
-    assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-1')).value, 'blue');
-    assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'blue');
-    assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value, 'red');
+    assert.strictEqual((document.getElementById("test-case-2-select-item-1") as HTMLInputElement).value, "blue");
+    assert.strictEqual((document.getElementById("test-case-2-select-item-2") as HTMLInputElement).value, "blue");
+    assert.strictEqual((document.getElementById("test-case-2-select-item-3") as HTMLInputElement).value, "red");
 
-    (<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value = 'green';
+    (document.getElementById("test-case-2-select-item-2") as HTMLInputElement).value = "green";
     if (typeof Event === "function") {
-        (<HTMLElement>document.getElementById('test-case-2-select-item-2')).dispatchEvent(new Event('change'));
+        (document.getElementById("test-case-2-select-item-2") as HTMLElement).dispatchEvent(new Event("change"));
     } else {
         // IE11 compatibility for test suite
-        let ev3 = (<any>document).createEvent("Event");
+        const ev3 = (document as any).createEvent("Event");
         ev3.initEvent("change", true, true);
-        (<HTMLElement>document.getElementById('test-case-2-select-item-2')).dispatchEvent(<Event>ev3);
+        (document.getElementById("test-case-2-select-item-2") as HTMLElement).dispatchEvent(ev3 as Event);
     }
 
-    assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-1')).value, 'green');
-    assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-2')).value, 'green');
-    assert.strictEqual((<HTMLInputElement>document.getElementById('test-case-2-select-item-3')).value, 'green');
+    assert.strictEqual((document.getElementById("test-case-2-select-item-1") as HTMLInputElement).value, "green");
+    assert.strictEqual((document.getElementById("test-case-2-select-item-2") as HTMLInputElement).value, "green");
+    assert.strictEqual((document.getElementById("test-case-2-select-item-3") as HTMLInputElement).value, "green");
 });
 
 QUnit.test("Body Script Activation system is active", (assert) => {
-    let testFunc = () => {
-        const testCase3HiddenTextMessage = (<any>document).getElementById('test-case-3-hidden-text-message').innerHTML;
+    const testFunc = () => {
+        const testCase3HiddenTextMessage = (document as any).getElementById("test-case-3-hidden-text-message").innerHTML;
         assert.strictEqual(testCase3HiddenTextMessage, "Body script activation system is working!");
-    }
+    };
     const done = assert.async();
-    FrontEndFramework.hooks.post.push(() => {
-        console.log('FEF post hook from test-case-3')
+    baseInstance.hooks.post.push(() => {
+        console.log("FEF post hook from test-case-3");
         testFunc();
         done();
     });
     if (document.readyState === "complete") {
         // FrontEndFramework post hooks have already fired
-        if (FrontEndFramework.hooks.post.length > 0) {
-            if (FrontEndFramework.hooks.post.length > 1) {
+        if (baseInstance.hooks.post.length > 0) {
+            if (baseInstance.hooks.post.length > 1) {
                 assert.ok(false, "FrontEndFramework post hooks invariant violated. GUID: 4f2a5150-79e1-4f24-9489-00f7defe98c1");
             }
-            FrontEndFramework.hooks.post.shift()();
+            (baseInstance.hooks.post.shift() as (() => void))();
         }
     }
+});
+
+QUnit.test("runtime visitLink function is present.", (assert) => {
+    assert.ok(typeof Runtime.visitLink === "function");
 });

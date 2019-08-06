@@ -32,6 +32,8 @@ module.exports = function(grunt) {
         child_process.execSync('node node_modules/typescript/bin/tsc -d javascripts/version.ts --types --outDir dist/javascripts', {stdio: 'inherit'});
     });
     grunt.registerTask('clean', 'Removes build artifacts', () => {
+        // TODO: Updated clean task.
+        throw new Error("Task needs to be updated.");
         const fs = require('fs');
 
         var relevantFiles = [
@@ -66,6 +68,7 @@ module.exports = function(grunt) {
         fs.copyFile('./test/index.html', './tmp/index.html', (error) => {
             if (error) throw error;
         });
-        child_process.execSync('node node_modules/typescript/bin/tsc -d test/frontendframework-tests.ts --types --outFile tmp/frontendframework-tests.js', {stdio: 'inherit'});
+        child_process.execSync('node node_modules/typescript/bin/tsc test/frontendframework-tests.ts --outDir tmp', {stdio: 'inherit'});
+        child_process.execSync('node node_modules\\browserify\\bin\\cmd.js tmp\\test\\frontendframework-tests.js > tmp\\bundle.js', {stdio: 'inherit'});
     });
 };
