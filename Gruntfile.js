@@ -28,7 +28,7 @@ module.exports = function(grunt) {
         if (!fs.existsSync('./dist')) {
             fs.mkdirSync('./dist');
         }
-        child_process.execSync('node node_modules/typescript/bin/tsc --types --outDir dist', {stdio: 'inherit'});
+        child_process.execSync('node node_modules/typescript/bin/tsc', {stdio: 'inherit'});
     });
     grunt.registerTask('clean', 'Removes build artifacts', () => {
         // TODO: Updated clean task.
