@@ -61,26 +61,9 @@ const cleanTask = () => {
     }
 };
 
-const testPreparationTask = () => {
-    console.log("Depends on `yarn dist` having been run");
-    const child_process = require('child_process');
-    const fs = require('fs');
-    const fse = require('fs-extra');
-    if (!fs.existsSync('./tmp')) {
-        fs.mkdirSync('./tmp');
-    }
-    fs.copyFile('./test/index.html', './tmp/index.html', (error) => {
-        if (error) throw error;
-    });
-    fse.copySync('dist', 'tmp');
-    child_process.execSync('node node_modules/browserify/bin/cmd.js tmp/test/frontendframework-tests.js > tmp/bundle.js', {stdio: 'inherit'});
-};
-
 module.exports = (grunt) => {
     require('load-grunt-config')(grunt);
     gruntSetup(grunt);
-    grunt.registerTask('test', ['connect', 'qunit']);
     grunt.registerTask('dist', 'Generates dist/ folder contents for release (only full framework currently supported)', distTask);
     grunt.registerTask('clean', 'Removes build artifacts', cleanTask);
-    grunt.registerTask('test-preparation', 'Generates files needed to run test cases', testPreparationTask);
 };
