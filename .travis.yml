@@ -1,12 +1,10 @@
 os:
   - linux
-  - windows
 
 env:
   - YARN_GPG=no
-
-addons:
-  chrome: stable
+  global:
+    - CC_TEST_REPORTER_ID=ed930157ac952849b64a74178b855acb3b38ee0fb0fc6e8b1f14ae3d55db5032
 
 language: node_js
 
@@ -22,3 +20,11 @@ matrix:
 
 before_install:
   - yarn
+
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
