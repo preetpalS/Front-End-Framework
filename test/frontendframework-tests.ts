@@ -1,5 +1,5 @@
-/// <reference path="../node_modules/@types/qunit/index.d.ts"/>
 
+import {assert} from "chai";
 import Base from "../javascripts/base";
 import BodyScriptActivator from "../javascripts/body_script_activator";
 import VERSION from "../javascripts/constants/version";
@@ -7,6 +7,8 @@ import { ObjectLifeCycle } from "../javascripts/enumerations/object_life_cycle";
 import {MiniHtmlViewModel} from "../javascripts/mini_html_view_model";
 import {HtmlInputElementPublisherAndSubscriber, publish, setup, subscribe} from "../javascripts/pub_sub";
 import Runtime from "../javascripts/runtime";
+import "mocha";
+
 
 const baseInstance = Base.getInstance(window);
 setup();
@@ -18,7 +20,7 @@ baseInstance.hooks.pre.push(() => {
     });
 });
 
-QUnit.test("version number export", (assert) => {
+it("version number export", () => {
     assert.ok(VERSION != null);
 });
 
@@ -26,12 +28,12 @@ QUnit.test("version number export", (assert) => {
 // These mainly test to make sure that gHndl and hooks are not overwritten
 //
 
-QUnit.test("global handle basics", (assert) => {
+it("global handle basics", () => {
     assert.notStrictEqual((typeof baseInstance.gHndl), "undefined");
     assert.equal(baseInstance.gHndl, window);
 });
 
-QUnit.test("hooks basics", (assert) => {
+it("hooks basics", () => {
     assert.notStrictEqual((typeof baseInstance.hooks), "undefined");
     // The behaviour as described in the following line is no longer guaranteed:
     // assert.equal((baseInstance.gHndl as any).baseInstance.hooks, baseInstance.hooks);
@@ -43,12 +45,12 @@ QUnit.test("hooks basics", (assert) => {
 // MiniHtmlViewModel
 //
 
-QUnit.test("MiniHtmlViewModel basics", (assert) => {
+it("MiniHtmlViewModel basics", () => {
     // Tests if MiniHtmlViewModel namespace is available
-    assert.notStrictEqual(MiniHtmlViewModel, "undefined");
+    assert.notStrictEqual(MiniHtmlViewModel as any, "undefined");
 });
 
-QUnit.test("MiniHtmlViewModel ViewModelProperty basics", (assert) => {
+it("MiniHtmlViewModel ViewModelProperty basics", () => {
     assert.ok(MiniHtmlViewModel.ViewModelProperty != null);
     assert.ok(
         (new MiniHtmlViewModel.ViewModelProperty(
@@ -58,11 +60,11 @@ QUnit.test("MiniHtmlViewModel ViewModelProperty basics", (assert) => {
     );
 });
 
-QUnit.test("view sanity test", (assert) => {
+it("view sanity test", () => {
     assert.ok(document.getElementById("fef") != null);
 });
 
-QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", (assert) => {
+it("MiniHtmlViewModel.ViewModel keeps track of changes", () => {
     class TestCase1ViewModel extends MiniHtmlViewModel.ViewModel {
         public static SELECT_ITEM_ID = "test-case-1-select-item";
         public static GROUP_SELECT_ITEM1_ID = "test-case-1-group-select-item-1";
@@ -209,7 +211,7 @@ QUnit.test("MiniHtmlViewModel.ViewModel keeps track of changes", (assert) => {
     (document.getElementById(`${TestCase1ViewModel.TWO_WAY_BINDING_ITEM_ID}`) as HTMLInputElement).value = "0";
 });
 
-QUnit.test("Pub Sub system is able to relay data to subscribers", (assert) => {
+it("Pub Sub system is able to relay data to subscribers", () => {
     // tslint:disable-next-line:no-unused-expression
     new HtmlInputElementPublisherAndSubscriber(
         "test-case-2-color-sync",
@@ -260,12 +262,11 @@ QUnit.test("Pub Sub system is able to relay data to subscribers", (assert) => {
     assert.strictEqual((document.getElementById("test-case-2-select-item-3") as HTMLInputElement).value, "green");
 });
 
-QUnit.test("Body Script Activation system is active", (assert) => {
+it("Body Script Activation system is active", (done) => {
     const testFunc = () => {
         const testCase3HiddenTextMessage = (document as any).getElementById("test-case-3-hidden-text-message").innerHTML;
         assert.strictEqual(testCase3HiddenTextMessage, "Body script activation system is working!");
     };
-    const done = assert.async();
     baseInstance.hooks.post.push(() => {
         console.log("FEF post hook from test-case-3");
         testFunc();
@@ -282,6 +283,6 @@ QUnit.test("Body Script Activation system is active", (assert) => {
     }
 });
 
-QUnit.test("runtime visitLink function is present.", (assert) => {
+it("runtime visitLink function is present.", () => {
     assert.ok(typeof Runtime.visitLink === "function");
 });
