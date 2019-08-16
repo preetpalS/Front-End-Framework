@@ -4,3 +4,6 @@ node_modules/
 *.gem
 frontendframework.d.ts
 dist/test/
+.nyc_output/
+yarn-error.log
+coverage/
