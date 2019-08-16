@@ -24,9 +24,14 @@
   "exclude": [
     "**/*.spec.ts",
     "node_modules",
+    "!node_modules/@types",
     "vendor",
-    "public"
+    "public",
+    "dist",
+    "tmp",
   ],
   "compileOnSave": false,
-  "files": ["./test/frontendframework-tests.ts"]
+  "include": [
+    "javascripts/**/*.ts"
+  ],
 }
