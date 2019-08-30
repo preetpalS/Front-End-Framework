@@ -35,7 +35,7 @@ This library should compile with the strictest TypeScript compiler settings.
 ### Linting Tools
 
 Currently TSLint is configured. No TSLint issues should be present in
-releases (see tsconfig.json).
+releases (see tslint.json).
 
 ### File Names
 
