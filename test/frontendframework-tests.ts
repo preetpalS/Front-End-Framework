@@ -1,5 +1,6 @@
 
 import {assert} from "chai";
+import "mocha";
 import Base from "../javascripts/base";
 import BodyScriptActivator from "../javascripts/body_script_activator";
 import VERSION from "../javascripts/constants/version";
@@ -7,8 +8,6 @@ import { ObjectLifeCycle } from "../javascripts/enumerations/object_life_cycle";
 import {MiniHtmlViewModel} from "../javascripts/mini_html_view_model";
 import {HtmlInputElementPublisherAndSubscriber, publish, setup, subscribe} from "../javascripts/pub_sub";
 import Runtime from "../javascripts/runtime";
-import "mocha";
-
 
 const baseInstance = Base.getInstance(window);
 setup();
