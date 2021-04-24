@@ -4,6 +4,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var base_1 = require("./base");
 var Storage;
 (function (Storage) {
+    var DataPersistenceDuration;
+    (function (DataPersistenceDuration) {
+        DataPersistenceDuration[DataPersistenceDuration["Transient"] = 0] = "Transient";
+        DataPersistenceDuration[DataPersistenceDuration["Session"] = 1] = "Session";
+        DataPersistenceDuration[DataPersistenceDuration["AcrossSessions"] = 2] = "AcrossSessions";
+    })(DataPersistenceDuration = Storage.DataPersistenceDuration || (Storage.DataPersistenceDuration = {}));
     var ExpiringCacheDuration = /** @class */ (function () {
         function ExpiringCacheDuration(expiryDate) {
             this.expiryDate = expiryDate;
@@ -36,9 +42,9 @@ var Storage;
     Storage.IS_SESSION_STORAGE_AVAILABLE = isSessionStorageAvailable;
     var ClientStorageProfile = /** @class */ (function () {
         function ClientStorageProfile() {
-            this.dataPersistanceDurationCapabilities = [0 /* Transient */];
+            this.dataPersistanceDurationCapabilities = [DataPersistenceDuration.Transient];
             if (base_1.default.getInstance().TURBOLINKS_AVAILABLE || Storage.IS_SESSION_STORAGE_AVAILABLE) {
-                this.dataPersistanceDurationCapabilities.push(1 /* Session */);
+                this.dataPersistanceDurationCapabilities.push(DataPersistenceDuration.Session);
             }
         }
         return ClientStorageProfile;
@@ -63,19 +69,19 @@ var Storage;
             this.clientProfile = new ClientStorageProfile();
         }
         ClientStorage.prototype.set = function (key, val, dataPersistenceDuration, cacheExpirationDuration) {
-            if (dataPersistenceDuration === void 0) { dataPersistenceDuration = 1 /* Session */; }
+            if (dataPersistenceDuration === void 0) { dataPersistenceDuration = DataPersistenceDuration.Session; }
             try {
                 // TODO: Remove upon adding support for DataPersistenceDuration.AcrossSessions
                 if (cacheExpirationDuration != null) {
                     console.error("cacheExpirationDuration ignored in Database#set.");
                 }
                 switch (dataPersistenceDuration) {
-                    case 0 /* Transient */:
+                    case DataPersistenceDuration.Transient:
                         break;
-                    case 1 /* Session */:
+                    case DataPersistenceDuration.Session:
                         sessionStorage.setItem(key, val);
                         break;
-                    case 2 /* AcrossSessions */:
+                    case DataPersistenceDuration.AcrossSessions:
                         break;
                     default:
                         break;
@@ -91,11 +97,11 @@ var Storage;
             try {
                 if (dataPersistenceDuration != null) {
                     switch (dataPersistenceDuration) {
-                        case 0 /* Transient */:
+                        case DataPersistenceDuration.Transient:
                             break;
-                        case 1 /* Session */:
+                        case DataPersistenceDuration.Session:
                             return sessionStorage.getItem(key);
-                        case 2 /* AcrossSessions */:
+                        case DataPersistenceDuration.AcrossSessions:
                             break;
                         default:
                             break;

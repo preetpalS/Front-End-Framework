@@ -2,8 +2,21 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var base_1 = require("./base");
 var html_input_change_events_1 = require("./constants/html_input_change_events");
+var object_life_cycle_1 = require("./enumerations/object_life_cycle");
 var MiniHtmlViewModel;
 (function (MiniHtmlViewModel) {
+    var BindingMode;
+    (function (BindingMode) {
+        BindingMode[BindingMode["OneTime"] = 0] = "OneTime";
+        BindingMode[BindingMode["OneWayRead"] = 1] = "OneWayRead";
+        BindingMode[BindingMode["OneWayWrite"] = 2] = "OneWayWrite";
+        BindingMode[BindingMode["TwoWay"] = 3] = "TwoWay";
+    })(BindingMode = MiniHtmlViewModel.BindingMode || (MiniHtmlViewModel.BindingMode = {}));
+    var BindingOperationType;
+    (function (BindingOperationType) {
+        BindingOperationType[BindingOperationType["Read"] = 0] = "Read";
+        BindingOperationType[BindingOperationType["Write"] = 1] = "Write";
+    })(BindingOperationType = MiniHtmlViewModel.BindingOperationType || (MiniHtmlViewModel.BindingOperationType = {}));
     // Should inherit from this class instead of instantiating it directly.
     var ViewModel = /** @class */ (function () {
         function ViewModel(objectLifeCycle) {
@@ -14,7 +27,7 @@ var MiniHtmlViewModel;
             this.objectLifeCycle = objectLifeCycle;
             this.idToBindableProperty = {};
             bindableProperties.forEach(this.processBindableProperty, this);
-            if (this.objectLifeCycle === 0 /* Transient */ &&
+            if (this.objectLifeCycle === object_life_cycle_1.ObjectLifeCycle.Transient &&
                 base_1.default.getInstance().SINGLE_PAGE_APPLICATION_SUPPORT &&
                 (base_1.default.getInstance().hooks.pageCleanup != null)) {
                 base_1.default.getInstance().hooks.pageCleanup.push(this.genTeardownFunc(this));
@@ -48,7 +61,7 @@ var MiniHtmlViewModel;
         ViewModel.prototype.teardown = function (overrideObjectLifeCycle) {
             var _this = this;
             if (overrideObjectLifeCycle === void 0) { overrideObjectLifeCycle = false; }
-            if (this.objectLifeCycle === 2 /* InfinitePersistence */ &&
+            if (this.objectLifeCycle === object_life_cycle_1.ObjectLifeCycle.InfinitePersistence &&
                 !overrideObjectLifeCycle) {
                 console.error("Failed to teardown FrontEndFramework.MiniHtmlViewModel.ViewModel instance due to objectLifeCycle not being overridden");
                 return;
@@ -119,20 +132,20 @@ var MiniHtmlViewModel;
         };
         // Triggers change in UI to match value of property in idToBindableProperty.
         ViewModel.prototype.handlePropertyChangedEvent = function (propertyId, bindingOperationType) {
-            if (bindingOperationType === void 0) { bindingOperationType = 1 /* Write */; }
+            if (bindingOperationType === void 0) { bindingOperationType = BindingOperationType.Write; }
             try {
                 var bindableProperty = this.idToBindableProperty[propertyId];
                 switch (bindingOperationType) {
-                    case 1 /* Write */:
+                    case BindingOperationType.Write:
                         switch (bindableProperty.bindingMode) {
-                            case 0 /* OneTime */:
-                            case 1 /* OneWayRead */:
+                            case BindingMode.OneTime:
+                            case BindingMode.OneWayRead:
                                 console.warn("NOOP");
                                 break;
-                            case 2 /* OneWayWrite */:
+                            case BindingMode.OneWayWrite:
                                 ViewModel.setValueForBindableProperty(bindableProperty, propertyId);
                                 break;
-                            case 3 /* TwoWay */:
+                            case BindingMode.TwoWay:
                                 ViewModel.setValueForBindableProperty(bindableProperty, propertyId);
                                 break;
                             default:
@@ -140,16 +153,16 @@ var MiniHtmlViewModel;
                                 break;
                         }
                         break;
-                    case 0 /* Read */:
+                    case BindingOperationType.Read:
                         switch (bindableProperty.bindingMode) {
-                            case 0 /* OneTime */:
-                            case 2 /* OneWayWrite */:
+                            case BindingMode.OneTime:
+                            case BindingMode.OneWayWrite:
                                 console.warn("NOOP");
                                 break;
-                            case 1 /* OneWayRead */:
+                            case BindingMode.OneWayRead:
                                 ViewModel.retrieveAndSetValueForBindableProperty(bindableProperty, propertyId);
                                 break;
-                            case 3 /* TwoWay */:
+                            case BindingMode.TwoWay:
                                 ViewModel.retrieveAndSetValueForBindableProperty(bindableProperty, propertyId);
                                 break;
                             default:
@@ -172,23 +185,23 @@ var MiniHtmlViewModel;
             try {
                 // Store and attach bindable properties that do not have a OneTime bindingMode.
                 // Note that OneTime bindingMode properties are not stored.
-                if (bP.bindingMode !== 0 /* OneTime */) {
+                if (bP.bindingMode !== BindingMode.OneTime) {
                     bP.viewModelRef = this;
                     this.idToBindableProperty[bindablePropertyId] = bP;
                 }
                 // BindingMode.OneTime is set always
-                if ((bP.value !== undefined) || (bP.bindingMode === 0 /* OneTime */)) {
+                if ((bP.value !== undefined) || (bP.bindingMode === BindingMode.OneTime)) {
                     ViewModel.setValueForBindableProperty(bP, bindablePropertyId);
                 }
                 else {
                     ViewModel.retrieveAndSetValueForBindableProperty(bP, bindablePropertyId);
                 }
                 // Attach onChange event handler for TwoWay and OneWayRead properties.
-                if (bP.bindingMode === 3 /* TwoWay */ ||
-                    bP.bindingMode === 1 /* OneWayRead */) {
+                if (bP.bindingMode === BindingMode.TwoWay ||
+                    bP.bindingMode === BindingMode.OneWayRead) {
                     var boundedFunc_1 = function (_ev) {
                         console.info("Detected change in: " + bindablePropertyId);
-                        _this.handlePropertyChangedEvent(bindablePropertyId, 0 /* Read */);
+                        _this.handlePropertyChangedEvent(bindablePropertyId, BindingOperationType.Read);
                         if (bP.onChangeFunc != null) {
                             bP.onChangeFunc(bP.viewModelRef);
                         }
@@ -260,7 +273,7 @@ var MiniHtmlViewModel;
             this.converterFunc = converterFunc;
             this.viewModelRef = viewModelRef;
             this.changeEvents = changeEvents;
-            this.bindingMode = 0 /* OneTime */;
+            this.bindingMode = BindingMode.OneTime;
         }
         return ViewModelPropertyOneTimeBinding;
     }());
@@ -276,7 +289,7 @@ var MiniHtmlViewModel;
             this.onChangeFunc = onChangeFunc;
             this.viewModelRef = viewModelRef;
             this.changeEvents = changeEvents;
-            this.bindingMode = 1 /* OneWayRead */;
+            this.bindingMode = BindingMode.OneWayRead;
         }
         return ViewModelPropertyOneWayReadBinding;
     }());
@@ -291,7 +304,7 @@ var MiniHtmlViewModel;
             this.converterFunc = converterFunc;
             this.viewModelRef = viewModelRef;
             this.changeEvents = changeEvents;
-            this.bindingMode = 2 /* OneWayWrite */;
+            this.bindingMode = BindingMode.OneWayWrite;
         }
         return ViewModelPropertyOneWayWriteBinding;
     }());
@@ -309,7 +322,7 @@ var MiniHtmlViewModel;
             this.converterFunc = converterFunc;
             this.viewModelRef = viewModelRef;
             this.changeEvents = changeEvents;
-            this.bindingMode = 3 /* TwoWay */;
+            this.bindingMode = BindingMode.TwoWay;
         }
         return ViewModelPropertyTwoWayBinding;
     }());

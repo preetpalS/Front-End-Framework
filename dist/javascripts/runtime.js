@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var base_1 = require("./base");
+var supported_integration_1 = require("./enumerations/supported_integration");
 var Runtime = /** @class */ (function () {
     function Runtime() {
         var _this = this;
@@ -42,7 +43,7 @@ var Runtime = /** @class */ (function () {
         };
         if (base_1.default.getInstance().SINGLE_PAGE_APPLICATION_SUPPORT) {
             // TODO: Add support for other SPA frameworks here.
-            if (base_1.default.getInstance().SUPPORTED_INTEGRATION === 1 /* Turbolinks */ &&
+            if (base_1.default.getInstance().SUPPORTED_INTEGRATION === supported_integration_1.SupportedIntegration.Turbolinks &&
                 base_1.default.getInstance().TURBOLINKS_AVAILABLE) {
                 document.addEventListener("turbolinks:before-render", this.cleanupFunc);
                 if (base_1.default.getInstance().hooks.pageCleanup != null) {
@@ -105,11 +106,11 @@ var Runtime = /** @class */ (function () {
             }
         };
         switch (base_1.default.getInstance().SUPPORTED_INTEGRATION) {
-            case 1 /* Turbolinks */:
+            case supported_integration_1.SupportedIntegration.Turbolinks:
                 document.addEventListener("turbolinks:load", READY_FUNC);
                 break;
-            case 0 /* NoFramework */:
-            case 2 /* WindowsUWP */:
+            case supported_integration_1.SupportedIntegration.NoFramework:
+            case supported_integration_1.SupportedIntegration.WindowsUWP:
             default:
                 document.addEventListener("DOMContentLoaded", READY_FUNC);
         }
@@ -125,7 +126,7 @@ var Runtime = /** @class */ (function () {
             if (base_1.default.getInstance().SINGLE_PAGE_APPLICATION_SUPPORT && !((forceReload != null) && forceReload)) {
                 // TODO: Add support for other SPA frameworks here.
                 if ((base_1.default.getInstance().SUPPORTED_INTEGRATION ===
-                    1 /* Turbolinks */) &&
+                    supported_integration_1.SupportedIntegration.Turbolinks) &&
                     (typeof (base_1.default.getInstance().gHndl.Turbolinks.visit) === "function")) {
                     base_1.default.getInstance().gHndl.Turbolinks.visit(link);
                 }

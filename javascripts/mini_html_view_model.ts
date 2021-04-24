@@ -5,9 +5,17 @@ import { ObjectLifeCycle } from "./enumerations/object_life_cycle";
 import IObjectLifeCycleDeterminable from "./interfaces/i_object_life_cycle_determinable";
 
 export namespace MiniHtmlViewModel {
-    export const enum BindingMode { OneTime, OneWayRead, OneWayWrite, TwoWay }
+    export enum BindingMode {
+        OneTime = 0,
+        OneWayRead = 1,
+        OneWayWrite = 2,
+        TwoWay = 3
+    }
 
-    export const enum BindingOperationType { Read, Write }
+    export enum BindingOperationType {
+        Read = 0,
+        Write = 1
+    }
 
     export interface IViewModelPropertyBase<T extends ViewModel> {
         readonly bindingMode: BindingMode;

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var base_1 = require("./base");
 var html_input_change_events_1 = require("./constants/html_input_change_events");
+var object_life_cycle_1 = require("./enumerations/object_life_cycle");
 var storage_1 = require("./storage");
 var PubSubRelay = /** @class */ (function () {
     function PubSubRelay(subscriptionIdentifier) {
@@ -102,7 +103,7 @@ var PubSubRelay = /** @class */ (function () {
         }
     };
     PubSubRelay.prototype.handleNavigation = function () {
-        if (this.objectLifeCycle === 0 /* Transient */) {
+        if (this.objectLifeCycle === object_life_cycle_1.ObjectLifeCycle.Transient) {
             return;
         } // Short-circuit if item will be PubSubRelay itself will be destroyed anyways
         var toRemove = []; // indices (this.pubSubRelaySubscribers) of subscribers to remove
@@ -115,13 +116,13 @@ var PubSubRelay = /** @class */ (function () {
             this.pubSubRelaySubscribers.splice(toRemove.pop(), 1);
         }
     };
-    PubSubRelay.DEFAULT_OBJECT_LIFE_CYCLE = 0 /* Transient */;
+    PubSubRelay.DEFAULT_OBJECT_LIFE_CYCLE = object_life_cycle_1.ObjectLifeCycle.Transient;
     return PubSubRelay;
 }());
 var PubSubRelayStorage = /** @class */ (function () {
     function PubSubRelayStorage() {
         // TODO: Allow the PubSubRelayStorage to have a transient object life cycle
-        this.objectLifeCycle = 2 /* InfinitePersistence */;
+        this.objectLifeCycle = object_life_cycle_1.ObjectLifeCycle.InfinitePersistence;
         this.mapFromSubscriptionIdentifierToPubSubRelays = {};
     }
     PubSubRelayStorage.prototype.get = function (subscriptionIdentifier) {
@@ -136,7 +137,7 @@ var PubSubRelayStorage = /** @class */ (function () {
         Object.keys(this.mapFromSubscriptionIdentifierToPubSubRelays).forEach(function (subscriptionIdentifier) {
             var pubSubRelayInstance = _this.mapFromSubscriptionIdentifierToPubSubRelays[subscriptionIdentifier];
             pubSubRelayInstance.handleNavigation();
-            if (pubSubRelayInstance.objectLifeCycle === 0 /* Transient */) {
+            if (pubSubRelayInstance.objectLifeCycle === object_life_cycle_1.ObjectLifeCycle.Transient) {
                 // Remove pubSubRelayInstance
                 keysToDelete.push(subscriptionIdentifier);
             }
@@ -156,7 +157,7 @@ var PubSubRelayStorage = /** @class */ (function () {
 var PubSubRelayManager = /** @class */ (function () {
     function PubSubRelayManager() {
         // TODO: Allow the PubSubRelayManager to have a transient object life cycle
-        this.objectLifeCycle = 2 /* InfinitePersistence */;
+        this.objectLifeCycle = object_life_cycle_1.ObjectLifeCycle.InfinitePersistence;
         this.pubSubRelayStorage = new PubSubRelayStorage();
         if (base_1.default.getInstance().SINGLE_PAGE_APPLICATION_SUPPORT) {
             base_1.default.getInstance().cleanupHooks.push(this.genHandleNavigationFunc(this));
@@ -171,7 +172,7 @@ var PubSubRelayManager = /** @class */ (function () {
     };
     PubSubRelayManager.prototype.handleSubscription = function (subscriptionIdentifier, selfIdentifier, // should be a CSS selector (JQuery selector)
     selfSetter, objectLifeCycle) {
-        if (objectLifeCycle === void 0) { objectLifeCycle = 0 /* Transient */; }
+        if (objectLifeCycle === void 0) { objectLifeCycle = object_life_cycle_1.ObjectLifeCycle.Transient; }
         var pubSubRelay = this.handlePubSubRelayInitializationAndRetrieval(subscriptionIdentifier);
         // TODO: See if given `objectLifeCycle` is greater than designated objectLifeCycle,
         // if it is, change how it is managed (not relevant until object life cycle other
@@ -212,7 +213,7 @@ exports.setup = function () { pubSubRelayManager = new PubSubRelayManager(); };
 exports.subscribe = function (subscriptionIdentifier, selfIdentifier, // should be a CSS selector (JQuery selector) unless providing `selfSetter` argument
 selfSetter, objectLifeCycle) {
     if (selfSetter === void 0) { selfSetter = undefined; }
-    if (objectLifeCycle === void 0) { objectLifeCycle = 0 /* Transient */; }
+    if (objectLifeCycle === void 0) { objectLifeCycle = object_life_cycle_1.ObjectLifeCycle.Transient; }
     // console.info("Printing FrontEndFramework.PubSub.subscribe args");
     // console.info(subscriptionIdentifier);
     // console.info(selfIdentifier);
@@ -232,7 +233,7 @@ var PubSubSessionStorageSubscriber = /** @class */ (function () {
     function PubSubSessionStorageSubscriber(subscriptionIdentifier, storageKey, publishExistingStoredValue) {
         if (publishExistingStoredValue === void 0) { publishExistingStoredValue = true; }
         // TODO: Support other object life cycles
-        this.objectLifeCycle = 2 /* InfinitePersistence */;
+        this.objectLifeCycle = object_life_cycle_1.ObjectLifeCycle.InfinitePersistence;
         this.storageKey = storageKey;
         // TODO: Short-Circuit if session storage not available
         if (!storage_1.Storage.IS_SESSION_STORAGE_AVAILABLE) {
@@ -261,7 +262,7 @@ exports.PubSubSessionStorageSubscriber = PubSubSessionStorageSubscriber;
 var HtmlInputElementPublisherAndSubscriber = /** @class */ (function () {
     function HtmlInputElementPublisherAndSubscriber(subscriptionIdentifier, htmlId, onChangeFunc, objectLifeCycle, publishValuePredicate) {
         if (onChangeFunc === void 0) { onChangeFunc = null; }
-        if (objectLifeCycle === void 0) { objectLifeCycle = 0 /* Transient */; }
+        if (objectLifeCycle === void 0) { objectLifeCycle = object_life_cycle_1.ObjectLifeCycle.Transient; }
         if (publishValuePredicate === void 0) { publishValuePredicate = false; }
         var _this = this;
         this.subscriptionIdentifier = subscriptionIdentifier;
@@ -313,21 +314,21 @@ var HtmlInputElementPublisherAndSubscriber = /** @class */ (function () {
         html_input_change_events_1.default.split(" ").forEach(function (evString) {
             document.getElementById(htmlId).addEventListener(evString, _this._publishOnChangeFunc);
         });
-        if (this.objectLifeCycle === 0 /* Transient */ &&
+        if (this.objectLifeCycle === object_life_cycle_1.ObjectLifeCycle.Transient &&
             base_1.default.getInstance().SINGLE_PAGE_APPLICATION_SUPPORT &&
             (base_1.default.getInstance().hooks.pageCleanup != null)) {
             base_1.default.getInstance().hooks.pageCleanup.push(this.genHandleNavigationFunc(this));
         }
     }
     HtmlInputElementPublisherAndSubscriber.prototype.handleNavigation = function () {
-        if (this.objectLifeCycle === 0 /* Transient */) {
+        if (this.objectLifeCycle === object_life_cycle_1.ObjectLifeCycle.Transient) {
             this.teardown();
         }
     };
     HtmlInputElementPublisherAndSubscriber.prototype.teardown = function (overrideObjectLifeCycle) {
         var _this = this;
         if (overrideObjectLifeCycle === void 0) { overrideObjectLifeCycle = false; }
-        if (this.objectLifeCycle === 2 /* InfinitePersistence */ &&
+        if (this.objectLifeCycle === object_life_cycle_1.ObjectLifeCycle.InfinitePersistence &&
             !overrideObjectLifeCycle) {
             console.error("Failed to teardown FrontEndFramework.PubSub.HtmlInputElementPublisherAndSubscrber instance due to objectLifeCycle not being overridden");
             return;

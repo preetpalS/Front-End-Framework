@@ -3,7 +3,7 @@
 
 "use strict";
 
-namespace FrontEndFramework {
+export namespace FrontEndFramework {
 export namespace ScreenDimensions {
     export interface ScreenDimensions {
         availableHeight : number;

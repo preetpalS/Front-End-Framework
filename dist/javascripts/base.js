@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// This file contains types and internal state used by the framework that individual components
+// in the library need knowledge of such as FrontEndFramework.ObjectLifeCycle.
+var supported_integration_1 = require("./enumerations/supported_integration");
 // Should be loaded after Turbolinks to register cleanupFunc on 'turbolinks:before-render' event.
 var Base = /** @class */ (function () {
     function Base(gHndl) {
@@ -9,13 +12,13 @@ var Base = /** @class */ (function () {
         this.WINDOWS_UWP_ENVIRONMENT = (typeof gHndl.Windows !== "undefined") && (gHndl.Windows != null);
         this.TURBOLINKS_AVAILABLE = (typeof gHndl.Turbolinks !== "undefined") && (gHndl.Turbolinks != null);
         this.SINGLE_PAGE_APPLICATION_SUPPORT = this.TURBOLINKS_AVAILABLE;
-        var runtimeSupportedIntegration = 0 /* NoFramework */;
+        var runtimeSupportedIntegration = supported_integration_1.SupportedIntegration.NoFramework;
         // TODO: Support Turbolinks in Windows UWP Environment
         if (this.WINDOWS_UWP_ENVIRONMENT) {
-            runtimeSupportedIntegration = 2 /* WindowsUWP */;
+            runtimeSupportedIntegration = supported_integration_1.SupportedIntegration.WindowsUWP;
         }
         else if (this.TURBOLINKS_AVAILABLE) {
-            runtimeSupportedIntegration = 1 /* Turbolinks */;
+            runtimeSupportedIntegration = supported_integration_1.SupportedIntegration.Turbolinks;
         }
         this.SUPPORTED_INTEGRATION = runtimeSupportedIntegration;
         // TODO: Add support for other SPA frameworks here.

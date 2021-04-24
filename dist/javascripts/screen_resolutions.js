@@ -1,5 +1,6 @@
 // Does not really depend on anything
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var FrontEndFramework;
 (function (FrontEndFramework) {
     var ScreenDimensions;
@@ -13,5 +14,5 @@ var FrontEndFramework;
             };
         };
     })(ScreenDimensions = FrontEndFramework.ScreenDimensions || (FrontEndFramework.ScreenDimensions = {}));
-})(FrontEndFramework || (FrontEndFramework = {}));
+})(FrontEndFramework = exports.FrontEndFramework || (exports.FrontEndFramework = {}));
 //# sourceMappingURL=screen_resolutions.js.map

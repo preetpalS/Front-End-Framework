@@ -3,7 +3,11 @@
 import Base from "./base";
 
 export namespace Storage {
-    export const enum DataPersistenceDuration { Transient, Session, AcrossSessions }
+    export enum DataPersistenceDuration {
+        Transient = 0,
+        Session = 1,
+        AcrossSessions = 2
+    }
     export interface ICacheExpirationDuration {
         indefinite?: boolean;
         expiryDate?: Date;
