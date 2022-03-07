@@ -39,7 +39,8 @@
   },
   "files": [
     "dist",
-    "src"
+    "javascripts",
+    "stylesheets"
   ],
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
