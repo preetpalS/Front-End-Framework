@@ -1,6 +1,6 @@
 {
   "name": "frontendframework",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Front end framework",
   "main": "dist/frontendframework.js",
   "types": "dist/frontendframework.d.ts",
@@ -38,10 +38,8 @@
     "test": "mocha"
   },
   "files": [
-    "app/",
-    "dist/frontendframework.js",
-    "dist/frontendframework.d.ts",
-    "README.md"
+    "dist",
+    "src"
   ],
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
