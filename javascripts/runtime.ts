@@ -38,8 +38,8 @@ export default class Runtime {
                 if (Base.getInstance().hooks.pageCleanup != null) {
                     document.addEventListener("turbolinks:before-render", () => {
                         // Fire functions in hooks.pageCleanup Array
-                        while ((Base.getInstance().hooks.pageCleanup as Array<() => void>).length > 0) {
-                            try { ((Base.getInstance().hooks.pageCleanup as Array<() => void>).shift() as (() => void))(); } catch (e) { console.error(e); }
+                        while ((Base.getInstance().hooks.pageCleanup as (() => void)[]).length > 0) {
+                            try { ((Base.getInstance().hooks.pageCleanup as (() => void)[]).shift() as (() => void))(); } catch (e) { console.error(e); }
                         }
                     });
                 }

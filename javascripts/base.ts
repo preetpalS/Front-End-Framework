@@ -24,19 +24,19 @@ export default class Base implements ISupportedIntegrationMetadata {
     public readonly SUPPORTED_INTEGRATION: SupportedIntegration;
     public pagePreCacheEvent?: string;
     public readyFunc: (() => void)|null;
-    public readonly cleanupHooks: Array<() => void>;
-    public readonly preReadyHooks: Array<() => void>;
-    public readonly postReadyHooks: Array<() => void>;
+    public readonly cleanupHooks: (() => void)[];
+    public readonly preReadyHooks: (() => void)[];
+    public readonly postReadyHooks: (() => void)[];
     public stateToClearOnNavigation: any = {};
     public readonly hooks: {
         // Invoked after document is ready (but before MiniHtmlViewModel.readyFunc)
-        pre: Array<() => void>,
+        pre: (() => void)[],
 
         // Invoked after document is ready (but after MiniHtmlViewModel.readyFunc)
-        post: Array<() => void>,
+        post: (() => void)[],
 
         // Experimental: Only makes sense if used with Turbolinks
-        pageCleanup?: Array<() => void>
+        pageCleanup?: (() => void)[]
     };
 
     private constructor(

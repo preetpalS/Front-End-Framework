@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ObjectLifeCycle = void 0;
 // A part of the SPA suppport
 var ObjectLifeCycle;
 (function (ObjectLifeCycle) {

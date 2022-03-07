@@ -29,12 +29,12 @@ var BodyScriptActivator = /** @class */ (function () {
                                 }
                                 catch (error) {
                                     console.log(error);
-                                    console.error("Failed to successfully execute lookup value func for activation index: " + activationIndex);
+                                    console.error("Failed to successfully execute lookup value func for activation index: ".concat(activationIndex));
                                 }
                                 // console.log(`after body script invocation (activationIndex: ${activationIndex})`);
                             }
                             else {
-                                console.error("Refusing to re-activate activationIndex: " + activationIndex);
+                                console.error("Refusing to re-activate activationIndex: ".concat(activationIndex));
                             }
                         }
                     }

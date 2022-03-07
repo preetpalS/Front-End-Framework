@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SupportedIntegration = void 0;
 var SupportedIntegration;
 (function (SupportedIntegration) {
     SupportedIntegration[SupportedIntegration["NoFramework"] = 0] = "NoFramework";

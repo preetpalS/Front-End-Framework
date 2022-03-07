@@ -179,8 +179,8 @@ class PubSubRelayManager {
     private pubSubRelayStorage: PubSubRelayStorage = new PubSubRelayStorage();
     constructor() {
         if (Base.getInstance().SINGLE_PAGE_APPLICATION_SUPPORT) {
-            (Base.getInstance().cleanupHooks as Array<() => void>).push(this.genHandleNavigationFunc(this));
-            (Base.getInstance().postReadyHooks as Array<() => void>).push(this.genRebroadcastLastMessagesFunc(this));
+            (Base.getInstance().cleanupHooks as (() => void)[]).push(this.genHandleNavigationFunc(this));
+            (Base.getInstance().postReadyHooks as (() => void)[]).push(this.genRebroadcastLastMessagesFunc(this));
         }
     }
 
@@ -396,7 +396,7 @@ export class HtmlInputElementPublisherAndSubscriber implements IObjectLifeCycleD
         if (this.objectLifeCycle === ObjectLifeCycle.Transient &&
             Base.getInstance().SINGLE_PAGE_APPLICATION_SUPPORT &&
             (Base.getInstance().hooks.pageCleanup != null)) {
-            (Base.getInstance().hooks.pageCleanup as Array<() => void>).push(this.genHandleNavigationFunc(this));
+            (Base.getInstance().hooks.pageCleanup as (() => void)[]).push(this.genHandleNavigationFunc(this));
         }
     }
 

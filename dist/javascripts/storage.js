@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Storage = void 0;
 // Relies on ./base.ts because this library should be able to take advantage of Turbolinks not reloading page.
 var base_1 = require("./base");
 var Storage;
@@ -118,7 +119,7 @@ var Storage;
             }
             return null;
         };
-        ClientStorage.prototype.forceCacheExpiry = function (key) { console.error("Unimplemented Database#forceCacheExpiry: Failed to expire key: " + key); throw key; };
+        ClientStorage.prototype.forceCacheExpiry = function (key) { console.error("Unimplemented Database#forceCacheExpiry: Failed to expire key: ".concat(key)); throw key; };
         return ClientStorage;
     }());
     Storage.ClientStorage = ClientStorage;

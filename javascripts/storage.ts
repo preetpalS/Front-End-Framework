@@ -6,7 +6,7 @@ export namespace Storage {
     export enum DataPersistenceDuration {
         Transient = 0,
         Session = 1,
-        AcrossSessions = 2
+        AcrossSessions = 2,
     }
     export interface ICacheExpirationDuration {
         indefinite?: boolean;

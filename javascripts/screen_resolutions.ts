@@ -4,7 +4,7 @@
 "use strict";
 
 export namespace FrontEndFramework {
-export namespace ScreenDimensions {
+export namespace ScreenResolutions {
     export interface ScreenDimensions {
         availableHeight : number;
         availableWidth : number;
@@ -12,13 +12,11 @@ export namespace ScreenDimensions {
         deviceWidth : number;
     }
 
-    export var GetScreenDimensions = function() : ScreenDimensions {
-        return {
-            availableHeight: window.screen.availHeight,
-            availableWidth: window.screen.availWidth,
-            deviceHeight: window.screen.height,
-            deviceWidth: window.screen.width
-        };
-    }
+    export const GET_SCREEN_DIMENSIONS = (): ScreenDimensions => ({
+        availableHeight: window.screen.availHeight,
+        availableWidth: window.screen.availWidth,
+        deviceHeight: window.screen.height,
+        deviceWidth: window.screen.width,
+    });
 }
 }

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MiniHtmlViewModel = void 0;
 var base_1 = require("./base");
 var html_input_change_events_1 = require("./constants/html_input_change_events");
 var object_life_cycle_1 = require("./enumerations/object_life_cycle");
@@ -67,7 +68,7 @@ var MiniHtmlViewModel;
                 return;
             }
             Object.keys(this.idToBindableProperty).forEach(function (id) {
-                console.log("Cleaning up event handlers set up in ViewModel (id: " + id + ")");
+                console.log("Cleaning up event handlers set up in ViewModel (id: ".concat(id, ")"));
                 var bP = _this.idToBindableProperty[id];
                 switch (bP.id.constructor) {
                     case String:
@@ -100,7 +101,7 @@ var MiniHtmlViewModel;
                         }
                         break;
                     default:
-                        console.error("Unacceptable id detected in IViewModelPropertyBase: " + bP);
+                        console.error("Unacceptable id detected in IViewModelPropertyBase: ".concat(bP));
                         break;
                 }
             }, this);
@@ -126,7 +127,7 @@ var MiniHtmlViewModel;
                     }
                     break;
                 default:
-                    console.error("Unacceptable id detected in IViewModelPropertyBase: " + bP);
+                    console.error("Unacceptable id detected in IViewModelPropertyBase: ".concat(bP));
                     break;
             }
         };
@@ -149,7 +150,7 @@ var MiniHtmlViewModel;
                                 ViewModel.setValueForBindableProperty(bindableProperty, propertyId);
                                 break;
                             default:
-                                console.warn("Invalid bindingMode (" + bindableProperty.bindingMode + ") for Binding Property associated with id: " + propertyId);
+                                console.warn("Invalid bindingMode (".concat(bindableProperty.bindingMode, ") for Binding Property associated with id: ").concat(propertyId));
                                 break;
                         }
                         break;
@@ -166,12 +167,12 @@ var MiniHtmlViewModel;
                                 ViewModel.retrieveAndSetValueForBindableProperty(bindableProperty, propertyId);
                                 break;
                             default:
-                                console.warn("Invalid bindingMode (" + bindableProperty.bindingMode + ") for Binding Property associated with id: " + propertyId);
+                                console.warn("Invalid bindingMode (".concat(bindableProperty.bindingMode, ") for Binding Property associated with id: ").concat(propertyId));
                                 break;
                         }
                         break;
                     default:
-                        console.error("Invalid bindingOperationType: " + bindingOperationType);
+                        console.error("Invalid bindingOperationType: ".concat(bindingOperationType));
                         break;
                 }
             }
@@ -200,7 +201,7 @@ var MiniHtmlViewModel;
                 if (bP.bindingMode === BindingMode.TwoWay ||
                     bP.bindingMode === BindingMode.OneWayRead) {
                     var boundedFunc_1 = function (_ev) {
-                        console.info("Detected change in: " + bindablePropertyId);
+                        console.info("Detected change in: ".concat(bindablePropertyId));
                         _this.handlePropertyChangedEvent(bindablePropertyId, BindingOperationType.Read);
                         if (bP.onChangeFunc != null) {
                             bP.onChangeFunc(bP.viewModelRef);
@@ -227,7 +228,7 @@ var MiniHtmlViewModel;
                                 break;
                             default:
                                 // For debugging
-                                console.error("Unacceptable id detected in IViewModelPropertyBase (bindable property displayed below): " + bP.id);
+                                console.error("Unacceptable id detected in IViewModelPropertyBase (bindable property displayed below): ".concat(bP.id));
                                 console.info(bP);
                                 break;
                         }

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.HtmlInputElementPublisherAndSubscriber = exports.PubSubSessionStorageSubscriber = exports.publish = exports.subscribe = exports.setup = void 0;
 var base_1 = require("./base");
 var html_input_change_events_1 = require("./constants/html_input_change_events");
 var object_life_cycle_1 = require("./enumerations/object_life_cycle");
@@ -20,7 +21,7 @@ var PubSubRelay = /** @class */ (function () {
         for (var i = 0; i < this.pubSubRelaySubscribers.length; i++) {
             if (this.pubSubRelaySubscribers[i].subscriberIdentifier ===
                 subscriberInfo.subscriberIdentifier) {
-                console.warn("Cannot subscribe more than once to (" + this.subscriptionIdentifier + ") with (" + subscriberInfo.subscriberIdentifier + ").");
+                console.warn("Cannot subscribe more than once to (".concat(this.subscriptionIdentifier, ") with (").concat(subscriberInfo.subscriberIdentifier, ")."));
                 return;
             }
         }
@@ -50,7 +51,7 @@ var PubSubRelay = /** @class */ (function () {
                             var elemsOfInterest = document.querySelectorAll(relevantSubscriber.subscriberIdentifier);
                             for (var x = 0; x < elemsOfInterest.length; x++) {
                                 if (message.constructor === Array) {
-                                    console.warn("Something probably is not going to work as planned in setting values (" + message + ") for element with id: " + relevantSubscriber.subscriberIdentifier);
+                                    console.warn("Something probably is not going to work as planned in setting values (".concat(message, ") for element with id: ").concat(relevantSubscriber.subscriberIdentifier));
                                 }
                                 elemsOfInterest[x].value = message;
                             }
@@ -87,7 +88,7 @@ var PubSubRelay = /** @class */ (function () {
                         var elemsOfInterest = document.querySelectorAll(relevantSubscriber.subscriberIdentifier);
                         for (var x = 0; x < elemsOfInterest.length; x++) {
                             if (this.lastSentMessage.constructor === Array) {
-                                console.warn("Something probably is not going to work as planned in setting values (" + this.lastSentMessage + ") for element with id: " + relevantSubscriber.subscriberIdentifier);
+                                console.warn("Something probably is not going to work as planned in setting values (".concat(this.lastSentMessage, ") for element with id: ").concat(relevantSubscriber.subscriberIdentifier));
                             }
                             elemsOfInterest[x].value = this.lastSentMessage;
                         }
@@ -207,10 +208,11 @@ var PubSubRelayManager = /** @class */ (function () {
 // Internal library state
 // TODO: Manage internal library state without using globals
 var pubSubRelayManager;
-exports.setup = function () { pubSubRelayManager = new PubSubRelayManager(); };
+var setup = function () { pubSubRelayManager = new PubSubRelayManager(); };
+exports.setup = setup;
 // Treat the first two arguments to this function as being more a part of a stable
 // API vs the the third and fourth arguments which are subject to change.
-exports.subscribe = function (subscriptionIdentifier, selfIdentifier, // should be a CSS selector (JQuery selector) unless providing `selfSetter` argument
+var subscribe = function (subscriptionIdentifier, selfIdentifier, // should be a CSS selector (JQuery selector) unless providing `selfSetter` argument
 selfSetter, objectLifeCycle) {
     if (selfSetter === void 0) { selfSetter = undefined; }
     if (objectLifeCycle === void 0) { objectLifeCycle = object_life_cycle_1.ObjectLifeCycle.Transient; }
@@ -221,12 +223,14 @@ selfSetter, objectLifeCycle) {
     // console.info(objectLifeCycle);
     pubSubRelayManager.handleSubscription(subscriptionIdentifier, selfIdentifier, selfSetter, objectLifeCycle);
 };
-exports.publish = function (subscriptionIdentifier, message) {
+exports.subscribe = subscribe;
+var publish = function (subscriptionIdentifier, message) {
     // console.info("Printing FrontEndFramework.PubSub.publish args");
     // console.info(subscriptionIdentifier);
     // console.info(message);
     pubSubRelayManager.handlePublishedMessage(subscriptionIdentifier, message);
 };
+exports.publish = publish;
 // Usage: During initialization subscribe before post-hooks (preferably pre-hooks) and publish in post-hooks.
 // Assumed to be constructed in pre-hook
 var PubSubSessionStorageSubscriber = /** @class */ (function () {
@@ -240,12 +244,12 @@ var PubSubSessionStorageSubscriber = /** @class */ (function () {
             console.log("Abandoning PubSubSessionStorageSubscriber initialization since session storage is not available");
             return;
         }
-        exports.subscribe(subscriptionIdentifier, storageKey, this.genStoreInSessionStorageFunc(this), this.objectLifeCycle);
+        (0, exports.subscribe)(subscriptionIdentifier, storageKey, this.genStoreInSessionStorageFunc(this), this.objectLifeCycle);
         var initialStoredValue = sessionStorage.getItem(storageKey);
         if (initialStoredValue != null &&
             publishExistingStoredValue) {
             base_1.default.getInstance().hooks.post.push(function () {
-                exports.publish(subscriptionIdentifier, initialStoredValue);
+                (0, exports.publish)(subscriptionIdentifier, initialStoredValue);
             });
         }
     }
@@ -274,20 +278,20 @@ var HtmlInputElementPublisherAndSubscriber = /** @class */ (function () {
         if (publishValuePredicate &&
             (document.getElementById(htmlId).value != null)) {
             base_1.default.getInstance().hooks.post.push(function () {
-                exports.publish(subscriptionIdentifier, document.getElementById(htmlId).value);
+                (0, exports.publish)(subscriptionIdentifier, document.getElementById(htmlId).value);
             });
         }
         // Subscribe
-        exports.subscribe(subscriptionIdentifier, "#" + htmlId, function (message) {
+        (0, exports.subscribe)(subscriptionIdentifier, "#".concat(htmlId), function (message) {
             if (typeof base_1.default.getInstance().gHndl.$ === "undefined") {
                 // Replaces: $(`#${htmlId}`).val(message);
-                var elemsOfInterest = document.querySelectorAll("#" + htmlId);
+                var elemsOfInterest = document.querySelectorAll("#".concat(htmlId));
                 for (var x = 0; x < elemsOfInterest.length; x++) {
                     elemsOfInterest[x].value = message;
                 }
             }
             else {
-                base_1.default.getInstance().gHndl.$("#" + htmlId).val(message);
+                base_1.default.getInstance().gHndl.$("#".concat(htmlId)).val(message);
             }
             if (_this.onChangeFunc != null) {
                 try {
@@ -299,7 +303,7 @@ var HtmlInputElementPublisherAndSubscriber = /** @class */ (function () {
             }
         }, this.objectLifeCycle);
         this._publishOnChangeFunc = (function (_ev) {
-            exports.publish(_this.subscriptionIdentifier, document.getElementById(_this.htmlId).value);
+            (0, exports.publish)(_this.subscriptionIdentifier, document.getElementById(_this.htmlId).value);
             // console.info(`Detected change in (${htmlId}): ${(<HTMLInputElement>document.getElementById(htmlId)).value}`)
             if (_this.onChangeFunc != null) {
                 try {
@@ -333,7 +337,7 @@ var HtmlInputElementPublisherAndSubscriber = /** @class */ (function () {
             console.error("Failed to teardown FrontEndFramework.PubSub.HtmlInputElementPublisherAndSubscrber instance due to objectLifeCycle not being overridden");
             return;
         }
-        console.log("Cleaning up event handlers set up in HtmlInputElementPublisherAndSubscrber (id: " + this.htmlId + ")");
+        console.log("Cleaning up event handlers set up in HtmlInputElementPublisherAndSubscrber (id: ".concat(this.htmlId, ")"));
         // Replaces: $('#' + this.htmlId).off(HtmlInputChangeEvents);
         html_input_change_events_1.default.split(" ").forEach(function (evString) {
             if (document.getElementById(_this.htmlId) != null) {

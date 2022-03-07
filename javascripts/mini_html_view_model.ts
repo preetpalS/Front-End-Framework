@@ -9,12 +9,12 @@ export namespace MiniHtmlViewModel {
         OneTime = 0,
         OneWayRead = 1,
         OneWayWrite = 2,
-        TwoWay = 3
+        TwoWay = 3,
     }
 
     export enum BindingOperationType {
         Read = 0,
-        Write = 1
+        Write = 1,
     }
 
     export interface IViewModelPropertyBase<T extends ViewModel> {
@@ -93,7 +93,7 @@ export namespace MiniHtmlViewModel {
         protected idToBindableProperty: { [index: string]: IViewModelPropertyBase<ViewModel> };
         protected constructor(
             public readonly objectLifeCycle: ObjectLifeCycle,
-            ...bindableProperties: Array<IViewModelPropertyBase<ViewModel>>
+            ...bindableProperties: IViewModelPropertyBase<ViewModel>[]
         ) {
             this.idToBindableProperty = {};
             bindableProperties.forEach(this.processBindableProperty, this);
@@ -101,7 +101,7 @@ export namespace MiniHtmlViewModel {
             if (this.objectLifeCycle === ObjectLifeCycle.Transient &&
                 Base.getInstance().SINGLE_PAGE_APPLICATION_SUPPORT &&
                 (Base.getInstance().hooks.pageCleanup != null)) {
-                (Base.getInstance().hooks.pageCleanup as Array<() => void>).push(this.genTeardownFunc(this));
+                (Base.getInstance().hooks.pageCleanup as (() => void)[]).push(this.genTeardownFunc(this));
             }
         }
 
